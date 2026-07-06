@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PATIENT
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  RESPONDED
+}
+
+enum ResultStatus {
+  PENDING
+  READY
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  role         Role     @default(PATIENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  appointments Appointment[]
+  results      TestResult[]  @relation("PatientResults")
+  uploaded     TestResult[]  @relation("UploadedByAdmin")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  category    String
+  description String
+  price       String
+  icon        String   @default("microscope")
+  featured    Boolean  @default(false)
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  appointments Appointment[]
+  results      TestResult[]
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  patientName   String
+  patientEmail  String
+  patientPhone  String
+  serviceId     String?
+  service       Service?          @relation(fields: [serviceId], references: [id])
+  preferredDate DateTime
+  preferredTime String
+  notes         String?
+  status        AppointmentStatus @default(PENDING)
+  userId        String?
+  user          User?             @relation(fields: [userId], references: [id])
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model Inquiry {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+}
+
+model TestResult {
+  id             String       @id @default(cuid())
+  patientId      String
+  patient        User         @relation("PatientResults", fields: [patientId], references: [id])
+  serviceId      String?
+  service        Service?     @relation(fields: [serviceId], references: [id])
+  testName       String
+  resultDate     DateTime     @default(now())
+  status         ResultStatus @default(PENDING)
+  fileName       String?
+  filePath       String?
+  notes          String?
+  uploadedById   String
+  uploadedBy     User         @relation("UploadedByAdmin", fields: [uploadedById], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
