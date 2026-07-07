@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { readFile } from "fs/promises";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { resultFilePath } from "@/lib/storage";
+import { readResultFile } from "@/lib/storage";
 
 export async function GET(
   _req: Request,
@@ -27,8 +26,8 @@ export async function GET(
   }
 
   try {
-    const buffer = await readFile(resultFilePath(result.filePath));
-    return new NextResponse(buffer, {
+    const buffer = await readResultFile(result.filePath);
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/octet-stream",
         "Content-Disposition": `attachment; filename="${result.fileName ?? "result"}"`,
