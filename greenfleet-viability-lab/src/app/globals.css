@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Forest / emerald: sustainability identity */
+  --color-forest-50: #eef7f2;
+  --color-forest-100: #d5ebdf;
+  --color-forest-200: #aed6c0;
+  --color-forest-300: #7fbb9c;
+  --color-forest-400: #4c9a76;
+  --color-forest-500: #2e7d5b;
+  --color-forest-600: #1f6548;
+  --color-forest-700: #19503a;
+  --color-forest-800: #153f2f;
+  --color-forest-900: #0f3024;
+  --color-forest-950: #08201a;
+
+  /* Navy / slate: financial and analytical seriousness */
+  --color-navy-50: #f3f5f9;
+  --color-navy-100: #e3e8f0;
+  --color-navy-200: #c8d1e0;
+  --color-navy-300: #9cabc4;
+  --color-navy-400: #6d7f9f;
+  --color-navy-500: #4f6283;
+  --color-navy-600: #3c4d6a;
+  --color-navy-700: #2f3d56;
+  --color-navy-800: #232e43;
+  --color-navy-900: #19223a;
+  --color-navy-950: #0f1729;
+
+  --color-paper: #f7f8f6;
+  --color-surface: #ffffff;
+  --color-line: #dde2e8;
+
+  --radius-card: 0.875rem;
+  --shadow-card: 0 1px 2px rgb(15 23 41 / 0.05), 0 4px 16px rgb(15 23 41 / 0.04);
+  --shadow-raised: 0 2px 4px rgb(15 23 41 / 0.06), 0 12px 32px rgb(15 23 41 / 0.08);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-navy-900);
+    font-family: var(--font-sans);
+    font-feature-settings: "tnum" 1, "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-forest-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+/* Printing and Save as PDF. The report is the only page designed for paper; other pages still lose their chrome. */
+@media print {
+  @page { size: A4; margin: 14mm 12mm; }
+  html, body { background: #fff !important; }
+  body { font-size: 11px; color: #000; }
+  main { max-width: none !important; padding: 0 !important; }
+  .report-section { break-inside: auto; }
+  .report-section > h2, .report-section > h3 { break-after: avoid; }
+  .report-card, .report-section figure, .report-section tr, .report-section li { break-inside: avoid; }
+  .report-page-break { break-before: page; }
+  .report-cover { break-after: page; }
+  a { color: inherit; text-decoration: none; }
+  * { box-shadow: none !important; }
+}

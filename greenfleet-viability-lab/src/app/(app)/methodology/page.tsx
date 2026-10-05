@@ -1,0 +1,386 @@
+import { Scale } from "lucide-react";
+import type { Metadata } from "next";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible } from "@/components/ui/collapsible";
+import { Formula } from "@/components/ui/formula";
+import { PageHeader } from "@/components/ui/page-header";
+import { ResponsiveTable } from "@/components/ui/responsive-table";
+import { UNITS, type UnitId } from "@/lib/units";
+
+export const metadata: Metadata = { title: "Methodology & Assumptions" };
+
+const CANONICAL: ReadonlyArray<readonly [string, string]> = [
+  ["Money", "Whole units of the assessment currency (default ₦). No scaling to thousands or millions."],
+  ["Distance", "Kilometres. Daily and annual distances are km/day and km/year."],
+  ["Fuel economy", "Litres per 100 km internally. km/litre is a display conversion."],
+  ["Electric economy", "kWh per 100 km internally. kWh/km is a display conversion."],
+  ["Mass", "Kilograms. Tonnes is a display conversion."],
+  ["Percentages", "Stored as 0 to 100, never as a 0 to 1 fraction."],
+  ["Emissions", "kg CO2e. tCO2e/year is a display conversion."],
+  ["Time", "Years for lifetimes, horizons and loan terms; days/year for operating days."],
+];
+
+
+export default function MethodologyPage() {
+  const unitIds = Object.keys(UNITS) as UnitId[];
+  return (
+    <>
+      <PageHeader
+        help="methodology"
+        eyebrow="Transparency"
+        title="Methodology & assumptions"
+        description="How GreenFleet reaches its answers, and what you can inspect and change."
+      />
+
+      <div className="mb-6 flex gap-4 rounded-card border border-forest-200 bg-forest-50 p-5">
+        <Scale aria-hidden className="mt-0.5 size-6 shrink-0 text-forest-700" />
+        <p className="font-medium leading-relaxed text-forest-950">
+          GreenFleet does not assume that a green technology is commercially superior. Results are determined by the user&apos;s operating
+          and financial assumptions.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <Collapsible title="Commercial methodology" summary="Diesel is the baseline; alternatives are judged against it." defaultOpen>
+          <div className="space-y-3">
+            <p>Each technology is assessed over the same analysis horizon, on the same route and utilisation. Diesel is the reference case. It is not treated as inferior, and no technology receives a favourable result unless your numbers produce one.</p>
+            <p>Commercial viability and environmental performance are separate dimensions. A technology can emit less and still be commercially unattractive, and the application reports both.</p>
+            <p>Calculations are deterministic and auditable. GreenFleet does not use generative AI. Every figure and every sentence comes from the deterministic rules described on this page.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Calculation formulas" summary="Every number on the results page, step by step." defaultOpen>
+          <div className="space-y-2">
+            <p>
+              Diesel is the baseline. Each alternative is compared with it year by year. A positive incremental net present value means the alternative has an
+              economic advantage over diesel under the assumptions you entered, and a negative one means an economic disadvantage. It does not mean the
+              alternative is better for the environment or that it will work in your operation.
+            </p>
+            <p>
+              <strong>Timeline.</strong> Year 0 is the purchase date. Years 1 to T are operating years, with T the analysis period. Year 0 is not
+              discounted. Costs are positive numbers; incentives and residual value are subtracted.
+            </p>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">Distance</h2>
+            <Formula meaning="Or the annual distance you entered directly.">annual distance = daily distance × operating days per year</Formula>
+            <Formula>fleet annual distance = annual distance × number of vehicles</Formula>
+            <Formula meaning="Utilisation is the same in every year.">fleet distance over the period = Σ<sub>t=1..T</sub> fleet annual distance</Formula>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">Fuel and energy</h2>
+            <Formula meaning="Used when you enter km per litre. Entering litres per 100 km gives the same answer.">litres per 100 km = 100 ÷ (km per litre)</Formula>
+            <Formula>annual fuel = fleet annual distance × (litres per 100 km) ÷ 100</Formula>
+            <Formula meaning="Escalation applies only if you entered it. A blank is held constant and shown as a missing assumption.">
+              price<sub>t</sub> = price<sub>1</sub> × (1 + g)<sup>t−1</sup>
+              <br />
+              fuel cost<sub>t</sub> = annual fuel × price<sub>t</sub>
+            </Formula>
+            <Formula meaning="Electric vehicles. kWh per 100 km is divided by 100 to give kWh per km.">vehicle energy = fleet annual distance × (kWh per km)</Formula>
+            <Formula meaning="L is the share of grid energy lost in charging, as a decimal. With a 10% loss you divide by 0.90. You do not multiply by 1.10.">
+              grid energy = vehicle energy ÷ (1 − L)
+              <br />
+              electricity cost<sub>t</sub> = grid energy × tariff<sub>t</sub>
+            </Formula>
+            <Formula meaning="Biofuel uses the same steps in its own fuel unit (litre, kg or m³). It is never forced into litres.">biofuel cost<sub>t</sub> = fleet distance × (fuel per km) × price<sub>t</sub></Formula>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">Running costs (each year)</h2>
+            <Formula meaning="Each part is kept separate in the results.">
+              operating cost<sub>t</sub> = energy + maintenance + insurance + licensing + other fixed + other variable + infrastructure running cost
+            </Formula>
+            <Formula meaning="Per-vehicle amounts are multiplied by the number of vehicles. Cost per km is multiplied by fleet distance only, so the fleet size is never applied twice.">
+              maintenance, insurance, licensing, other fixed = amount per vehicle × vehicles
+              <br />
+              other variable = cost per km × fleet annual distance
+            </Formula>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">Capital costs, incentives and infrastructure</h2>
+            <Formula>Year 0 vehicles = price per vehicle × vehicles (for a conversion: conversion cost × vehicles)</Formula>
+            <Formula meaning="Only incentives you entered. A percentage subsidy applies to the vehicle purchase cost, not to infrastructure. A tax credit or other incentive with no defined timing is excluded and reported, not assumed to arrive in Year 0.">
+              grant = amount per vehicle × vehicles (never more than the purchase cost)
+              <br />
+              subsidy = percentage × vehicle purchase cost
+            </Formula>
+            <Formula meaning="Charger costs are totals for the whole installation, not per charger. Your fleet is charged only its share. Charger utilisation is a different idea and is not used to share cost.">
+              share = min(1, vehicles assessed ÷ total vehicles using the chargers)
+              <br />
+              infrastructure capital = (equipment + installation + electrical upgrade) × share
+            </Formula>
+            <Formula meaning="Infrastructure is paid for once, in Year 0. Its replacement and any remaining value at the end are not modelled.">infrastructure running cost<sub>t</sub> = (maintenance + other annual cost) × share</Formula>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">Replacements and residual value</h2>
+            <Formula meaning="A replacement vehicle is bought at Year k × life whenever that is before the end of the period, so none is bought at exactly Year T. A non-integer life falls in the year it expires. The replacement costs the same as the first vehicle.">
+              replacement years = { `{ k × useful life : k = 1, 2, … and k × useful life < T }` }
+            </Formula>
+            <Formula meaning="Only an answer of “Yes” adds the cost. “Unknown” is not turned into zero: it is left out and flagged.">
+              battery replacement<sub>t</sub> = cost per vehicle × vehicles, in the replacement year (and again in each later vehicle cycle)
+            </Formula>
+            <Formula meaning="Subtracted in the final year. An amount is per vehicle; a percentage applies to the acquisition price. If none is entered, nothing is credited and this is flagged.">
+              residual value = amount per vehicle × vehicles, or percentage × acquisition price × vehicles
+            </Formula>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">Total cost of ownership</h2>
+            <Formula meaning="Net cash cost in a year is capital + operating + replacements, minus incentives and residual value.">
+              TCO = Σ<sub>t=0..T</sub> net cash cost<sub>t</sub>
+            </Formula>
+            <Formula meaning="r is the discount rate as a decimal. Year 0 is divided by 1.">
+              present cost = Σ<sub>t=0..T</sub> net cash cost<sub>t</sub> ÷ (1 + r)<sup>t</sup>
+            </Formula>
+            <Formula meaning="Both use the same distance, so a discounted cost is never divided by a different horizon.">
+              TCO per km = TCO ÷ fleet distance over the period
+              <br />
+              present cost per km = present cost ÷ fleet distance over the period
+            </Formula>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">Alternative versus diesel</h2>
+            <Formula meaning="Positive means the alternative is cheaper in that year. Year 0 is minus the extra investment. The final year includes the difference in residual values.">
+              incremental cash flow<sub>t</sub> = diesel net cash cost<sub>t</sub> − alternative net cash cost<sub>t</sub>
+            </Formula>
+            <Formula meaning="Greater than zero: economic advantage over diesel. About zero: economically indifferent. Less than zero: economic disadvantage. This is a statement about cost only.">
+              NPV = Σ<sub>t=0..T</sub> incremental cash flow<sub>t</sub> ÷ (1 + r)<sup>t</sup>
+            </Formula>
+            <Formula meaning="Found on the running total of incremental cash flow. If it crosses zero between two years, the point is interpolated inside that year. If it never reaches zero within the period, the result is “Not achieved within analysis horizon”, never 0 and never the period length. If the alternative is cheaper at Year 0, there is nothing to recover and payback is immediate.">
+              simple payback = (t − 1) + shortfall at the start of year t ÷ cash flow in year t
+            </Formula>
+            <Formula meaning="The same method on discounted cash flows.">discounted payback: same, using incremental cash flow<sub>t</sub> ÷ (1 + r)<sup>t</sup></Formula>
+            <Formula meaning="Replacements and price escalation make the path uneven, so it is read from the year-by-year path rather than from a single formula.">
+              break-even distance = fleet distance driven by the time of simple payback
+            </Formula>
+            <Formula meaning="Excludes capital and replacement costs. A negative figure is shown as additional operating cost, not as savings.">
+              operating savings<sub>t</sub> = diesel operating cost<sub>t</sub> − alternative operating cost<sub>t</sub>
+            </Formula>
+
+            <h2 className="pt-3 text-base font-semibold text-navy-950">What these results leave out</h2>
+            <ul className="list-disc space-y-1 pl-5">
+              <li><strong>Financing.</strong> GreenFleet evaluates project and asset economic viability: the cost of owning and running the vehicles and infrastructure, whoever pays for them. Loans, interest and the debt/equity split are stored but not used, so the comparison does not depend on how the vehicles are paid for and acquisition is never counted twice. GreenFleet does not model whether a start-up could obtain finance, service a loan or stay solvent, and its results must not be read as a statement of financeability. The discount rate is the only finance input that changes the NPV.</li>
+              <li>Tax, depreciation allowances and VAT.</li>
+              <li>Revenue. Both options are assumed to do the same transport work, so this is a cost comparison and no internal rate of return is calculated.</li>
+              <li>Inflation in general. Only the escalation rates you enter are applied, to the prices you apply them to. Maintenance is held constant. Results are a scenario, not a full inflation model.</li>
+              <li>Whether a battery-electric vehicle can do the daily route, or whether biofuel is reliably available. These are checked in the separate operational feasibility layer and are never priced into the cost figures.</li>
+              <li>Emissions. They are estimated in the separate environmental layer and are never given a price.</li>
+            </ul>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Commercial viability policy v1.0" summary="GreenFleet Commercial Viability Policy v1.0: how each alternative is classified against diesel." defaultOpen>
+          <div className="space-y-3">
+            <p><strong>The decision rules are prototype modelling policies intended for transparent comparative analysis. They are not universal investment laws.</strong> The question answered is: under your stated operating, financial and infrastructure assumptions, is this green alternative commercially viable relative to the diesel baseline? Battery electric and biofuel are each classified against diesel. Diesel is the baseline and gets no label.</p>
+            <p>The classification is <strong>hierarchical and rule-based</strong>. There is no weighted score, no points and no green or sustainability score. Every label can be traced to explicit rules, and the &ldquo;Why this result?&rdquo; panel on the results page shows the steps.</p>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">The four labels</h2>
+            <ul className="list-disc space-y-1 pl-5">
+              <li><strong>VIABLE.</strong> Under the entered assumptions, the alternative shows a favourable economic case relative to diesel and no material unresolved operational constraint. It is not a guarantee of future profit and not investment advice.</li>
+              <li><strong>CONDITIONALLY VIABLE.</strong> A potentially credible commercial case, but one or more remediable conditions, uncertainties or dependencies must be resolved. This includes a case that is close to break-even.</li>
+              <li><strong>NOT YET VIABLE.</strong> Under the current assumptions the alternative does not establish a sufficiently credible commercial case against diesel: materially unfavourable economics, an unresolved hard operational constraint, or both. &ldquo;Yet&rdquo; is deliberate, because changing prices, utilisation, financing, infrastructure or operating conditions may change the result.</li>
+              <li><strong>INSUFFICIENT EVIDENCE.</strong> Essential information is missing, so a defensible label is not possible. Incomplete data is never forced into one of the other three.</li>
+            </ul>
+            <p>These are different from the operational statuses (Suitable, Conditional, Constrained, Insufficient data), which describe only the duty cycle.</p>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">Decision order</h2>
+            <ol className="list-decimal space-y-1 pl-5">
+              <li><strong>Consistency.</strong> The economic results are cross-checked (the NPV must match the discounted cumulative cash flow and the present-cost difference). A contradiction is reported and is never classified.</li>
+              <li><strong>Evidence sufficiency.</strong> Economic evidence must support a comparison with diesel, and the critical operational items must be known. This check comes before the economic case, so a negative NPV with a missing critical operational item gives INSUFFICIENT EVIDENCE, not NOT YET VIABLE. The result still says that the available economic evidence is unfavourable, as information only. Environmental factors are <em>not</em> required.</li>
+              <li><strong>Operational feasibility.</strong> A <em>hard operational constraint</em> prevents VIABLE and, with nothing that resolves it, gives NOT YET VIABLE. A <em>remediable condition</em> allows CONDITIONALLY VIABLE.</li>
+              <li><strong>Economic attractiveness.</strong> Favourable, near break-even or unfavourable (below).</li>
+              <li><strong>Conditions and material uncertainties.</strong> Any left over turn an otherwise VIABLE result into CONDITIONALLY VIABLE.</li>
+            </ol>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">Economic case</h2>
+            <p>The primary indicator is the incremental NPV against diesel. Payback, the total-cost difference and the year-one operating saving are shown as support and are not used blindly. A payback is judged against your analysis horizon. If the alternative is cheaper at Year 0, payback is immediate and no ratio needing a positive extra investment is forced.</p>
+            <Formula meaning="Used only to judge how close the NPV is to zero. It is not a return on investment.">NPV materiality ratio = incremental NPV ÷ denominator</Formula>
+            <ul className="list-disc space-y-1 pl-5">
+              <li><strong>Prototype near-break-even tolerance: ±5% of the additional initial investment</strong> (alternative Year-0 net cost minus diesel Year-0 net cost), when that is positive and at least 1% of the diesel present cost. Otherwise (zero, negative or trivially small) the denominator is the <strong>diesel present cost</strong>. This 5% is a model policy assumption, not a universal law and not an academic consensus. It sits in one policy object and is easy to change.</li>
+              <li><strong>Favourable:</strong> NPV above zero by more than the tolerance. <strong>Near break-even:</strong> |ratio| within the tolerance, including an NPV of exactly zero. <strong>Unfavourable:</strong> NPV below zero by more than the tolerance. A result outside the tolerance but only slightly negative is therefore not called near break-even, and a clearly negative NPV is never softened into CONDITIONALLY VIABLE.</li>
+              <li><strong>Numerical tolerance</strong> is separate: an NPV is treated as exactly zero when it is within one billionth of the diesel present cost, which only absorbs floating-point noise.</li>
+            </ul>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">Hard constraints, conditions and unknowns</h2>
+            <ul className="list-disc space-y-1 pl-5">
+              <li><strong>Hard constraints</strong> (no remedy identified in what you entered): the day or a single route is longer than the BEV range with depot-only charging; the average payload exceeds the effective BEV capacity; biofuel supply is limited and the infrastructure it needs is not specified.</li>
+              <li><strong>Remediable conditions</strong>: daytime charging is required; vehicles must recharge at the depot between routes; charging arrangements need reconciling; biofuel supply is intermittent or limited; required biofuel infrastructure is not fully specified.</li>
+              <li><strong>Critical unknowns</strong> (give INSUFFICIENT EVIDENCE): the BEV range or daily distance is missing, or the day or a route is longer than the range and charging availability is unknown; biofuel availability is missing or unknown.</li>
+              <li><strong>Non-critical unknowns</strong> are carried as material uncertainties and give CONDITIONALLY VIABLE, not INSUFFICIENT EVIDENCE: an unknown battery replacement requirement (a lifecycle cost that is not in the cost figures), an unknown BEV payload impact, an unconfirmed charging arrangement, an unknown need for biofuel infrastructure.</li>
+            </ul>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">Environmental performance</h2>
+            <p>Environmental performance is a fourth dimension. It is reported beside the label (lower, higher, equal, or unavailable) and does <strong>not</strong> change it under this policy. Lower emissions do not rescue negative economics, higher emissions do not cancel a favourable and feasible case, and a missing emission factor does not stop classification. The result always says which of these applies.</p>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">Limits</h2>
+            <p>The label depends on your inputs, uses no market data, and does not cover tax, revenue, financing or risk. It does not say how far an assumption must move to change the label. The threshold analysis does that, one assumption at a time and all else equal.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Sensitivity analysis methodology" summary="One assumption at a time, through the same engine, with the Base Case untouched.">
+          <div className="space-y-3">
+            <p><strong>Base Case.</strong> Your current assessment. Every analysis copies it in memory, changes the named assumptions on the copy, and recalculates with the same engine as the Results page. No formula is repeated. The Base Case is never changed.</p>
+            <p><strong>One-way sensitivity.</strong> Only the chosen assumption changes. Every other assumption equals the Base Case. Each point reports the incremental NPV, the present-cost difference, TCO, cost per km, both paybacks, the economic case, the operational status and the Policy v1.0 classification.</p>
+            <p><strong>Prototype sensitivity range.</strong> -20%, -10%, base, +10%, +20%. This is a convention for exploring and has no academic justification as a universal range. You can set a minimum, a maximum and a number of steps (3 to 41), as percentages or as absolute values. The base value is always included. A value the model cannot use (for example a negative price, or a rate above 100%) is rejected and named, never silently adjusted. If the base value is zero a percentage range is unavailable and an absolute range is used.</p>
+            <p><strong>Assumptions that can be varied.</strong> Diesel price, electricity tariff, biofuel price, BEV and biofuel acquisition or conversion cost, annual distance, operating days, maintenance cost, discount rate, charging and biofuel infrastructure capital cost (project totals), an upfront purchase subsidy per vehicle, and the operational inputs BEV range, charging downtime and payload reduction. Only an upfront grant is varied, because the timing of other incentives is undefined. Annual distance scales the daily distance in proportion (operating days fixed) so the cost model and the operational checks see the same duty; operating days scales annual distance with the daily distance fixed. Fuel availability and charging access are categories and are compared in scenarios only.</p>
+            <Formula meaning="The ranking shows how strongly the incremental NPV responds to each assumption at the low and high end of the same range. It is sensitivity influence under the tested ranges. It does not show that an assumption causes the result.">driver impact = max(NPV<sub>high</sub>, NPV<sub>low</sub>) − min(NPV<sub>high</sub>, NPV<sub>low</sub>)</Formula>
+            <p><strong>Two-way sensitivity.</strong> A grid of at most 11 × 11 values for a short list of useful pairs (for example BEV acquisition price with electricity tariff). The economic break-even frontier is the set of combinations where the incremental NPV is approximately zero. It is an economic result only. Where the operational gates are not satisfied the classification column does not read Viable.</p>
+            <p><strong>Classification changes</strong> between tested values are reported as boundaries of the Policy v1.0 rules, not as a continuous curve. Changing an emission factor never changes the classification.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Scenario analysis methodology" summary="A named set of overrides on the Base Case.">
+          <div className="space-y-3">
+            <p>A scenario is the Base Case plus the changes you choose. Only the changes are stored, in this browser, apart from your assessment. You can create, rename, edit, duplicate and delete scenarios, up to 12. The limit keeps the comparison readable and has no scientific meaning.</p>
+            <p>Each scenario is calculated by the same engine. The comparison shows the NPV, TCO, present cost, cost per km, both paybacks, the operational status, the emissions result where emission factors exist, and the commercial classification, with the changes from the Base Case. The lowest-cost scenario is not called the best: check the operational status and the classification first.</p>
+            <p>GreenFleet ships no scenarios. Scenarios you create are marked USER-CREATED, and none is a market forecast. Because scenarios store absolute values, a saved scenario is applied to the Base Case as it is now. An override that is no longer valid for the Base Case (for example a subsidy larger than the vehicle price) is reported and not calculated.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Threshold and inverse decision analysis" summary="What would make it viable? Solving backwards for the value an assumption would need to reach.">
+          <div className="space-y-3">
+            <p><strong>Two targets that are not the same.</strong> <em>Economic break-even</em> is the value at which the incremental NPV against diesel is approximately zero. <em>Commercial classification transition</em> is the nearest value at which Policy v1.0 changes the classification. They differ because operational constraints can remain after the economics reach break-even. Reaching economic break-even does not by itself make an alternative commercially viable, and the answer says so whenever a hard constraint remains.</p>
+            <p><strong>All else equal.</strong> Every threshold moves one assumption and holds all others at the Base Case. Thresholds for different assumptions are not additive, and a threshold is not a forecast.</p>
+            <p><strong>Solver.</strong> The solver calls the full engine; it never uses a simplified formula, so replacement cycles, a percentage residual value, infrastructure sharing and incentives behave as in the results.</p>
+            <ol className="list-decimal space-y-1 pl-5">
+              <li>Read the current value and the incremental NPV. If the NPV is already approximately zero, the current value is the threshold.</li>
+              <li>Measure which direction raises the NPV, then move the other way (if the NPV is negative, the improving direction; if positive, the deteriorating direction to find the margin). The step starts at 5% of the current value (or one millionth of the bound range) and doubles each time, up to 60 doublings, never beyond a solver bound.</li>
+              <li>Stop when the NPV changes sign. The root is then bracketed. If a bound is reached first the result is Not bracketed and no number is shown.</li>
+              <li>Sample the bracket at 12 intervals. If the NPV is not monotonic across it, the result is Non-monotonic: &ldquo;No reliable single threshold was found within the tested range.&rdquo;</li>
+              <li>Bisect until the bracket is narrower than 1e-10 of the value, or |NPV| is within 1e-9 of the diesel present cost, or 100 iterations pass (Solver limit reached).</li>
+              <li>Re-run the engine at the solved value. If |NPV| is not within 1e-6 of the diesel present cost the threshold is not reported (Not verified).</li>
+            </ol>
+            <p><strong>Solver bounds</strong> are computational limits, not market limits: zero up to ten times the current value (or a large fixed ceiling when the current value is zero); a subsidy up to the vehicle purchase cost; discount rate 0% to 100%; operating days up to 366. Results are displayed to about three significant figures with &ldquo;approximately&rdquo;. Full precision is kept internally.</p>
+            <p><strong>Classification transition.</strong> The solver scans 48 points from the current value toward each bound and bisects between the last unchanged point and the first changed one. It reports the nearest change only, why it changed (the economic case, the operational status, or open conditions) and the Policy v1.0 trace before and after. A numeric assumption does not always reach Viable: the answer may stop at Conditionally Viable because conditions remain.</p>
+            <p><strong>Status values.</strong> Found; Already satisfied (the target holds, and a margin may be given); Not bracketed; Non-monotonic; Solver limit reached; Not verified; Insufficient data (critical inputs are missing, so nothing is solved); Not applicable (for example a category, or an assumption that does not change the NPV); Blocked by an operational constraint; Blocked by open conditions. A failure state never carries a number.</p>
+            <p><strong>Operational remedies.</strong> Where an operational rule gives a number, the boundary is shown without a safety buffer and checked by re-running the engine: the minimum usable range equals the required route distance (or the daily distance when no route is entered), and the maximum payload reduction keeps the effective capacity at the average payload. These are minimum model thresholds, not engineering safety recommendations. Fuel availability, charging access and infrastructure are qualitative remedies and are never turned into numbers.</p>
+            <p><strong>Limitations.</strong> A threshold depends on the entered assumptions, uses no market data, and is not a forecast, a quotation or an optimisation of fleet decisions. Discount rate and operating days are analysed by sensitivity and are not solved. Monte Carlo analysis is not included.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Reporting and evidence interpretation" summary="What the report, the presentation and the exports do, and what evidence quality means.">
+          <div className="space-y-3">
+            <p><strong>Reports consume results; they do not create them.</strong> The professional report, Presentation Mode, the CSV exports and the JSON export are all built from one report model, which only arranges values the engine has already produced. The same assessment gives the same NPV, TCO, payback, classification, operational status and emissions result on the Results page, in the report, in the presentation and in the exports. A figure that is not available is shown as unavailable and is never invented.</p>
+            <p><strong>Evidence quality is descriptive, not statistical.</strong> The evidence states (complete, partial, insufficient, unavailable), the counts of user, sourced, illustrative, derived and missing values, and the lists of critical missing inputs and material uncertainties describe how complete and how well sourced the inputs are. GreenFleet does not calculate a confidence interval, a probability or a confidence score for the commercial classification, and no such number appears anywhere. Evidence completeness must not be read as statistical confidence.</p>
+            <p><strong>Material assumptions</strong> are those that the decision itself points to: assumptions behind a condition, constraint or uncertainty in the Policy v1.0 result, the largest tested drivers, and variables for which a threshold was solved. An input is not called material just because it is on a form.</p>
+            <p><strong>No AI.</strong> Summaries and takeaways are fixed templates filled with values from the structured results. The same results always give the same words.</p>
+            <p><strong>Analyses shown in a report</strong> are those you have run on the Sensitivity page for the current inputs. The report does not run them again. If you changed an input since, the earlier analysis is not shown, and the report says that the analysis has not been run.</p>
+            <p><strong>Exports and privacy.</strong> CSV and JSON files are created on your device and are not uploaded. They keep raw, unrounded numbers, the currency, the policy version and the application and report versions. Print / Save as PDF uses your browser&apos;s print dialog. <strong>Presentation Mode</strong> reads the current assessment and does not change it.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Environmental methodology" summary="Estimated operational energy/fuel-related GHG emissions, from factors you supply.">
+          <div className="space-y-3">
+            <p>This layer estimates <strong>operational energy/fuel-related greenhouse gas emissions</strong>. It is not a life-cycle assessment. Vehicle and battery manufacturing, disposal and infrastructure emissions are not included, and no embodied emissions are estimated.</p>
+            <Formula meaning="Physical use is the same litres or kWh the cost calculation uses. The factor is the one you entered, converted to kg of CO2e per litre, kg, m³ or kWh.">emissions (kg CO2e) = physical energy or fuel use × emission factor</Formula>
+            <Formula meaning="Electricity is counted at the grid or charger. Charging losses are included only when you entered a loss rate; otherwise this is stated.">grid kWh = kWh delivered to the vehicle ÷ (1 − charging loss)</Formula>
+            <Formula meaning="Positive means the alternative emits less than diesel. A negative result is labelled an increase, never a reduction.">change against diesel (%) = (diesel − alternative) ÷ diesel × 100</Formula>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>GreenFleet ships no emission factors. Every factor, its unit, source, year and scope is yours. With no factor, the figure is shown as unavailable, never as zero.</li>
+              <li>Factors are applied as constants for the whole period. They do not depend on any price.</li>
+              <li>Unit checks: a factor per litre cannot be applied to kWh. A mismatch makes that technology unavailable instead of guessing a conversion. Grams convert to kilograms. A CO2-only factor is flagged because it is not CO2e.</li>
+              <li>If the factors compared cover different things (for example direct against fuel-cycle), a warning says so. Scope labels are recorded as you give them.</li>
+              <li>The biofuel factor applies to the fuel as bought. For a blend, enter the factor of the blend.</li>
+              <li>The lifecycle adjustment percentage is recorded and shown but not applied, because how it should be used is not defined.</li>
+              <li>Emissions are not converted to money. No carbon price is used.</li>
+            </ul>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Operational feasibility methodology" summary="Transparent rule checks on whether each option can do the transport task.">
+          <div className="space-y-3">
+            <p>This layer asks whether the option can plausibly do the work you described. It uses your own inputs and fixed rules. It does not use costs or emissions, and it does not produce a score.</p>
+            <p><strong>Statuses.</strong> Suitable: no operational constraint is identified from the data entered. Conditional: operation appears possible but depends on a stated condition. Constrained: at least one entered fact conflicts with the duty cycle. Insufficient data: the evidence needed to judge is not available.</p>
+            <p><strong>How the overall status is set.</strong> Rule 1: any constrained check makes the option constrained. Rule 2: otherwise, if a core check lacks data, the option is insufficient data. Rule 3: otherwise, any conditional or unknown check makes it conditional. Rule 4: otherwise it is suitable. The rule that applied is recorded.</p>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">Battery electric</h2>
+            <Formula meaning="Negative margin means the daily distance is longer than the stated usable range. No safety buffer is assumed.">range margin = usable range − daily distance</Formula>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>Daily distance within range: satisfied. Above range with depot-only charging: constrained, unless each route fits the range and vehicles can recharge between routes (conditional). Above range with daytime charging available: conditional. Above range with charging unknown: insufficient data.</li>
+              <li>A single route longer than the range is a stronger problem than a long day: constrained with depot-only charging, conditional if a charge is possible during the route.</li>
+              <li>Payload: effective capacity = capacity − reduction (kg), or capacity × (1 − reduction %). Constrained when average payload exceeds it. An unknown impact is reported as uncertainty, not guessed.</li>
+              <li>Charging time is shown as you entered it, per vehicle and for the fleet. It is not lost productive time and is not priced.</li>
+            </ul>
+            <h2 className="pt-1 text-base font-semibold text-navy-950">Biofuel</h2>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>Reliable supply: satisfied. Intermittent: conditional. Limited: conditional, or constrained when needed infrastructure is not specified. Unknown: insufficient data.</li>
+              <li>Infrastructure that is needed but not fully specified is conditional. Unknown need is insufficient data.</li>
+              <li>Extra refuelling distance is shown as entered per vehicle per day. Downtime per month is multiplied by 12 for a yearly figure. Neither is priced.</li>
+            </ul>
+            <p><strong>Evidence completeness</strong> counts how many evidence items were answered out of a stated total. &ldquo;Unknown&rdquo; does not count as answered. Diesel is shown as the baseline configuration with no constraint collected.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Economic assumptions" summary="Prices, escalation, vehicle lifetime and residual value.">
+          <div className="space-y-3">
+            <p>Fuel and electricity prices, their expected change over time, vehicle lifetime and resale value are all inputs that you set. None are fixed in the software.</p>
+            <p>Volatile figures such as diesel prices and electricity tariffs are never hard-coded as facts. Where an illustrative value is shown, it is labelled as such.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Financial assumptions" summary="Financing, discounting and infrastructure cost.">
+          <div className="space-y-3">
+            <p>Financing terms (share financed, interest rate, loan term), the discount rate and infrastructure costs are entered by you. A cost of zero is treated as a real value; a blank is treated as missing, and &ldquo;not applicable&rdquo; is recorded as its own state.</p>
+            <p>Every financial input carries a currency and unit. Changing the currency relabels units but does not convert amounts.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Operational assumptions" summary="Distance, utilisation, payload, range and charging or blending limits.">
+          <div className="space-y-3">
+            <p>Daily distance, operating days, load factor and analysis horizon describe how the vehicles are used. Operating limits, such as battery range for electric vehicles or the approved blend share for biofuel engines, are checked against these inputs.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Environmental assumptions" summary="Emission factors and how emissions are reported.">
+          <div className="space-y-3">
+            <p>Emission estimates depend on emission factors that you supply or confirm. The software does not assume a fuel or grid factor is correct for your context.</p>
+            <p>Emissions are reported next to, but separately from, commercial and operational results. Economic attractiveness, operational feasibility and environmental performance are three answers that are never merged into one score.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Units and definitions" summary="Canonical internal units and the units shown beside inputs.">
+          <div className="space-y-5">
+            <ResponsiveTable caption="Canonical internal units">
+              <thead>
+                <tr className="border-b border-line bg-navy-50 text-navy-800">
+                  <th scope="col" className="px-4 py-3 font-semibold">Quantity</th>
+                  <th scope="col" className="px-4 py-3 font-semibold">Internal convention</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CANONICAL.map(([q, d]) => (
+                  <tr key={q} className="border-b border-line last:border-0">
+                    <th scope="row" className="px-4 py-3 font-medium text-navy-900">{q}</th>
+                    <td className="px-4 py-3 text-navy-800">{d}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </ResponsiveTable>
+            <div>
+              <p className="mb-2 font-semibold text-navy-950">Units recognised by the application</p>
+              <ul className="flex flex-wrap gap-2">
+                {unitIds.map((id) => (
+                  <li key={id}>
+                    <Badge tone="navy">{UNITS[id].label.replace("{cur}", "₦")}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Data sources" summary="Where numbers come from.">
+          <div className="space-y-3">
+            <p>This release contains no market data. Every figure is either entered by you or is an optional demonstration value labelled &ldquo;Illustrative demo assumption &mdash; not current market data.&rdquo;</p>
+            <p>When sourced data is added, each value will be listed here with its citation and the date it was retrieved.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Prototype validation and computational safeguards" summary="How the figures were checked, how rounding works, and what the software refuses to calculate.">
+          <div className="space-y-2">
+            <p><strong>Checked independently.</strong> The calculations are checked against small hand-calculated cases whose expected values are written out as plain arithmetic, not produced by the software: a simple case, a replacement-cycle case, an infrastructure-sharing case and an escalation case. Policy v1.0 is checked against a decision table of every combination of economic case, operational status and uncertainty, and a test changes only the emission factors to confirm the classification does not move. These are verification checks of the prototype&apos;s logic, not evidence about any real fleet.</p>
+            <p><strong>Deterministic.</strong> The same inputs always give the same figures, classification and threshold. There is no randomness and no clock in the calculation.</p>
+            <p><strong>Rounding is for display only.</strong> Figures are shown rounded, but every calculation, comparison and classification uses the unrounded value. An amount that is not zero but below one currency unit is shown as &ldquo;&lt; ₦1&rdquo; (or &ldquo;&gt; -₦1&rdquo;), never as ₦0.</p>
+            <p><strong>What the software refuses to calculate.</strong> Inputs that would overflow the number range, or a vehicle life so short that it would need more than 1,000 replacements in the analysis period, are reported as an error with a message. They never produce Infinity, NaN or a hidden zero. Zero, not entered, unknown, not applicable, not run, not achieved and unavailable are kept as different states everywhere.</p>
+            <p><strong>Nothing leaves your device.</strong> The application makes no network request with your data. There is no account, analytics, remote database, market-data feed or AI service.</p>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Limitations" summary="What this prototype can and cannot tell you.">
+          <ul className="list-disc space-y-2 pl-5">
+            <li>It is an academic proof of concept, not a certified financial, engineering or investment-advisory system.</li>
+            <li>Results are only as good as the assumptions entered. Unsupported inputs produce unsupported outputs.</li>
+            <li>It models one vehicle profile at a time and does not capture every real-world factor, such as taxes, subsidies or downtime.</li>
+            <li>It evaluates project and asset economics. It does not assess whether a start-up could finance, repay or survive the investment.</li>
+            <li>Emission factors, prices and rates are yours to supply. The software ships none and uses no live market data.</li>
+            <li>Your entries are stored in this browser only. Clearing site data removes them.</li>
+          </ul>
+        </Collapsible>
+      </div>
+    </>
+  );
+}

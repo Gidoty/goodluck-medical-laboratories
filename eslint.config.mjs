@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Independent sub-project with its own tooling.
+    "greenfleet-viability-lab/**",
   ]),
 ]);
 
