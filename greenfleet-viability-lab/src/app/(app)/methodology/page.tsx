@@ -243,6 +243,17 @@ export default function MethodologyPage() {
           </div>
         </Collapsible>
 
+        <Collapsible title="Reporting and evidence interpretation" summary="What the report, the presentation and the exports do, and what evidence quality means.">
+          <div className="space-y-3">
+            <p><strong>Reports consume results; they do not create them.</strong> The professional report, Presentation Mode, the CSV exports and the JSON export are all built from one report model, which only arranges values the engine has already produced. The same assessment gives the same NPV, TCO, payback, classification, operational status and emissions result on the Results page, in the report, in the presentation and in the exports. A figure that is not available is shown as unavailable and is never invented.</p>
+            <p><strong>Evidence quality is descriptive, not statistical.</strong> The evidence states (complete, partial, insufficient, unavailable), the counts of user, sourced, illustrative, derived and missing values, and the lists of critical missing inputs and material uncertainties describe how complete and how well sourced the inputs are. GreenFleet does not calculate a confidence interval, a probability or a confidence score for the commercial classification, and no such number appears anywhere. Evidence completeness must not be read as statistical confidence.</p>
+            <p><strong>Material assumptions</strong> are those that the decision itself points to: assumptions behind a condition, constraint or uncertainty in the Policy v1.0 result, the largest tested drivers, and variables for which a threshold was solved. An input is not called material just because it is on a form.</p>
+            <p><strong>No AI.</strong> Summaries and takeaways are fixed templates filled with values from the structured results. The same results always give the same words.</p>
+            <p><strong>Analyses shown in a report</strong> are those you have run on the Sensitivity page for the current inputs. The report does not run them again. If you changed an input since, the earlier analysis is not shown, and the report says that the analysis has not been run.</p>
+            <p><strong>Exports and privacy.</strong> CSV and JSON files are created on your device and are not uploaded. They keep raw, unrounded numbers, the currency, the policy version and the application and report versions. Print / Save as PDF uses your browser&apos;s print dialog. <strong>Presentation Mode</strong> reads the current assessment and does not change it.</p>
+          </div>
+        </Collapsible>
+
         <Collapsible title="Environmental methodology" summary="Estimated operational energy/fuel-related GHG emissions, from factors you supply.">
           <div className="space-y-3">
             <p>This layer estimates <strong>operational energy/fuel-related greenhouse gas emissions</strong>. It is not a life-cycle assessment. Vehicle and battery manufacturing, disposal and infrastructure emissions are not included, and no embodied emissions are estimated.</p>

@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Collapsible } from "@/components/ui/collapsible";
@@ -11,6 +11,7 @@ import { analyzeViability, type OperationalRemedy, type ThresholdResult } from "
 import { formatValue } from "@/calculation/analysis/format";
 import { scenarioDraftFromThreshold } from "@/calculation/scenario";
 import { formatNumber } from "@/lib/format";
+import { useAnalysisStore } from "@/state/useAnalysis";
 import { useScenarios } from "@/state/useScenarios";
 import type { NormalizedAssessmentInput } from "@/domain/normalized";
 import type { GreenTechId } from "@/calculation/types";
@@ -91,6 +92,8 @@ function Remedies({ list }: { list: OperationalRemedy[] }) {
 
 export function ViabilityPanel({ input, tech, f }: { input: NormalizedAssessmentInput; tech: GreenTechId; f: ResultFormatter }) {
   const a = useMemo(() => analyzeViability(input, tech), [input, tech]);
+  const { store: analysisStore } = useAnalysisStore();
+  useEffect(() => { analysisStore.recordViability(input, tech, a); }, [analysisStore, input, tech, a]);
   const col = "min-w-0 rounded-xl border border-line p-3";
   return (
     <section id="viability" aria-labelledby="viability-title" className="scroll-mt-28 space-y-4">

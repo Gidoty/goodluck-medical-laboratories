@@ -28,7 +28,7 @@ export const TOUR_STEPS: readonly TourStep[] = [
   { id: "new", title: "New Assessment", where: "Sidebar: New Assessment", href: "/assessment/business", body: "Start or continue an assessment here. Nothing is pre-filled except a labelled demo you can load to see how the tool works." },
   { id: "wizard", title: "The six steps", where: "New Assessment", href: "/assessment/business", body: "Business and fleet, diesel, battery electric, biofuel, finance and infrastructure, then review. Essential inputs come first. Advanced assumptions are collapsed and optional." },
   { id: "review", title: "Review and calculate", where: "Step 6: Review & Calculate", href: "/assessment/review", body: "Check every assumption and see what is missing. Then run the assessment. GreenFleet never fills a blank with an invented value." },
-  { id: "results", title: "Results", where: "Sidebar: Results", href: "/results", body: "Four separate answers: economic performance, operational feasibility, environmental performance and a commercial classification against diesel. Each has a help button." },
+  { id: "results", title: "Results", where: "Sidebar: Results", href: "/results", body: "Four separate answers: economic performance, operational feasibility, environmental performance and a commercial classification against diesel. From here you can open a printable Professional Report or Presentation Mode." },
   { id: "method", title: "Methodology", where: "Sidebar: Methodology", href: "/methodology", body: "Every formula, assumption and decision rule, for anyone who wants to check the work." },
   { id: "analysis", title: "Sensitivity and Scenarios", where: "Sidebar: Sensitivity Analysis, Saved Scenarios", href: "/sensitivity", body: "Sensitivity analysis changes one assumption at a time to show how strongly it affects results, and it includes What Would Make It Viable? thresholds. Scenarios let you keep and compare sets of assumptions without changing your Base Case." },
 ];
@@ -252,6 +252,43 @@ export const GUIDANCE: Record<GuidanceId, GuidanceContent> = {
     tips: ["Barriers are grouped as economic, operational, and evidence. Only economic barriers can be solved by a price or cost.", "Fuel availability and charging access are categories. They are shown as required changes, never as numbers.", "Use Create Scenario at This Threshold to compare the solved value with your Base Case."],
     warnings: ["Solver bounds are computational limits, not market limits.", "Thresholds are model-derived values based on the entered assumptions. They are not forecasts or guaranteed market outcomes."],
   },
+  report: {
+    id: "report",
+    title: "Professional report",
+    shortDescription: "A document built from your assessment.",
+    whatYouAreDoing: "The professional report organizes your assessment inputs, results, decision logic and available sensitivity/scenario evidence into a structured document.",
+    whatGreenFleetDoes: "Reports reflect the current model outputs and do not create new calculations. Every figure is the one shown on the Results page. Sections for sensitivity, scenarios and thresholds appear only if you have run them, and they say so when you have not.",
+    definitions: [
+      { term: "Print / Save as PDF", text: "Opens your browser's print dialog, where you can print or choose Save as PDF. The page is laid out as a document and the navigation and buttons are left out." },
+      { term: "CSV", text: "Tabular results for spreadsheet analysis, for example the technology comparison or the year-by-year cash flow. Numbers are raw and unrounded." },
+      { term: "JSON", text: "The structured assessment and model output for reproducibility or technical inspection: inputs, provenance, results, the policy version and any analysis you ran." },
+      { term: "Include in the report", text: "Choose which optional sections to include: sensitivity, scenarios, thresholds, detailed assumptions and the methodology appendix." },
+    ],
+    tips: ["Open the Sensitivity page first if you want sensitivity and threshold sections in the report.", "Exports are created on your device. Nothing is uploaded."],
+    warnings: ["The report is a decision-support document, not advice. It carries the same disclaimer as the rest of GreenFleet."],
+    links: [{ label: "Back to Results", href: "/results" }, { label: "View full methodology", href: "/methodology" }],
+  },
+  presentation: {
+    id: "presentation",
+    title: "Presentation Mode",
+    shortDescription: "The assessment as a short sequence of screens for a live explanation.",
+    whatYouAreDoing: "Presentation Mode simplifies the assessment into a sequence of decision-focused screens for live explanation. It does not alter the underlying assessment.",
+    whatGreenFleetDoes: "It reads your current results, so what you show is what the Results page shows. Screens for sensitivity drivers and thresholds appear only if you have run those analyses.",
+    tips: ["Use the Right and Left arrow keys, or the Next and Previous buttons. Escape leaves the presentation.", "Nothing advances by itself."],
+    links: [{ label: "Back to Results", href: "/results" }],
+  },
+  evidence: {
+    id: "evidence",
+    title: "Evidence & Assumptions",
+    shortDescription: "Where each number came from.",
+    whatYouAreDoing: "This view shows which values you entered, which came from a named source, which are illustrative, which were worked out from other inputs, and which are missing.",
+    definitions: [
+      { term: "Evidence completeness", text: "Whether the economic, operational and environmental inputs are complete, partial or insufficient. It describes the inputs, not how likely a result is to be right." },
+      { term: "Statistical confidence", text: "GreenFleet does not calculate a confidence interval or probability for any result. There is no confidence score." },
+      { term: "Material assumption", text: "An assumption that the decision logic, a tested driver or a solved threshold points to. Not every form field is material." },
+    ],
+    tips: ["Adding a source and year to a volatile input makes the assessment easier to check."],
+  },
   scenarios: {
     id: "scenarios",
     title: "Scenarios",
@@ -283,6 +320,7 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
   { id: "results", title: "Understanding Results", entries: ["results.overview", "results.economic", "results.operational", "results.environmental"] },
   { id: "commercial", title: "Commercial Viability", entries: ["results.commercial", "results.why"] },
   { id: "analysis", title: "Sensitivity, Scenarios & Thresholds", entries: ["sensitivity", "thresholds", "scenarios"] },
+  { id: "reporting", title: "Reports, Exports & Presentation", entries: ["report", "presentation", "evidence"] },
   { id: "methodology", title: "Methodology", entries: ["methodology"] },
 ];
 

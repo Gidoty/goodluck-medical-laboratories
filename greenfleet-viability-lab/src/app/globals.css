@@ -60,3 +60,18 @@
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
 }
+
+/* Printing and Save as PDF. The report is the only page designed for paper; other pages still lose their chrome. */
+@media print {
+  @page { size: A4; margin: 14mm 12mm; }
+  html, body { background: #fff !important; }
+  body { font-size: 11px; color: #000; }
+  main { max-width: none !important; padding: 0 !important; }
+  .report-section { break-inside: auto; }
+  .report-section > h2, .report-section > h3 { break-after: avoid; }
+  .report-card, .report-section figure, .report-section tr, .report-section li { break-inside: avoid; }
+  .report-page-break { break-before: page; }
+  .report-cover { break-after: page; }
+  a { color: inherit; text-decoration: none; }
+  * { box-shadow: none !important; }
+}

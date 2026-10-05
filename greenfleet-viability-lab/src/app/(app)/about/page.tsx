@@ -1,3 +1,4 @@
+import { REPORT_DISCLAIMER } from "@/reporting/identity";
 import type { Metadata } from "next";
 import { Card, CardBody } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -27,7 +28,7 @@ export default function AboutPage() {
               battery-electric vehicles and biofuel pathways under their own operating and financial conditions.
             </p>
             <p className="text-sm text-slate-600">
-              The prototype supports learning and discussion. It is not certified financial, engineering or investment advice.
+              The prototype supports learning and discussion. {REPORT_DISCLAIMER}
             </p>
           </CardBody>
         </Card>

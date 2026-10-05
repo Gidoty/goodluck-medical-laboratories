@@ -1,6 +1,6 @@
 "use client";
 
-import { Calculator, FlaskConical, Pencil } from "lucide-react";
+import { Calculator, FileText, FlaskConical, Pencil, Presentation } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Alert } from "@/components/ui/alert";
@@ -17,9 +17,12 @@ import type { Assessment } from "@/domain/stored";
 import { PageHelpButton } from "@/guidance/HelpButtons";
 import { resultFormatter } from "./format-results";
 import { CashFlowChart, CostComponentsChart, TcoChart } from "./results-charts";
+import { EvidenceAssumptions } from "@/components/report/evidence-assumptions";
+import type { NormalizedAssessmentInput } from "@/domain/normalized";
 import { CommercialHeadline, CommercialMatrix, CommercialPolicyNote, WhyPanels } from "./commercial-sections";
 import { CompletenessIndicators, DomainWarnings, EnvironmentalSection, OperationalSection, economicWarnings } from "./analysis-sections";
 import { AssumptionsPanel, CashFlowTables, ComparisonTables, HeadlineTiles, TechnologyCards, WarningsPanel } from "./result-sections";
+import type { ProvenanceContext } from "@/reporting/provenance";
 import type { CurrencyCode } from "@/lib/currency";
 
 export function ResultsView() {
@@ -63,10 +66,10 @@ export function ResultsBody({ assessment }: { assessment: Assessment }) {
     );
   }
 
-  return <ResultsDashboard result={outcome.result} currency={outcome.input.meta.currency} arrangement={outcome.input.infrastructure?.bevCharging?.arrangement ?? null} />;
+  return <ResultsDashboard result={outcome.result} currency={outcome.input.meta.currency} arrangement={outcome.input.infrastructure?.bevCharging?.arrangement ?? null} provenance={outcome.input.provenance} input={outcome.input} />;
 }
 
-function ResultsDashboard({ result, currency, arrangement }: { result: AssessmentCalculationResult; currency: CurrencyCode; arrangement: string | null }) {
+function ResultsDashboard({ result, currency, arrangement, provenance, input }: { result: AssessmentCalculationResult; currency: CurrencyCode; arrangement: string | null; provenance: ProvenanceContext["provenance"]; input: NormalizedAssessmentInput }) {
   const f = resultFormatter(currency);
   const m = result.metadata;
   const isDemo = m.illustrativeInputs.length > 0;
@@ -81,7 +84,11 @@ function ResultsDashboard({ result, currency, arrangement }: { result: Assessmen
             </p>
             <p className="mt-1 text-xs text-slate-600">Calculated from your current inputs. Change an input and these figures update.</p>
           </div>
-          <ButtonLink href="/assessment/review" variant="secondary" size="sm"><Pencil aria-hidden className="size-4" /> Review inputs</ButtonLink>
+          <div className="flex flex-wrap gap-2">
+            <ButtonLink href="/report" size="sm"><FileText aria-hidden className="size-4" /> View Professional Report</ButtonLink>
+            <ButtonLink href="/present" variant="secondary" size="sm"><Presentation aria-hidden className="size-4" /> Presentation Mode</ButtonLink>
+            <ButtonLink href="/assessment/review" variant="secondary" size="sm"><Pencil aria-hidden className="size-4" /> Review inputs</ButtonLink>
+          </div>
         </CardBody>
       </Card>
 
@@ -123,7 +130,8 @@ function ResultsDashboard({ result, currency, arrangement }: { result: Assessmen
       <EnvironmentalSection r={result} />
       <DomainWarnings r={result} />
 
-      <AssumptionsPanel r={result} f={f} />
+      <AssumptionsPanel r={result} f={f} provenance={provenance} />
+      <EvidenceAssumptions input={input} result={result} f={f} />
 
       <Card>
         <CardHeader title="How to read these results" description={<>Read the <Link href="/methodology" className="font-semibold underline underline-offset-2">methodology</Link> for the formulas.</>} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { formatValue } from "@/calculation/analysis/format";
 import type { GreenTechId } from "@/calculation/types";
 import type { NormalizedAssessmentInput } from "@/domain/normalized";
 import type { ResultFormatter } from "@/components/results/format-results";
+import { useAnalysisStore } from "@/state/useAnalysis";
 import { PageHelpButton } from "@/guidance/HelpButtons";
 import { ClassBadge, ECON_WORD, Disclaimer, opLabel } from "./shared";
 
@@ -33,6 +34,8 @@ export function OneWaySection({ input, tech, f }: { input: NormalizedAssessmentI
   const effective = applied && vars.some((v) => v.id === applied.variableId) ? applied : { variableId: current, range: DEFAULT_SENSITIVITY_RANGE };
   const result = useMemo(() => runSensitivityAnalysis({ input, technology: tech, variableId: effective.variableId, range: effective.range }), [input, tech, effective.variableId, effective.range]);
   const def = vars.find((v) => v.id === effective.variableId);
+  const { store: analysisStore } = useAnalysisStore();
+  useEffect(() => { if (result.status === "ok") analysisStore.recordOneWay(input, tech, result); }, [analysisStore, input, tech, result]);
 
   return (
     <section id="one-way" aria-labelledby={`${id}-t`} className="scroll-mt-28">

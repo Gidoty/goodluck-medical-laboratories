@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { ResponsiveTable } from "@/components/ui/responsive-table";
@@ -9,12 +9,15 @@ import { formatValue, CLASS_WORDS } from "@/calculation/analysis/format";
 import type { GreenTechId } from "@/calculation/types";
 import type { NormalizedAssessmentInput } from "@/domain/normalized";
 import type { ResultFormatter } from "@/components/results/format-results";
+import { useAnalysisStore } from "@/state/useAnalysis";
 import { PageHelpButton } from "@/guidance/HelpButtons";
 
 const AXIS = { fontSize: 12, fill: "#3c4d6a" } as const;
 
 export function DriversSection({ input, tech, f }: { input: NormalizedAssessmentInput; tech: GreenTechId; f: ResultFormatter }) {
   const d = useMemo(() => runDriverAnalysis({ input, technology: tech }), [input, tech]);
+  const { store: analysisStore } = useAnalysisStore();
+  useEffect(() => { if (d.status === "ok") analysisStore.recordDrivers(input, tech, d); }, [analysisStore, input, tech, d]);
   return (
     <section id="drivers" aria-labelledby="drivers-t" className="scroll-mt-28">
       <Card>

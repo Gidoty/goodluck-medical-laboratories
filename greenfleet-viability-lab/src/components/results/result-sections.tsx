@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, Info, Minus } from "lucide-react";
-import { AssumptionBadge, type AssumptionKind } from "@/components/ui/assumption-badge";
+import { AssumptionBadge } from "@/components/ui/assumption-badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Collapsible } from "@/components/ui/collapsible";
 import { ResponsiveTable } from "@/components/ui/responsive-table";
@@ -9,6 +9,7 @@ import { HelpTip } from "@/components/ui/help-tip";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { formatNumber } from "@/lib/format";
 import { TECH_NAMES, type AssessmentCalculationResult, type AssumptionRecord, type CalcWarning, type GreenTechId, type IncrementalAnalysis, type TechId, type TechnologyEconomics } from "@/calculation/types";
+import { classifyAssumption, type ProvenanceContext } from "@/reporting/provenance";
 import { NPV_LABEL, type ResultFormatter } from "./format-results";
 
 const TECHS: readonly TechId[] = ["diesel", "bev", "biofuel"];
@@ -220,21 +221,7 @@ export function WarningsPanel({ warnings }: { warnings: CalcWarning[] }) {
 
 const GROUP_TITLE: Record<AssumptionRecord["group"], string> = { environment: "Environmental", operational: "Operational", scope: "Scope", operations: "Distance and use", diesel: "Diesel", bev: "Battery electric", biofuel: "Biofuel", finance: "Finance", infrastructure: "Infrastructure", method: "Method" };
 
-function badgeFor(a: AssumptionRecord, illustrative: ReadonlySet<string>): AssumptionKind {
-  switch (a.status) {
-    case "user_input":
-      return a.fieldIds?.some((id) => illustrative.has(id)) ? "illustrative" : "user";
-    case "derived":
-      return "derived";
-    case "convention":
-      return "convention";
-    default:
-      return "excluded";
-  }
-}
-
-export function AssumptionsPanel({ r, f }: { r: AssessmentCalculationResult; f: ResultFormatter }) {
-  const illustrative = new Set(r.metadata.illustrativeInputs);
+export function AssumptionsPanel({ r, f, provenance = {} }: { r: AssessmentCalculationResult; f: ResultFormatter; provenance?: ProvenanceContext["provenance"] }) {
   const groups = (Object.keys(GROUP_TITLE) as AssumptionRecord["group"][]).map((g) => ({ g, items: r.assumptions.filter((a) => a.group === g) })).filter((x) => x.items.length > 0);
   return (
     <Collapsible title="Assumptions used" summary={`${r.assumptionsUsed.length} used, ${r.assumptionsMissing.length} missing or left out`}>
@@ -250,7 +237,7 @@ export function AssumptionsPanel({ r, f }: { r: AssessmentCalculationResult; f: 
                   <tr key={a.id} className="border-b border-line align-top last:border-0">
                     <th scope="row" className="px-3 py-2 text-left text-xs font-medium text-navy-900">{a.label}</th>
                     <td className="px-3 py-2 text-xs text-navy-900">{f.text(a.value)}{a.unit ? ` ${f.text(a.unit)}` : ""}{a.note && <span className="mt-0.5 block text-slate-600">{f.text(a.note)}</span>}</td>
-                    <td className="px-3 py-2"><AssumptionBadge kind={badgeFor(a, illustrative)} /></td>
+                    <td className="px-3 py-2"><AssumptionBadge kind={classifyAssumption(a, { illustrativeInputs: r.metadata.illustrativeInputs, provenance })} /></td>
                   </tr>
                 ))}
               </tbody>

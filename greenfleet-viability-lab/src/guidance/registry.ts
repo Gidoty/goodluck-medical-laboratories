@@ -17,6 +17,8 @@ export function guidanceIdForPath(pathname: string | null | undefined): Guidance
     }
   }
   if (p.startsWith("/results")) return "results.overview";
+  if (p.startsWith("/report")) return "report";
+  if (p.startsWith("/present")) return "presentation";
   if (p.startsWith("/methodology")) return "methodology";
   if (p.startsWith("/sensitivity")) return "sensitivity";
   if (p.startsWith("/scenarios")) return "scenarios";

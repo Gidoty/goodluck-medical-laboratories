@@ -9,7 +9,7 @@ export function PageHeader({ eyebrow, title, description, action, help }: { eyeb
         {eyebrow && <p className="text-xs font-semibold uppercase tracking-wider text-forest-700">{eyebrow}</p>}
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-navy-950 sm:text-3xl">{title}</h1>
         {description && <p className="mt-2 text-base text-slate-600">{description}</p>}
-        {help && <PageHelpButton id={help} className="-ml-2.5 mt-1" />}
+        {help && <PageHelpButton id={help} className="-ml-2.5 mt-1 print:hidden" />}
       </div>
       {action}
     </header>

@@ -1,4 +1,4 @@
-# GreenFleet Viability Lab: progress summary (Batches 1 to 6)
+# GreenFleet Viability Lab: progress summary (Batches 1 to 7)
 
 **Project:** web decision-support tool comparing diesel, battery-electric (BEV) and biofuel fleets for logistics start-ups. Academic prototype, University of Port Harcourt (CELTRAS).
 **Where:** folder `greenfleet-viability-lab/` in repo `gidoty/goodluck-medical-laboratories`, branch `ccr-7360588a-pkyx8s`. Independent of the rest of the repo.
@@ -56,6 +56,17 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - Tests changed on purpose: the Batch 5.1 "coming later" guidance tests and the Batch 5 "Explore What Could Change This Result" CTA test, because Batch 6 activates those features; the cross-domain help-topic count (nine to ten).
 - Not built: Monte Carlo, optimisation, report export, AI interpretation.
 
+## Batch 7: reporting, export, presentation and evidence quality
+- `src/reporting/` builds one report model from results the engine already produced (`docs/REPORTING_AND_PRESENTATION.md`). Nothing is recalculated.
+- **Professional report** at `/report`: executive summary, profile, assumptions with provenance and sources, comparison, economics with charts, operational, environmental (scope stated), commercial viability, decision trace, sensitivity, scenarios, thresholds or viability margin, evidence quality, methodology, limitations, disclaimer. Print / Save as PDF through the browser; print CSS hides the app chrome. Optional sections can be switched off.
+- **Evidence quality** is descriptive (complete, partial, insufficient, unavailable), with provenance counts, critical missing inputs and material uncertainties. No score and no confidence percentage. Shown in the report and in a new "Evidence & Assumptions" panel on Results.
+- **Exports**: seven CSV tables and a full JSON, created locally with raw numbers, metadata and safe filenames.
+- **Presentation Mode** at `/present`: up to ten decision-focused screens, keyboard and button navigation, no auto-advance.
+- Sensitivity, driver and threshold results from the Sensitivity page are now remembered locally (tied to the current inputs) so the report and presentation can show them without rerunning.
+- Help, tour and Methodology updated. The authorship line is allowed in the generated report only.
+- QA debt cleared: the browser checks now live in `e2e/` (`npm run e2e`), start deterministically and match the product.
+- Tests changed on purpose: the attribution-file test now allows `reporting/identity.ts`, and the Help index count (eleven topics).
+
 ## Rules to keep
 - Asset perspective only. Loans, interest and equity are stored but excluded from NPV and TCO.
 - Escalation applies only if the user entered it. A blank is held constant and shown as a missing assumption.
@@ -66,7 +77,7 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - No market prices or emission factors are shipped. Demo values are labelled "Illustrative assumption, not current market data."
 
 ## Quality status
-521 automated tests (439 from Batches 1 to 5.1, plus 82 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
+580 automated tests (521 from Batches 1 to 6, plus 59 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
 
 ## Already in the code for later batches
 `StatusBadge` shows the four commercial labels. Sensitivity and Scenarios pages are placeholders.

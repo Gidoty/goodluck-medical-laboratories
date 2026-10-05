@@ -175,8 +175,8 @@ describe("guidance registry", () => {
     expect(guidanceIdForPath("/nowhere")).toBe("home");
     for (const s of ASSESSMENT_STEPS) expect(GUIDANCE[STEP_GUIDANCE[s.id]]).toBeDefined();
   });
-  it("the help index covers the ten topics and points only at real entries (Batch 6 added Sensitivity, Scenarios & Thresholds)", () => {
-    expect(HELP_TOPICS.map((t) => t.title)).toEqual(["Getting Started", "Entering Fleet Data", "Diesel Baseline", "Battery Electric Vehicles", "Biofuel", "Finance & Infrastructure", "Understanding Results", "Commercial Viability", "Sensitivity, Scenarios & Thresholds", "Methodology"]);
+  it("the help index covers the eleven topics and points only at real entries (Batch 6 and 7 added topics)", () => {
+    expect(HELP_TOPICS.map((t) => t.title)).toEqual(["Getting Started", "Entering Fleet Data", "Diesel Baseline", "Battery Electric Vehicles", "Biofuel", "Finance & Infrastructure", "Understanding Results", "Commercial Viability", "Sensitivity, Scenarios & Thresholds", "Reports, Exports & Presentation", "Methodology"]);
     for (const t of HELP_TOPICS) for (const e of t.entries) expect(GUIDANCE[e]).toBeDefined();
     for (const id of relatedEntries("results.overview")) expect(GUIDANCE[id]).toBeDefined();
   });
@@ -359,5 +359,28 @@ describe("controls are present where they are needed", () => {
   });
   it("29. Group 8 attribution is unchanged and does not appear in any guidance or help", () => {
     expect(JSON.stringify(GUIDANCE) + JSON.stringify(TOUR_STEPS)).not.toContain("Group 8");
+  });
+});
+
+describe("Batch 7 guidance: report, presentation, evidence, exports", () => {
+  it("explains that reports reflect model outputs and create no new calculations", () => {
+    const t = body("report");
+    expect(t).toContain("The professional report organizes your assessment inputs, results, decision logic and available sensitivity/scenario evidence into a structured document.");
+    expect(t).toContain("Reports reflect the current model outputs and do not create new calculations");
+    for (const s of ["Print / Save as PDF", "browser's print dialog", "CSV", "JSON", "reproducibility"]) expect(t).toContain(s);
+  });
+  it("presentation help says it does not alter the assessment", () => {
+    expect(body("presentation")).toContain("Presentation Mode simplifies the assessment into a sequence of decision-focused screens for live explanation. It does not alter the underlying assessment.");
+  });
+  it("evidence help separates completeness from statistical confidence", () => {
+    const t = body("evidence");
+    expect(t).toContain("Statistical confidence");
+    expect(t).toContain("There is no confidence score");
+  });
+  it("routes /report and /present to their help", () => {
+    expect(guidanceIdForPath("/report")).toBe("report");
+    expect(guidanceIdForPath("/present")).toBe("presentation");
+    expect(isInWorkspace("/present")).toBe(false);
+    expect(isInWorkspace("/report")).toBe(true);
   });
 });

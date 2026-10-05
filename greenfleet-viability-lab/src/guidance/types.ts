@@ -19,6 +19,9 @@ export type GuidanceId =
   | "methodology"
   | "sensitivity"
   | "thresholds"
+  | "report"
+  | "presentation"
+  | "evidence"
   | "scenarios"
   | "about";
 

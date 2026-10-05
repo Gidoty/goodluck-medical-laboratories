@@ -35,7 +35,7 @@ function ChartFigure({ title, caption, children, table }: { title: string; capti
       <h3 id={`${id}-t`} className="text-base font-semibold text-navy-950">{title}</h3>
       <p id={`${id}-c`} className="mt-1 text-xs text-slate-600">{caption}</p>
       <div className="mt-3 h-72 w-full sm:h-80">{children}</div>
-      <details className="mt-3 text-xs">
+      <details className="mt-3 text-xs print:hidden">
         <summary className="w-fit cursor-pointer font-medium text-navy-600 underline underline-offset-2 hover:text-navy-900">View this chart as a table</summary>
         <div className="mt-2 overflow-x-auto">{table}</div>
       </details>
@@ -63,7 +63,7 @@ export function CashFlowChart({ result, f }: { result: AssessmentCalculationResu
         </table>
       }
     >
-      <div className="mb-2 flex gap-2" role="radiogroup" aria-label="Cash-flow basis">
+      <div className="mb-2 flex gap-2 print:hidden" role="radiogroup" aria-label="Cash-flow basis">
         {(["undiscounted", "discounted"] as const).map((b) => (
           <label key={b} className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-forest-500 ${basis === b ? "border-forest-600 bg-forest-50 text-forest-900" : "border-line text-navy-700"}`}>
             <input type="radio" name="basis" value={b} checked={basis === b} onChange={() => setBasis(b)} className="sr-only" />

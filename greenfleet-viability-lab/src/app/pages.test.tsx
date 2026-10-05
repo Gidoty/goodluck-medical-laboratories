@@ -62,7 +62,8 @@ describe("homepage attribution", () => {
       }
     };
     walk(join(process.cwd(), "src"));
-    expect(hits.sort()).toEqual(["components/landing/product-credit.tsx", "components/landing/sections.tsx"]);
+    // Batch 7: generated reports may carry the authorship line, from the single constant in reporting/identity.ts.
+    expect(hits.sort()).toEqual(["components/landing/product-credit.tsx", "components/landing/sections.tsx", "reporting/identity.ts"]);
   });
 });
 

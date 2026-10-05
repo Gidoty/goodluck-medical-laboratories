@@ -10,7 +10,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "e2e": "bash e2e/run-all.sh"
   },
   "dependencies": {
     "clsx": "^2.1.1",

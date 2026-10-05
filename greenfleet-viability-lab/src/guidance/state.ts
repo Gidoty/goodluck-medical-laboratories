@@ -79,4 +79,4 @@ export function shouldShowWelcome(s: GuidanceState, inWorkspace: boolean): boole
   return s.record === null && inWorkspace && !s.tour.open && !s.help.open;
 }
 
-export const isInWorkspace = (pathname: string | null | undefined): boolean => !!pathname && pathname !== "/";
+export const isInWorkspace = (pathname: string | null | undefined): boolean => !!pathname && pathname !== "/" && !pathname.startsWith("/present");
