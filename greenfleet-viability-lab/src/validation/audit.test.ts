@@ -5,6 +5,8 @@ import pkg from "../../package.json";
 import { CURRENCIES } from "@/lib/currency";
 import { UNITS, unitLabel } from "@/lib/units";
 import { DISCLAIMER } from "@/guidance/content";
+import { GUIDANCE, HELP_TOPICS, TOUR_STEPS } from "@/guidance/content";
+import { guidanceIdForPath } from "@/guidance/registry";
 import { PROTOTYPE_VERSION, REPORT_DISCLAIMER } from "@/reporting/identity";
 import { COMMERCIAL_VIABILITY_POLICY_V1 } from "@/calculation/viability";
 
@@ -177,5 +179,84 @@ describe("Currency and unit audit", () => {
     const all = FILES.map(read).join("\n");
     expect(all).toMatch(/kg CO2e\/km/);
     expect(all).toMatch(/tCO2e/);
+  });
+});
+
+describe("Help and navigation audit", () => {
+  // Routes come from the app folder itself, so a new page that Help does not know about is noticed.
+  const pageFiles = FILES.length ? walk(join(SRC, "app")).filter((f) => f.endsWith("page.tsx")) : [];
+  const STEP_IDS = ["business", "diesel", "electric", "biofuel", "finance", "review"];
+  const routes = new Set<string>(
+    pageFiles.flatMap((f) => {
+      const r = "/" + relative(join(SRC, "app"), f).replace(/page\.tsx$/, "").replace(/\([^)]*\)\//g, "").replace(/\/$/, "");
+      return r.includes("[step]") ? STEP_IDS.map((s) => r.replace("[step]", s)) : [r === "/" ? "/" : r];
+    }),
+  );
+  const hrefs = [
+    ...Object.values(GUIDANCE).flatMap((g) => (g.links ?? []).map((l) => l.href)),
+    ...TOUR_STEPS.flatMap((t) => ("href" in t && typeof (t as { href?: string }).href === "string" ? [(t as { href: string }).href] : [])),
+  ];
+  it("the app has the expected set of routes", () => {
+    for (const r of ["/", "/overview", "/assessment/business", "/assessment/review", "/results", "/sensitivity", "/scenarios", "/report", "/present", "/methodology", "/about"]) expect(routes.has(r), r).toBe(true);
+  });
+  it("every link in Help and the tour goes to a page that exists", () => {
+    expect(hrefs.length).toBeGreaterThan(8);
+    for (const h of hrefs) expect(routes.has(h.split("#")[0]!.split("?")[0]!), h).toBe(true);
+  });
+  it("every page has its own Help entry (a route never falls back to the home entry by accident)", () => {
+    for (const r of routes) {
+      if (r === "/" || r === "/overview") continue;
+      expect(guidanceIdForPath(r), r).not.toBe("home");
+    }
+  });
+  it("no Help text promises something that is not built", () => {
+    const all = JSON.stringify(GUIDANCE) + JSON.stringify(HELP_TOPICS);
+    expect(all).not.toMatch(/coming (later|soon)|not (yet )?available yet|will be added|a later (stage|batch)|future (batch|version)|under construction/i);
+  });
+  it("Help covers every current feature: demonstration cases, sensitivity, scenarios, thresholds, report, presentation, evidence, exports", () => {
+    const all = JSON.stringify(GUIDANCE).toLowerCase();
+    for (const term of ["demonstration case", "sensitivity", "scenario", "what would make it viable", "professional report", "presentation mode", "evidence", "csv", "print / save as pdf", "restart"]) expect(all, term).toContain(term);
+  });
+  it("Help topics are plain language: no raw reason codes or developer jargon", () => {
+    const all = JSON.stringify(GUIDANCE);
+    expect(all).not.toMatch(/\b[A-Z]{3,}_[A-Z_]{3,}\b/);
+    expect(all).not.toMatch(/normalizedassessmentinput|localstorage|json schema|stack trace/i);
+  });
+});
+
+describe("Methodology page audit (statements an examiner will test against the code)", () => {
+  const page = read(join(SRC, "app/(app)/methodology/page.tsx"));
+  const plain = page.replace(/<[^>]+>/g, " ").replace(/&apos;/g, "'").replace(/&ldquo;|&rdquo;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ");
+  it("states the NPV sign convention in both directions", () => {
+    expect(plain).toMatch(/positive incremental net present value means the alternative has an economic advantage over diesel/);
+    expect(plain).toMatch(/negative one means an economic disadvantage/);
+  });
+  it("states the financing boundary precisely and does not claim financeability", () => {
+    expect(plain).toMatch(/project and asset economic viability/);
+    expect(plain).toMatch(/does not model whether a start-up could obtain finance, service a loan or stay solvent/);
+    expect(plain).toMatch(/discount rate is the only finance input that changes the NPV/);
+  });
+  it("states the gate-order consequence and the disclosure", () => {
+    expect(plain).toMatch(/negative NPV with a missing critical operational item gives INSUFFICIENT EVIDENCE, not NOT YET VIABLE/);
+    expect(plain).toMatch(/available economic evidence is unfavourable/);
+  });
+  it("states that there is no AI, no Monte Carlo claim, and no data leaving the device", () => {
+    expect(plain).toMatch(/does not use generative AI/);
+    expect(plain).toMatch(/Monte Carlo analysis is not included/);
+    expect(plain).toMatch(/makes no network request with your data/);
+  });
+  it("documents the safeguards that the engine really has (the figures match the code constants)", () => {
+    expect(plain).toMatch(/more than 1,000 replacements/);
+    expect(plain).toMatch(/below one currency unit is shown as/);
+    expect(read(join(SRC, "calculation/finite.ts"))).toMatch(/MAX_REPLACEMENT_EVENTS = 1_000/);
+  });
+  it("quotes the policy parameters that the policy object really holds", () => {
+    expect(plain).toMatch(/±5% of the additional initial investment/);
+    expect(plain).toMatch(/at least 1% of the diesel present cost/);
+    expect(COMMERCIAL_VIABILITY_POLICY_V1.nearBreakEvenTolerancePct).toBe(5);
+    expect(COMMERCIAL_VIABILITY_POLICY_V1.minimumInvestmentBasePctOfDieselPresentCost).toBe(1);
+  });
+  it("uses present tense (nothing is promised for later)", () => {
+    expect(plain).not.toMatch(/will reach|will be (added|available|built)|coming (soon|later)|in a later/i);
   });
 });

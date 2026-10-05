@@ -26,7 +26,7 @@ export const HOW_GREENFLEET_WORKS = [
 
 export const TOUR_STEPS: readonly TourStep[] = [
   { id: "overview", title: "Overview", where: "Sidebar: Overview", href: "/overview", body: "Your starting page. It shows how far you have got and how the whole journey fits together. Your work is saved in this browser." },
-  { id: "new", title: "New Assessment", where: "Sidebar: New Assessment", href: "/assessment/business", body: "Start or continue an assessment here. Nothing is pre-filled except a labelled demo you can load to see how the tool works." },
+  { id: "new", title: "New Assessment", where: "Sidebar: New Assessment", href: "/assessment/business", body: "Start or continue an assessment here. Nothing is pre-filled except the labelled synthetic demonstration cases you can load to see how the tool works. Loading one asks before it replaces your work." },
   { id: "wizard", title: "The six steps", where: "New Assessment", href: "/assessment/business", body: "Business and fleet, diesel, battery electric, biofuel, finance and infrastructure, then review. Essential inputs come first. Advanced assumptions are collapsed and optional." },
   { id: "review", title: "Review and calculate", where: "Step 6: Review & Calculate", href: "/assessment/review", body: "Check every assumption and see what is missing. Then run the assessment. GreenFleet never fills a blank with an invented value." },
   { id: "results", title: "Results", where: "Sidebar: Results", href: "/results", body: "Four separate answers: economic performance, operational feasibility, environmental performance and a commercial classification against diesel. From here you can open a printable Professional Report or Presentation Mode." },
@@ -41,11 +41,11 @@ export const GUIDANCE: Record<GuidanceId, GuidanceContent> = {
     id: "home",
     title: "Welcome to GreenFleet",
     shortDescription: "What GreenFleet does and how to start.",
-    whatYouAreDoing: "You are at the start. From here you can begin an assessment, continue one, or load a labelled demo.",
+    whatYouAreDoing: "You are at the start. From here you can begin an assessment, continue one, or load a labelled synthetic demonstration case.",
     whatGreenFleetDoes:
       "GreenFleet compares a diesel baseline, battery electric vehicles and biofuel or alternative-fuel vehicles. It looks at four things: economic performance, operational feasibility, environmental performance and commercial viability. It uses only the assumptions you enter.",
     whyItMatters: "A green vehicle is not automatically the better business choice, and the cheapest vehicle may not suit your routes. Looking at each question separately keeps the answer honest.",
-    tips: ["Your work is saved in this browser, with no account.", "The demo values are illustrative. They show how the tool works and say nothing about real costs."],
+    tips: ["Your work is saved in this browser, with no account.", "You can restart the Quick Tour at any time from the Help panel.", "The demonstration cases are synthetic. They show how the tool works and say nothing about real costs. \"Return to Blank Assessment\" in the same menu clears them after you confirm."],
     warnings: ["GreenFleet does not supply live market prices. It does not guarantee investment outcomes."],
     whatHappensNext: "Start with Business & Fleet, then describe each technology.",
     links: [{ label: "Start an assessment", href: "/assessment/business" }, { label: "View full methodology", href: "/methodology" }],
@@ -244,7 +244,7 @@ export const GUIDANCE: Record<GuidanceId, GuidanceContent> = {
     whatYouAreDoing: "\"What Would Make It Viable?\" works backwards from a target result to estimate the value an assumption would need to reach.",
     definitions: [
       { term: "Economic break-even", text: "The point at which the alternative's incremental NPV relative to diesel is approximately zero." },
-      { term: "Commercial transition", text: "The point at which GreenFleet Policy v1.0 changes the commercial classification." },
+      { term: "Commercial classification transition", text: "The point at which GreenFleet Policy v1.0 changes the commercial classification." },
       { term: "Why they can differ", text: "Operational constraints can remain after the economics reach break-even. Reaching economic break-even does not by itself make an alternative commercially viable." },
       { term: "All else equal", text: "Every threshold changes one assumption and holds every other assumption at your Base Case. It is not a forecast, and thresholds for different assumptions are not additive." },
       { term: "Viability margin", text: "For an alternative that is already viable, how far an assumption can move before incremental NPV reaches zero or the classification changes." },

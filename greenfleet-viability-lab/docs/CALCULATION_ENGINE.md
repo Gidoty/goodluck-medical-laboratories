@@ -34,7 +34,7 @@ primary result, so the comparison does not depend on how vehicles are financed a
 - Net cash cost in a year = vehicle + replacement + infrastructure + battery + operating - incentives - residual.
 - `incremental cash flow_t = diesel net cash cost_t - alternative net cash cost_t` (positive = alternative cheaper).
 - NPV = sum of incremental cash flow_t / (1 + r)^t.
-- Utilisation is constant (the distance series is an array so later batches can vary it).
+- Utilisation is constant (the distance series is an array, so a later version could vary it; none does today).
 
 ## Rules worth knowing
 
@@ -83,3 +83,14 @@ After the three layers are computed, `classifyCommercialViability` is called onc
 ## Batch 6: analysis on top of the engine
 
 `sensitivity/`, `scenario/` and `threshold/` (with shared `analysis/`) change a clone of the normalized input and call `calculateAssessment` again. They add no formula. See `docs/SENSITIVITY_AND_THRESHOLD_ENGINE.md`.
+
+## Batch 8: computational safeguards and validation
+
+No formula, convention or rule changed. Two safeguards were added at the engine boundary (`finite.ts`, `input-checks.ts`, `engine.ts`):
+
+- **Overflow.** If any figure in the economics overflows double precision (for example a fleet size of 1e308), `calculateAssessment` returns `{ ok: false }` with a message. An emission factor that overflows makes that technology's emissions *unavailable* and leaves the economics untouched. Nothing is shown as `Infinity` or `NaN`.
+- **Replacement events.** A vehicle life that would need more than `MAX_REPLACEMENT_EVENTS` (1,000) replacements inside the horizon is refused. A realistic life needs at most 49 (1 year over 50 years). This exists only so a vanishing life such as 0.000000001 years cannot make the schedule loops run for billions of iterations.
+
+Display rounding is separate from the engine: `formatMoney` shows a real amount below one currency unit as "< ₦1" or "> -₦1" instead of "₦0". Values and classifications never depend on display rounding.
+
+The engine is checked against independent hand calculations in `src/validation/benchmarks.test.ts` (worksheets in `docs/VALIDATION_AND_VERIFICATION.md`).

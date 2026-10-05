@@ -106,6 +106,12 @@ The sentences shown to users are generated from these codes by fixed templates i
 
 ## Limitations
 Depends entirely on the user's inputs. No market data, tax, revenue, financing or risk. The 5% and 1% parameters are prototype
-choices. The label does not say how far an input must move to change it (a later stage). Limited biofuel supply on its own is
-treated as a condition because no required fuel volume is collected. Interpretation by an AI, sensitivity analysis, thresholds,
-scenarios and export are not part of this batch.
+choices. The label itself does not say how far an input must move to change it; the threshold analysis does (`docs/SENSITIVITY_AND_THRESHOLD_ENGINE.md`). Limited biofuel supply on its own is
+treated as a condition because no required fuel volume is collected. Sensitivity, thresholds, scenarios, reporting and export are described in `docs/SENSITIVITY_AND_THRESHOLD_ENGINE.md` and
+`docs/REPORTING_AND_PRESENTATION.md`. There is no AI interpretation.
+
+## Batch 8: validation, and one disclosure addition
+
+Policy v1.0 is unchanged. It is checked by a decision table of all 32 combinations of economic case, operational status and uncertainty (`src/validation/policy.test.ts`), by exact near-break-even boundary tests, by a test that NPV = 0 never gives VIABLE, and by an environmental-independence stress test.
+
+**Gate-order disclosure (defect D-1).** Gate 1 runs before the economic case, so negative NPV with a critical operational item missing gives INSUFFICIENT EVIDENCE. The result already carried the economic case and the NPV, but the decision trace, the plain-language summary, the headline card, the takeaways, the report and the presentation did not say it in words. They now add: *"Available economic evidence is unfavourable (incremental NPV versus diesel is negative and beyond the near-break-even tolerance). It is shown for information and was not used to classify, because the evidence gate was not passed."* (and the favourable and near-break-even equivalents). `availableEconomicEvidenceNote()` in `classify.ts` is the one source. It changes no label, reason code or condition.

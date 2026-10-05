@@ -38,7 +38,7 @@ related glossary terms and links. Help explains how to use the tool. Formulas an
 ## Onboarding
 - The welcome dialog appears once, on the first visit to a **workspace page** (not on the landing page, which already introduces the product).
   It offers Start Assessment, Take a Quick Tour and Skip for now. Nothing forces the tour.
-- Quick Tour: 7 steps (Overview, New Assessment, the six steps, Review & Calculate, Results, Methodology, Sensitivity and Scenarios as upcoming).
+- Quick Tour: 7 steps (Overview, New Assessment, the six steps, Review & Calculate, Results, Methodology, Sensitivity and Scenarios; these are working tools since Batch 6).
   Back, Next, Skip tour, Finish. It explains areas. It does not highlight, click or edit anything.
 - Persistence: `localStorage` key `greenfleet-viability-lab:onboarding` holds `{version, status, at}`, with status `completed` (tour finished),
   `skipped` (Skip for now or Skip tour) or `dismissed` (Escape, Start Assessment). Any recorded status stops the welcome from opening again.
@@ -73,3 +73,10 @@ Results section is on screen, so section buttons open those entries directly.
 
 ## Batch 6 update
 The Sensitivity, Scenarios and new "thresholds" entries now describe working tools (one assumption at a time, Base Case never changed, all else equal, economic break-even versus commercial transition, viability margin). The tour step and the Help index (ten topics) were updated, and the Batch 5.1 tests that expected "not available yet" were changed to match.
+
+## Batch 8 additions
+
+- **Demonstration cases.** Five labelled synthetic cases are loaded from a keyboard-accessible list on Overview and the assessment steps. Loading one asks first if work would be replaced; "Return to Blank Assessment" clears it after confirmation. Help and the Overview entry describe this.
+- **Single disclaimer.** Help uses the same core disclaimer as About, the report and the exports.
+- **Focus.** `useModalDialog` returns focus to the control that opened a dialog. If that control is gone (the tour is restarted from Help, which closes), focus returns to the Help button (`data-help-trigger`), and only after a real close, never on first render.
+- **Help audit.** Tested: every page has an entry, every Help and tour link goes to an existing page, no text promises an unbuilt feature, every current feature is covered, and the tour can be restarted from Help (`src/validation/audit.test.ts`).

@@ -17,9 +17,10 @@ export function TopBar() {
 
   return (
     <div className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur print:hidden">
-      <div className="flex items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex-nowrap sm:px-6 lg:px-8">
         <MobileNav />
-        <dl className="grid min-w-0 flex-1 grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-3 xl:grid-cols-4">
+        {/* On a phone the assessment name takes its own row, so it is never squeezed under the Help button. */}
+        <dl className="order-last grid min-w-0 basis-full grid-cols-1 gap-x-6 gap-y-1 text-sm sm:order-none sm:flex-1 sm:basis-0 sm:grid-cols-3 xl:grid-cols-4">
           <div className="min-w-0">
             <dt className="text-xs text-slate-600">Assessment</dt>
             <dd className="truncate font-semibold text-navy-950">{name || "Untitled assessment"}</dd>
@@ -35,7 +36,7 @@ export function TopBar() {
             </dd>
           </div>
         </dl>
-        <HelpButton className="shrink-0" />
+        <HelpButton className="ml-auto shrink-0 sm:ml-0" />
         <div className="shrink-0">
           <label htmlFor={currencyId} className="block text-xs text-slate-600">
             Currency

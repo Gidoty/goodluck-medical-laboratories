@@ -7,8 +7,6 @@ const S = process.env.SHOT_DIR || "./e2e/out";
 const fs = require("fs");
 fs.mkdirSync(S, { recursive: true });
 const launch = () => chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
-// Deterministic start-up: mark the welcome dialog as already dismissed, except in the guidance test that exercises it.
-const DISMISS = () => { try { if (!localStorage.getItem("greenfleet-viability-lab:onboarding")) localStorage.setItem("greenfleet-viability-lab:onboarding", JSON.stringify({ version: 1, status: "dismissed", at: "e2e" })); } catch {} };
 const log = [], errs = [];
 const ok = (n, c, x) => log.push((c ? "PASS " : "FAIL ") + n + (x !== undefined ? " :: " + x : ""));
 const noOverflow = (pg) => pg.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);

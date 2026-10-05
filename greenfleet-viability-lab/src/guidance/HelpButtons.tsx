@@ -14,6 +14,7 @@ export function HelpButton({ className }: { className?: string }) {
       onClick={() => openHelp()}
       aria-haspopup="dialog"
       aria-expanded={state.help.open}
+      data-help-trigger
       className={cn("inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-navy-200 bg-surface px-3 py-2 text-sm font-semibold text-navy-800 hover:bg-navy-50", className)}
     >
       <CircleHelp aria-hidden className="size-5" />

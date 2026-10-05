@@ -30,8 +30,6 @@ export const getGuidance = (id: GuidanceId): GuidanceContent => GUIDANCE[id];
 
 export const helpTopics = (): readonly HelpTopic[] => HELP_TOPICS;
 
-/** The topic that contains an entry, so the drawer can show its neighbours. */
-
 /** Entries shown below the main one on a page that has sub-sections (the results dashboard). */
 export const relatedEntries = (id: GuidanceId): GuidanceId[] =>
   id === "results.overview" ? ["results.economic", "results.operational", "results.environmental", "results.commercial", "results.why"] : [];

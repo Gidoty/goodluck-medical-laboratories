@@ -1,5 +1,7 @@
-# GreenFleet Viability Lab: progress summary (Batches 1 to 7)
+# GreenFleet Viability Lab: progress summary (Batches 1 to 8)
 
+**Status:** MSc Prototype Feature Freeze. Prototype identifier: `GreenFleet MSc Prototype v1.0` (separate from `GreenFleet Commercial Viability Policy v1.0`).
+**How to read this file:** each batch section describes that batch when it was built; the current state is in Batch 8, 'Quality status' and 'Not built'.
 **Project:** web decision-support tool comparing diesel, battery-electric (BEV) and biofuel fleets for logistics start-ups. Academic prototype, University of Port Harcourt (CELTRAS).
 **Where:** folder `greenfleet-viability-lab/` in repo `gidoty/goodluck-medical-laboratories`, branch `ccr-7360588a-pkyx8s`. Independent of the rest of the repo.
 **Stack:** Next.js 16 (App Router), React 19, strict TypeScript, Tailwind 4, Recharts, Vitest. Run: `cd greenfleet-viability-lab && npm install && npm run dev`.
@@ -67,6 +69,19 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - QA debt cleared: the browser checks now live in `e2e/` (`npm run e2e`), start deterministically and match the product.
 - Tests changed on purpose: the attribution-file test now allows `reporting/identity.ts`, and the Help index count (eleven topics).
 
+## Batch 8: scientific validation, hardening, demonstration readiness and freeze
+Not a feature batch. It asks whether GreenFleet can be trusted as a coherent, reproducible, academically defensible prototype within its scope. Full results: `docs/VALIDATION_AND_VERIFICATION.md`; requirement to code to test: `docs/REQUIREMENTS_TRACEABILITY.md`; demonstration and examiner guide: `docs/DEMO_CASES.md`.
+- **Independent benchmarks.** Four hand-calculated fixtures (simple, replacement and battery cycle, infrastructure allocation, escalation) with expected values written as plain arithmetic; the financing boundary; NPV sign; payback states; cost per km; charging loss; a closed-form threshold benchmark (relative error below 1e-6); a closed-form driver-ranking benchmark.
+- **Policy v1.0.** A 32-row decision table, gate order, exact near-break-even boundaries and denominators, NPV = 0 is not VIABLE, and an environmental-independence stress test. No rule changed.
+- **Hardening.** Adversarial inputs on every numeric field, hostile names, engine-level hostile objects, numerical robustness, determinism, mutation safety, persistence failure, JSON round trip, CSV and filename security.
+- **Defects found and fixed (none changed methodology).** D-1 an insufficient-evidence result now states the available economic evidence (disclosure only). D-2 inputs that overflow are refused, never shown as Infinity or NaN. D-3 a vanishing vehicle life no longer freezes the page. D-4 a real amount under one currency unit no longer displays as zero. D-5 to D-8 heading levels, focus return after the tour, a top-bar overlap at 360 px, a logo name. D-9 stale wording. Table in the validation document.
+- **Demonstration cases.** Five labelled synthetic cases (strong BEV, positive NPV with daytime charging, negative NPV with a range constraint, attractive biofuel with intermittent supply, critical evidence missing), loaded from a keyboard-accessible menu, asking before replacing work, with a way back to a blank assessment.
+- **Identity and wording.** `GreenFleet MSc Prototype v1.0` in About, the report and the exports. One core disclaimer in Help, About, the report and the export metadata. Terminology, claim, currency and unit audits; Methodology and Help re-read and corrected; dead code removed.
+- **QA.** `e2e/qa.cjs`: demonstration cases through the real interface; 15 routes at 360, 390, 430, 768, 1024, 1366, 1440 and 1920 px; axe-core (33 audits, 0 violations); keyboard and focus; presentation at projector sizes; print and PDF; timings; a network audit (no external request, no POST).
+- **Docs.** New `VALIDATION_AND_VERIFICATION.md`, `DEMO_CASES.md`, `REQUIREMENTS_TRACEABILITY.md`; new `CHANGELOG.md`; README finalised.
+- **Freeze.** No new major feature before the seminar unless there is a critical defect, a methodological error or a presentation-blocking usability problem.
+- Tests changed on purpose: the `formatMoney(-0.2)` expectation (D-4), the Help disclaimer wording, the "Commercial classification transition" term, and the numbered-section selector in the report test (D-5).
+
 ## Rules to keep
 - Asset perspective only. Loans, interest and equity are stored but excluded from NPV and TCO.
 - Escalation applies only if the user entered it. A blank is held constant and shown as a missing assumption.
@@ -77,20 +92,17 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - No market prices or emission factors are shipped. Demo values are labelled "Illustrative assumption, not current market data."
 
 ## Quality status
-580 automated tests (521 from Batches 1 to 6, plus 59 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
+1,323 automated tests (580 at the end of Batch 7, 743 added in Batch 8), lint, typecheck and production build pass. Browser checks (`npm run e2e`): five suites, no console error or warning, no failed resource, no external request, axe-core clean (WCAG 2 A/AA). Independent hand-calculated benchmarks, a 32-row policy decision table and a self-checking traceability matrix are in the tests.
 
-## Already in the code for later batches
-`StatusBadge` shows the four commercial labels. Sensitivity and Scenarios pages are placeholders.
-
-## Not built yet
-AI interpretation, report export, Monte Carlo analysis.
+## Not built (deliberately, and documented as future work)
+Monte Carlo analysis, optimisation, generative AI, live market data, financing metrics (levered cash flow, debt service), tax, revenue and IRR, general inflation, lifecycle (embodied) emissions, carbon pricing, infrastructure replacement and terminal value, a user-facing import of exported files.
 
 ## Decisions to confirm
 - A converted biofuel vehicle replaced within the horizon repeats the conversion cost (no replacement vehicle price is entered).
 - Infrastructure replacement and end-of-period value are not modelled, only warned about.
 - Battery replacement repeats in each later vehicle cycle.
-- Demo data has no emission factors. Say if you want clearly labelled illustrative ones added to the demo.
+- Decided in Batch 8: the demonstration cases ship no emission factors, on purpose, so emissions show as Unavailable and the 'refuse to invent' behaviour can be demonstrated.
 - Biofuel downtime is read as hours per month per vehicle. Refuelling distance is not annualised, because no refuelling frequency is collected.
-- Gate 1 runs before the economic case: a missing critical operational item gives INSUFFICIENT EVIDENCE even with a negative NPV. Say if you prefer a clearly negative NPV to win.
+- Gate 1 runs before the economic case: a missing critical operational item gives INSUFFICIENT EVIDENCE even with a negative NPV. Confirmed in Batch 8 and kept. The output now also states that the available economic evidence is unfavourable, as information only.
 - Limited biofuel supply alone is a condition (no required fuel volume is collected). Limited supply plus unspecified needed infrastructure is a hard constraint.
 - The 5% tolerance and 1% denominator floor are prototype policy values.

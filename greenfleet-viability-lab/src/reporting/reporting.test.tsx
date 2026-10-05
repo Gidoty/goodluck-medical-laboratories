@@ -353,7 +353,8 @@ describe("report document: identity, wording, limitations", () => {
     expect(model.identity.engineVersion).toBe(result.metadata.engineVersion);
   });
   it("sections are numbered, ordered and exist for the available data", () => {
-    const heads = [...html(<ReportDocument model={model} result={result} f={f} />).matchAll(/<h2[^>]*>.*?<\/h2>/g)].map((m) => m[0]!.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim());
+    // Batch 8: the cover title is an h2 (the page itself owns the single h1), so select the numbered section headings.
+    const heads = [...html(<ReportDocument model={model} result={result} f={f} />).matchAll(/<h2[^>]*>.*?<\/h2>/g)].map((m) => m[0]!.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim()).filter((h) => /^\d+\./.test(h));
     expect(heads[0]).toBe("1. Executive decision summary");
     expect(heads.some((h) => /Technology comparison/.test(h))).toBe(true);
     expect(heads.some((h) => /Commercial viability/.test(h))).toBe(true);

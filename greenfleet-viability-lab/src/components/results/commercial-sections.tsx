@@ -165,20 +165,20 @@ function WhyPanel({ r, g, f }: { r: AssessmentCalculationResult; g: GreenTechId;
   return (
     <Collapsible title={`Why this result? ${TECH_NAMES[g]}`} summary={`${c.classification.replace(/_/g, " ")}. Every step of the decision, and the policy that produced it.`}>
       <div className="space-y-4">
-        <div><h4 className="font-semibold text-navy-950">Economic evidence</h4>
+        <div><h3 className="font-semibold text-navy-950">Economic evidence</h3>
           <p className="mb-1 text-slate-700">{f.text(c.economic.explanation)} Economic case: <strong>{ECON_WORD[c.economicCase]}</strong>.</p>
           <dl className="divide-y divide-line">{c.supportingEvidence.filter((e) => e.label !== "Operational status").map((e) => <div key={e.label} className="flex flex-wrap justify-between gap-x-3 py-1"><dt>{e.label}</dt><dd className="text-right font-medium text-navy-950">{f.text(e.value)}</dd></div>)}</dl>
         </div>
-        <div><h4 className="font-semibold text-navy-950">Operational evidence</h4>
+        <div><h3 className="font-semibold text-navy-950">Operational evidence</h3>
           <p className="mb-1 text-slate-700">Operational status: <strong>{OPERATIONAL_STATUS_LABEL[op.status]}</strong>. {op.statusExplanation}</p>
           {list(Object.values(op.checks).map((k) => `${k.label}: ${k.explanation}`), "No operational checks.")}
         </div>
-        <div><h4 className="font-semibold text-navy-950">Material conditions</h4>{list(c.conditions.map((x) => x.text), "None identified.")}</div>
-        <div><h4 className="font-semibold text-navy-950">Uncertainties</h4>{list(c.uncertainties.map((x) => x.text), "No material uncertainty identified.")}</div>
-        <div><h4 className="font-semibold text-navy-950">Hard constraints</h4>{list(c.hardConstraints.map((x) => x.text), "None identified.")}</div>
-        <div><h4 className="font-semibold text-navy-950">Environmental context</h4><p>{c.environmentalContext.text}</p><p className="text-xs text-slate-600">Shown for context. It was not used to decide the classification.</p></div>
-        <div><h4 className="font-semibold text-navy-950">Reason codes</h4><p className="font-mono text-xs">{c.reasonCodes.join(", ")}</p></div>
-        <div><h4 className="font-semibold text-navy-950">Decision trace</h4>
+        <div><h3 className="font-semibold text-navy-950">Material conditions</h3>{list(c.conditions.map((x) => x.text), "None identified.")}</div>
+        <div><h3 className="font-semibold text-navy-950">Uncertainties</h3>{list(c.uncertainties.map((x) => x.text), "No material uncertainty identified.")}</div>
+        <div><h3 className="font-semibold text-navy-950">Hard constraints</h3>{list(c.hardConstraints.map((x) => x.text), "None identified.")}</div>
+        <div><h3 className="font-semibold text-navy-950">Environmental context</h3><p>{c.environmentalContext.text}</p><p className="text-xs text-slate-600">Shown for context. It was not used to decide the classification.</p></div>
+        <div><h3 className="font-semibold text-navy-950">Reason codes</h3><p className="font-mono text-xs">{c.reasonCodes.join(", ")}</p></div>
+        <div><h3 className="font-semibold text-navy-950">Decision trace</h3>
           <ol className="list-decimal space-y-1 pl-5">{c.decisionTrace.map((s) => <li key={s.step}><span className="text-xs uppercase tracking-wide text-slate-600">{s.gate}</span> {f.text(s.text)}</li>)}</ol>
         </div>
         <p className="text-xs text-slate-600">Policy: {c.policyId}. <Link href="/methodology" className="font-semibold underline underline-offset-2">Read the policy</Link>. Decision-support result, not investment advice.</p>

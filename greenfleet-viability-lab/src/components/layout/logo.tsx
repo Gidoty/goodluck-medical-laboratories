@@ -14,11 +14,12 @@ export function LogoMark({ className }: { className?: string }) {
 
 export function Logo({ href = "/", light }: { href?: string; light?: boolean }) {
   return (
-    <Link href={href} className="flex items-center gap-2.5 rounded-md" aria-label="GreenFleet Viability Lab, home">
+    <Link href={href} className="flex items-center gap-2.5 rounded-md">
       <LogoMark />
       <span className="leading-tight">
         <span className={cn("block text-sm font-bold tracking-tight", light ? "text-white" : "text-navy-950")}>GreenFleet</span>
         <span className={cn("block text-xs font-medium", light ? "text-forest-200" : "text-forest-700")}>Viability Lab</span>
+        <span className="sr-only">, home</span>
       </span>
     </Link>
   );

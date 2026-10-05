@@ -321,7 +321,7 @@ export function ReportDocument({ model: m, result, f }: { model: ReportModel; re
     <article aria-label="Professional assessment report" className="report mx-auto max-w-5xl">
       <header className="report-cover rounded-card border border-line bg-surface p-6 sm:p-10 print:border-0 print:p-0">
         <p className="text-sm font-semibold uppercase tracking-widest text-forest-700">{id.product}</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-navy-950 sm:text-4xl">{id.title}</h1>
+        <h2 className="mt-2 text-3xl font-semibold tracking-tight text-navy-950 sm:text-4xl">{id.title}</h2>
         <p className="mt-3 text-xl text-navy-900">{id.assessmentName}</p>
         <dl className="mt-6 grid gap-x-8 gap-y-1 text-sm sm:grid-cols-2">
           {id.businessName && <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Business</dt><dd className="font-medium">{id.businessName}</dd></div>}

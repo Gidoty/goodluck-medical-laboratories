@@ -256,7 +256,7 @@ describe("page guidance content (the task's required explanations)", () => {
     expect(c).not.toMatch(/not available yet|coming in a later/i);
     const t = body("thresholds");
     expect(t).toContain("works backwards from a target result to estimate the value an assumption would need to reach");
-    for (const w of ["Economic break-even", "Commercial transition", "all else equal", "Viability margin", "approximately zero", "changes the commercial classification"]) expect(t.toLowerCase()).toContain(w.toLowerCase());
+    for (const w of ["Economic break-even", "Commercial classification transition", "all else equal", "Viability margin", "approximately zero", "changes the commercial classification"]) expect(t.toLowerCase()).toContain(w.toLowerCase());
     expect(t).toContain("Reaching economic break-even does not by itself make an alternative commercially viable");
     expect(t).toContain("never as numbers");
     expect(JSON.stringify(TOUR_STEPS)).not.toMatch(/not available yet/);

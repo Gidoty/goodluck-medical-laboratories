@@ -89,3 +89,12 @@ The 5% near-break-even tolerance and the evidence wording are prototype choices.
 ## Browser checks
 `npm run e2e` (against a running app) runs four suites in `e2e/`: classification, guidance, analysis and reporting. Set `PLAYWRIGHT_MODULE` and `CHROMIUM` if needed.
 The reporting suite also emulates print media and generates a PDF.
+
+## Batch 8 additions
+
+- **Prototype identifier.** `GreenFleet MSc Prototype v1.0` (`PROTOTYPE_VERSION` in `src/reporting/identity.ts`) appears on the report cover, in the About page, in every CSV metadata block (`# prototype`) and in the JSON (`application.prototypeVersion`). It names the software and is separate from `GreenFleet Commercial Viability Policy v1.0`. `package.json` carries version 1.0.0.
+- **One core disclaimer.** The same sentence is used in Help, About, the report, the presentation, the CSV metadata (`# disclaimer`) and the JSON (`disclaimer`).
+- **Demonstration values.** When the assessment is a demonstration, the report cover, the presentation snapshot, the wizard and Results state: "Illustrative synthetic values for demonstration only. These are not current market prices or investment recommendations."
+- **Insufficient evidence.** The report, the presentation and the takeaways state the available economic evidence for information (see `docs/COMMERCIAL_VIABILITY_POLICY.md`, defect D-1) without drawing a conclusion.
+- **Report semantics.** The cover title is an `h2`; the page owns the single `h1`.
+- **Validation.** Consistency of every value across the Results page, the report, the presentation, the CSV tables and the JSON; JSON round trip; CSV and filename security are tested in `src/validation/outputs.test.tsx`.

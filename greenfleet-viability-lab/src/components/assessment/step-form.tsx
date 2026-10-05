@@ -87,9 +87,9 @@ function SectionBlock({ section, assessment, issues, hasFields, children }: { se
   if (!collapsible) {
     return (
       <div id={anchor} role="group" aria-labelledby={`${anchor}-title`} className="scroll-mt-28">
-        <h4 id={`${anchor}-title`} className="text-sm font-semibold uppercase tracking-wide text-navy-700">
+        <h3 id={`${anchor}-title`} className="text-sm font-semibold uppercase tracking-wide text-navy-700">
           {section.title}
-        </h4>
+        </h3>
         {section.description && <p className="mt-1 text-sm text-slate-600">{section.description}</p>}
         <div className="mt-4">{children}</div>
       </div>
