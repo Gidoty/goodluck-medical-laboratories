@@ -12,6 +12,12 @@ const COMPACT = new Intl.NumberFormat("en-US", { notation: "compact", maximumFra
 
 const isUsable = (v: number | null | undefined): v is number => typeof v === "number" && Number.isFinite(v);
 
+/**
+ * Removes binary floating-point noise for display only (0.1 + 0.2 shows as 0.3, not 0.30000000000000004).
+ * Stored values are never rounded.
+ */
+export const cleanFloat = (v: number): number => Number(v.toPrecision(12));
+
 /** Minus sign is only shown for values that round to a non-zero amount, so -0 never appears. */
 function signOf(v: number, rounded: string): string {
   return v < 0 && /[1-9]/.test(rounded) ? "-" : "";
@@ -19,7 +25,7 @@ function signOf(v: number, rounded: string): string {
 
 export function formatNumber(value: number | null | undefined, maxFractionDigits = 2): string {
   if (!isUsable(value)) return EMPTY_VALUE;
-  const body = nf(maxFractionDigits).format(Math.abs(value));
+  const body = nf(maxFractionDigits).format(Math.abs(cleanFloat(value)));
   return `${signOf(value, body)}${body}`;
 }
 
@@ -30,7 +36,7 @@ export function formatMoney(
 ): string {
   if (!isUsable(value)) return EMPTY_VALUE;
   const symbol = CURRENCIES[currency].symbol;
-  const abs = Math.abs(value);
+  const abs = Math.abs(cleanFloat(value));
   const body = options.compact
     ? COMPACT.format(abs)
     : options.fractionDigits !== undefined

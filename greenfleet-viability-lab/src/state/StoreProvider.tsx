@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
-import { createAssessmentStore, type AssessmentStore, type StoreState } from "./assessmentStore";
+import { createAssessmentStore, type AssessmentActions, type AssessmentStore, type StoreState } from "./assessmentStore";
 import { createStorageRepository, getBrowserStorage } from "./repository";
 
 const StoreContext = createContext<AssessmentStore | null>(null);
@@ -24,6 +24,6 @@ export function useAssessmentState(): StoreState {
 }
 
 /** Actions only (stable reference, never causes re-renders). */
-export function useAssessmentActions(): Pick<AssessmentStore, "setNumeric" | "setText" | "setCurrency" | "loadDemo" | "reset"> {
+export function useAssessmentActions(): AssessmentActions {
   return useStore();
 }

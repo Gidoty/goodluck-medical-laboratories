@@ -3,7 +3,8 @@
 import { useId } from "react";
 import { formatDateTime } from "@/lib/format";
 import { useAssessmentActions, useAssessmentState } from "@/state/StoreProvider";
-import { CurrencySelect } from "@/components/assessment/fields";
+import { CurrencySelect } from "@/components/assessment/currency-select";
+import { createReader, getCurrency } from "@/domain/reader";
 import { MobileNav } from "./mobile-nav";
 
 export function TopBar() {
@@ -11,6 +12,7 @@ export function TopBar() {
   const { setCurrency } = useAssessmentActions();
   const currencyId = useId();
   const saved = hydrated && assessment.origin !== "blank";
+  const name = createReader(assessment).text("business.assessmentName").trim();
 
   return (
     <div className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur">
@@ -19,7 +21,7 @@ export function TopBar() {
         <dl className="grid min-w-0 flex-1 grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-3 xl:grid-cols-4">
           <div className="min-w-0">
             <dt className="text-xs text-slate-600">Assessment</dt>
-            <dd className="truncate font-semibold text-navy-950">{assessment.name}</dd>
+            <dd className="truncate font-semibold text-navy-950">{name || "Untitled assessment"}</dd>
           </div>
           <div className="min-w-0">
             <dt className="text-xs text-slate-600">Scenario</dt>
@@ -36,7 +38,7 @@ export function TopBar() {
           <label htmlFor={currencyId} className="block text-xs text-slate-600">
             Currency
           </label>
-          <CurrencySelect id={currencyId} value={assessment.currency} onChange={setCurrency} className="w-auto max-w-[8.5rem]" />
+          <CurrencySelect id={currencyId} value={getCurrency(assessment)} onChange={setCurrency} className="w-auto max-w-[8.5rem]" />
         </div>
       </div>
     </div>

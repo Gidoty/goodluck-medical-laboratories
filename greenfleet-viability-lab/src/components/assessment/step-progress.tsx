@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 import Link from "next/link";
-import type { StepCompletion } from "@/domain/assessmentValidation";
+import type { StepCompletion } from "@/domain/completion";
 import { ASSESSMENT_STEPS, type StepId } from "@/domain/steps";
 import { cn } from "@/lib/cn";
 

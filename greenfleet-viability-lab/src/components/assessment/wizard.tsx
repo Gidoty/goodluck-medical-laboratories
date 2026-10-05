@@ -1,93 +1,72 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, FlaskConical, RotateCcw } from "lucide-react";
-import { useId, useState } from "react";
-import { assessmentCompletion } from "@/domain/assessmentValidation";
-import { fieldsForStep } from "@/domain/fields";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Alert } from "@/components/ui/alert";
+import { ButtonLink } from "@/components/ui/button";
+import { Card, CardBody, CardHeader } from "@/components/ui/card";
+import { checkAssessment } from "@/domain/checks";
+import { stepCompletions } from "@/domain/completion";
 import { DEMO_LABEL } from "@/domain/demo";
 import { neighbours, stepById, type StepId } from "@/domain/steps";
-import { Alert } from "@/components/ui/alert";
-import { Button, ButtonLink } from "@/components/ui/button";
-import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { useAssessmentActions, useAssessmentState } from "@/state/StoreProvider";
-import { CurrencySelect, NumberField, TextField } from "./fields";
-import { ReviewPanel } from "./review-panel";
+import { useAssessmentState } from "@/state/StoreProvider";
+import { ReviewScreen } from "./review-screen";
+import { StartActions } from "./start-actions";
+import { StepForm } from "./step-form";
 import { StepProgress } from "./step-progress";
 
 export function AssessmentWizard({ stepId }: { stepId: StepId }) {
   const { assessment, hydrated } = useAssessmentState();
-  const actions = useAssessmentActions();
-  const currencyId = useId();
-  const [showIssues, setShowIssues] = useState<StepId | null>(null);
+  const [revealedFor, setRevealedFor] = useState<StepId | null>(null);
+  const issues = useMemo(() => checkAssessment(assessment), [assessment]);
+  const completion = useMemo(() => Object.fromEntries(stepCompletions(assessment, issues).map((c) => [c.stepId, c])), [assessment, issues]);
+
+  // After saved work has loaded, honour a #section-... link (for example "Edit" on the review screen).
+  useEffect(() => {
+    if (!hydrated || !window.location.hash) return;
+    document.getElementById(window.location.hash.slice(1))?.scrollIntoView({ block: "start" });
+  }, [hydrated, stepId]);
 
   const step = stepById(stepId);
   if (!step) return null;
+  if (!hydrated) {
+    return (
+      <Card aria-busy="true">
+        <CardBody>
+          <p role="status" className="text-sm text-slate-600">Loading your saved work…</p>
+        </CardBody>
+      </Card>
+    );
+  }
   const { prev, next } = neighbours(stepId);
-  const completion = Object.fromEntries(assessmentCompletion(assessment).map((c) => [c.stepId, c]));
-  const { numeric, text } = fieldsForStep(stepId);
-  const revealIssues = showIssues === stepId;
+  const current = completion[stepId];
 
   return (
     <div className="space-y-6">
       <StepProgress current={stepId} completion={completion} />
 
-      {assessment.origin === "demo" && (
+      {assessment.illustrative.length > 0 && (
         <Alert tone="demo" title="Illustrative demo values are loaded">
-          {DEMO_LABEL} Replace them with your own figures. They are here only to show how the interface behaves.
+          {DEMO_LABEL} Replace them with your own figures. A value stops being labelled as illustrative as soon as you edit it.
         </Alert>
       )}
 
-      <Card aria-busy={!hydrated}>
+      <Card>
         <CardHeader
           title={`Step ${step.number}: ${step.title}`}
           description={step.description}
-          action={
-            stepId !== "review" && (
-              <div className="flex gap-2">
-                <Button variant="secondary" size="sm" onClick={actions.loadDemo}>
-                  <FlaskConical aria-hidden className="size-4" /> Load demo values
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    if (window.confirm("Clear everything you have entered in this assessment?")) actions.reset();
-                  }}
-                >
-                  <RotateCcw aria-hidden className="size-4" /> Clear
-                </Button>
-              </div>
-            )
-          }
+          action={stepId !== "review" ? <StartActions variant="compact" /> : undefined}
         />
         <CardBody>
           {stepId === "review" ? (
-            <ReviewPanel assessment={assessment} />
+            <ReviewScreen assessment={assessment} />
           ) : (
             <div className="space-y-6">
-              <p className="text-xs text-slate-600">
-                Fields marked optional can be left blank. Enter <strong>0</strong> when a value is genuinely zero. Your entries are kept
-                when you move between steps.
+              <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+                {current && current.requiredTotal > 0 && <span className="font-semibold text-navy-800">{current.requiredDone} of {current.requiredTotal} required inputs complete</span>}
+                <span>Enter <strong>0</strong> when a value is genuinely zero. Blank means “not entered yet”. Your entries are saved as you go.</span>
               </p>
-              <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
-                {stepId === "business" && (
-                  <div>
-                    <label htmlFor={currencyId} className="block text-sm font-semibold text-navy-900">
-                      Currency
-                    </label>
-                    <CurrencySelect id={currencyId} value={assessment.currency} onChange={actions.setCurrency} className="mt-1.5" showNames />
-                    <p className="mt-1.5 text-xs text-slate-600">
-                      Changing currency relabels the units. It does not convert any amount you have entered.
-                    </p>
-                  </div>
-                )}
-                {text.map((f) => (
-                  <TextField key={f.id} definition={f} assessment={assessment} showIssues={revealIssues} />
-                ))}
-                {numeric.map((f) => (
-                  <NumberField key={f.id} definition={f} assessment={assessment} showIssues={revealIssues} />
-                ))}
-              </div>
+              <StepForm stepId={stepId} assessment={assessment} issues={issues} showIssues={revealedFor === stepId} />
             </div>
           )}
         </CardBody>
@@ -102,7 +81,7 @@ export function AssessmentWizard({ stepId }: { stepId: StepId }) {
           <span />
         )}
         {next && (
-          <ButtonLink href={`/assessment/${next.id}`} onClick={() => setShowIssues(stepId)}>
+          <ButtonLink href={`/assessment/${next.id}`} onClick={() => setRevealedFor(stepId)}>
             Next: {next.title} <ArrowRight aria-hidden className="size-4" />
           </ButtonLink>
         )}

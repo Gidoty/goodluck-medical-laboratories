@@ -1,10 +1,10 @@
 export const ASSESSMENT_STEPS = [
-  { id: "business", number: 1, title: "Business & Fleet", short: "Business", description: "Describe your operation and how your vehicles are used." },
-  { id: "diesel", number: 2, title: "Diesel Baseline", short: "Diesel", description: "Configure the conventional diesel vehicle that every alternative is compared against." },
-  { id: "electric", number: 3, title: "Battery Electric", short: "Electric", description: "Configure the battery-electric alternative and its energy costs." },
-  { id: "biofuel", number: 4, title: "Biofuel", short: "Biofuel", description: "Configure the biofuel or biofuel-blend alternative." },
-  { id: "finance", number: 5, title: "Finance & Infrastructure", short: "Finance", description: "Set financing terms and the infrastructure each pathway needs." },
-  { id: "review", number: 6, title: "Review & Calculate", short: "Review", description: "Check completeness before running the assessment." },
+  { id: "business", number: 1, title: "Business & Fleet", short: "Business", description: "Describe your business, your vehicles and how they are used." },
+  { id: "diesel", number: 2, title: "Diesel Baseline", short: "Diesel", description: "The diesel vehicle represents the conventional benchmark against which green alternatives will be compared." },
+  { id: "electric", number: 3, title: "Battery Electric", short: "Electric", description: "Battery Electric Alternative: configure the vehicle, its energy cost and how well it suits your operation." },
+  { id: "biofuel", number: 4, title: "Biofuel", short: "Biofuel", description: "Biofuel / Alternative Fuel Pathway: choose the pathway first. Not every engine can use every fuel." },
+  { id: "finance", number: 5, title: "Finance & Infrastructure", short: "Finance", description: "Financing, incentives, infrastructure and environmental assumptions." },
+  { id: "review", number: 6, title: "Review & Calculate", short: "Review", description: "Check every input and what is still missing before running the assessment." },
 ] as const;
 
 export type StepId = (typeof ASSESSMENT_STEPS)[number]["id"];

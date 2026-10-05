@@ -24,15 +24,24 @@ export type UnitId =
   | "money_per_kwh"
   | "money_per_km"
   | "money_per_year"
+  | "money_per_kg"
+  | "money_per_m3"
   | "km"
   | "km_per_day"
   | "km_per_year"
   | "days_per_year"
   | "hours_per_day"
+  | "hours_per_month"
+  | "trips_per_day"
+  | "calendar_year"
   | "litres_per_100km"
   | "km_per_litre"
   | "kwh_per_100km"
   | "kwh_per_km"
+  | "km_per_kg"
+  | "kg_per_100km"
+  | "km_per_m3"
+  | "m3_per_100km"
   | "kwh"
   | "kw"
   | "kg"
@@ -43,12 +52,16 @@ export type UnitId =
   | "kgco2e"
   | "kgco2e_per_km"
   | "kgco2e_per_litre"
+  | "kgco2e_per_kg"
+  | "kgco2e_per_m3"
   | "kgco2e_per_kwh"
   | "tco2e_per_year";
 
 export type Dimension =
   | "money"
   | "money_per_volume"
+  | "money_per_mass"
+  | "money_per_gas_volume"
   | "money_per_energy"
   | "money_per_distance"
   | "money_per_time"
@@ -57,7 +70,12 @@ export type Dimension =
   | "distance_per_year"
   | "days_per_year"
   | "hours_per_day"
+  | "hours_per_month"
+  | "trips_per_day"
+  | "calendar_year"
   | "fuel_economy"
+  | "fuel_economy_mass"
+  | "fuel_economy_gas"
   | "electric_economy"
   | "energy"
   | "power"
@@ -68,6 +86,8 @@ export type Dimension =
   | "emissions_mass"
   | "emissions_per_distance"
   | "emissions_per_volume"
+  | "emissions_per_mass"
+  | "emissions_per_gas_volume"
   | "emissions_per_energy"
   | "emissions_per_year";
 
@@ -83,13 +103,22 @@ export const UNITS: Record<UnitId, UnitDefinition> = {
   money_per_kwh: { label: "{cur}/kWh", dimension: "money_per_energy" },
   money_per_km: { label: "{cur}/km", dimension: "money_per_distance" },
   money_per_year: { label: "{cur}/year", dimension: "money_per_time" },
+  money_per_kg: { label: "{cur}/kg", dimension: "money_per_mass" },
+  money_per_m3: { label: "{cur}/m³", dimension: "money_per_gas_volume" },
   km: { label: "km", dimension: "distance" },
   km_per_day: { label: "km/day", dimension: "distance_per_day" },
   km_per_year: { label: "km/year", dimension: "distance_per_year" },
   days_per_year: { label: "days/year", dimension: "days_per_year" },
   hours_per_day: { label: "hours/day", dimension: "hours_per_day" },
+  hours_per_month: { label: "hours/month", dimension: "hours_per_month" },
+  trips_per_day: { label: "trips/day", dimension: "trips_per_day" },
+  calendar_year: { label: "year", dimension: "calendar_year" },
   litres_per_100km: { label: "litres/100 km", dimension: "fuel_economy" },
   km_per_litre: { label: "km/litre", dimension: "fuel_economy" },
+  km_per_kg: { label: "km/kg", dimension: "fuel_economy_mass" },
+  kg_per_100km: { label: "kg/100 km", dimension: "fuel_economy_mass" },
+  km_per_m3: { label: "km/m³", dimension: "fuel_economy_gas" },
+  m3_per_100km: { label: "m³/100 km", dimension: "fuel_economy_gas" },
   kwh_per_100km: { label: "kWh/100 km", dimension: "electric_economy" },
   kwh_per_km: { label: "kWh/km", dimension: "electric_economy" },
   kwh: { label: "kWh", dimension: "energy" },
@@ -102,6 +131,8 @@ export const UNITS: Record<UnitId, UnitDefinition> = {
   kgco2e: { label: "kg CO2e", dimension: "emissions_mass" },
   kgco2e_per_km: { label: "kg CO2e/km", dimension: "emissions_per_distance" },
   kgco2e_per_litre: { label: "kg CO2e/litre", dimension: "emissions_per_volume" },
+  kgco2e_per_kg: { label: "kg CO2e/kg", dimension: "emissions_per_mass" },
+  kgco2e_per_m3: { label: "kg CO2e/m³", dimension: "emissions_per_gas_volume" },
   kgco2e_per_kwh: { label: "kg CO2e/kWh", dimension: "emissions_per_energy" },
   tco2e_per_year: { label: "tCO2e/year", dimension: "emissions_per_year" },
 };
@@ -126,7 +157,11 @@ const LINEAR: Partial<Record<UnitId, Partial<Record<UnitId, number>>>> = {
 };
 
 /** Reciprocal pair: x litres/100 km <-> 100/x km/litre. Zero has no reciprocal. */
-const RECIPROCAL: ReadonlyArray<readonly [UnitId, UnitId]> = [["litres_per_100km", "km_per_litre"]];
+const RECIPROCAL: ReadonlyArray<readonly [UnitId, UnitId]> = [
+  ["litres_per_100km", "km_per_litre"],
+  ["kg_per_100km", "km_per_kg"],
+  ["m3_per_100km", "km_per_m3"],
+];
 
 export function convertUnit(value: number, from: UnitId, to: UnitId): number {
   if (!Number.isFinite(value)) throw new UnitConversionError("Cannot convert a non-finite value.");

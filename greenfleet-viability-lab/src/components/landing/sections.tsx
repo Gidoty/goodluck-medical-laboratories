@@ -1,6 +1,7 @@
 import { Scale } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { HOW_IT_WORKS, PATHWAYS } from "./pathways";
+import { ProductCredit } from "./product-credit";
 
 const TONE: Record<string, string> = {
   diesel: "bg-navy-100 text-navy-800",
@@ -65,12 +66,15 @@ export function PrincipleSection() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-line bg-surface">
-      <div className="mx-auto max-w-6xl px-4 py-8 text-xs leading-relaxed text-slate-600 sm:px-6 lg:px-8">
-        <p>
-          GreenFleet Viability Lab is a decision-support prototype. Results depend on user-supplied assumptions and should not be
-          interpreted as certified financial or engineering advice.
-        </p>
-        <p className="mt-2">University of Port Harcourt, Centre for Logistics and Transport Studies (CELTRAS).</p>
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 py-8 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
+        <div className="max-w-2xl text-xs leading-relaxed text-slate-600">
+          <p>
+            GreenFleet Viability Lab is a decision-support prototype. Results depend on user-supplied assumptions and should not be
+            interpreted as certified financial or engineering advice.
+          </p>
+          <p className="mt-2">University of Port Harcourt, Centre for Logistics and Transport Studies (CELTRAS).</p>
+        </div>
+        <ProductCredit />
       </div>
     </footer>
   );

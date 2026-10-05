@@ -1,14 +1,8 @@
-import {
-  createBlankAssessment,
-  setCurrency as withCurrency,
-  setNumeric,
-  setText,
-  type NumericPath,
-  type TextPath,
-} from "@/domain/assessment";
+import { createBlankAssessment } from "@/domain/blank";
 import { createDemoAssessment } from "@/domain/demo";
 import type { NumericField } from "@/domain/fieldValue";
-import type { Assessment } from "@/domain/types";
+import { setChoice, setCurrency, setInput, setProvenance, setQNumber } from "@/domain/mutations";
+import type { Assessment, ProvenanceEntry } from "@/domain/stored";
 import type { CurrencyCode } from "@/lib/currency";
 import { newId as defaultNewId } from "@/lib/id";
 import type { AssessmentRepository } from "./repository";
@@ -19,16 +13,24 @@ export interface StoreState {
   hydrated: boolean;
 }
 
-export interface AssessmentStore {
+export interface AssessmentActions {
+  setNumber(id: string, field: NumericField): void;
+  setText(id: string, text: string): void;
+  /** `null` clears the choice back to "not selected". */
+  setChoice(id: string, option: string | null): void;
+  setQNumber(id: string, patch: { value?: NumericField; qualifier?: string }): void;
+  setProvenance(id: string, patch: Partial<ProvenanceEntry>): void;
+  setCurrency(currency: CurrencyCode): void;
+  loadDemo(): void;
+  /** Discards everything and starts a fresh blank assessment. UI must ask for confirmation first. */
+  reset(): void;
+}
+
+export interface AssessmentStore extends AssessmentActions {
   subscribe(listener: () => void): () => void;
   getSnapshot(): StoreState;
   getServerSnapshot(): StoreState;
   hydrate(): void;
-  setNumeric(path: NumericPath, field: NumericField): void;
-  setText(path: TextPath, text: string): void;
-  setCurrency(currency: CurrencyCode): void;
-  loadDemo(): void;
-  reset(): void;
 }
 
 export interface StoreDeps {
@@ -52,6 +54,15 @@ export function createAssessmentStore({ repository, now = () => new Date(), newI
     if (persist) repository.save(assessment);
     listeners.forEach((l) => l());
   };
+  const hydrate = () => {
+    if (state.hydrated) return;
+    commit(repository.load() ?? state.assessment, false);
+  };
+  // An edit that arrives before saved work has loaded must build on that work, never replace it.
+  const update = (f: (a: Assessment, nowIso: string) => Assessment) => {
+    hydrate();
+    commit(f(state.assessment, iso()));
+  };
 
   return {
     subscribe(listener) {
@@ -60,14 +71,17 @@ export function createAssessmentStore({ repository, now = () => new Date(), newI
     },
     getSnapshot: () => state,
     getServerSnapshot: () => initial,
-    hydrate() {
-      if (state.hydrated) return;
-      commit(repository.load() ?? state.assessment, false);
+    hydrate,
+    setNumber: (id, field) => update((a, t) => setInput(a, id, field, t)),
+    setText: (id, text) => update((a, t) => setInput(a, id, text, t)),
+    setChoice: (id, option) => update((a, t) => setChoice(a, id, option, t)),
+    setQNumber: (id, patch) => update((a, t) => setQNumber(a, id, patch, t)),
+    setProvenance: (id, patch) => update((a, t) => setProvenance(a, id, patch, t)),
+    setCurrency: (currency) => update((a, t) => setCurrency(a, currency, t)),
+    loadDemo: () => {
+      hydrate();
+      commit(createDemoAssessment(newId(), iso()));
     },
-    setNumeric: (path, field) => commit(setNumeric(state.assessment, path, field, iso())),
-    setText: (path, text) => commit(setText(state.assessment, path, text, iso())),
-    setCurrency: (currency) => commit(withCurrency(state.assessment, currency, iso())),
-    loadDemo: () => commit(createDemoAssessment(newId(), iso())),
     reset: () => {
       repository.clear();
       commit(createBlankAssessment(newId(), iso()), false);

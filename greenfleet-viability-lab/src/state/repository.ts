@@ -1,6 +1,5 @@
-import { createBlankAssessment, mergeOntoBlank } from "@/domain/assessment";
-import { isCurrencyCode } from "@/lib/currency";
-import type { Assessment } from "@/domain/types";
+import { createBlankAssessment, restoreAssessment } from "@/domain/blank";
+import type { Assessment } from "@/domain/stored";
 
 /**
  * Persistence boundary. The store only knows this interface, so localStorage can later be swapped
@@ -20,7 +19,8 @@ export interface KeyValueStorage {
 }
 
 export const STORAGE_KEY = "greenfleet-viability-lab:assessment";
-export const SCHEMA_VERSION = 1;
+/** Bump when the stored shape changes incompatibly. Older saves are ignored rather than misread. */
+export const SCHEMA_VERSION = 2;
 
 interface Envelope {
   version: number;
@@ -36,11 +36,10 @@ export function createStorageRepository(storage: KeyValueStorage | null, key = S
         if (raw === null) return null;
         const env = JSON.parse(raw) as Partial<Envelope> | null;
         if (!env || env.version !== SCHEMA_VERSION || typeof env.assessment !== "object" || env.assessment === null) return null;
-        const saved = env.assessment as Partial<Assessment>;
+        const saved = env.assessment as { id?: unknown; updatedAt?: unknown };
         const id = typeof saved.id === "string" ? saved.id : "recovered";
         const now = typeof saved.updatedAt === "string" ? saved.updatedAt : new Date(0).toISOString();
-        const merged = mergeOntoBlank(createBlankAssessment(id, now), saved);
-        return isCurrencyCode(saved.currency) ? merged : { ...merged, currency: createBlankAssessment(id, now).currency };
+        return restoreAssessment(createBlankAssessment(id, now), env.assessment);
       } catch {
         return null; // corrupted data must never break the app; start clean instead
       }

@@ -55,9 +55,9 @@ export function validateNumeric(
       : issue("not_applicable_not_allowed", `${rule.label} cannot be marked not applicable. Enter a value, or 0 if it truly is zero.`);
   }
   if (field.status === "missing") {
-    return rule.required
-      ? issue("missing", `${rule.label} is required (${unit}). Enter 0 if the value is genuinely zero.`)
-      : [];
+    if (!rule.required) return [];
+    const zeroIsValid = (rule.min === undefined || rule.min < 0 || (rule.min === 0 && !rule.minExclusive)) && (rule.max === undefined || rule.max >= 0);
+    return issue("missing", `${rule.label} is required (${unit}).${zeroIsValid ? " Enter 0 if the value is genuinely zero." : ""}`);
   }
 
   const v = field.value;

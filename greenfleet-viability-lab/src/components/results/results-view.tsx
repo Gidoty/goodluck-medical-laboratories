@@ -1,7 +1,7 @@
 "use client";
 
 import { BarChart3, Banknote, Calculator, Clock, Gauge, Leaf, PiggyBank, Route, Scale, TrendingUp, Wallet } from "lucide-react";
-import { isAssessmentReady } from "@/domain/assessmentValidation";
+import { assessReadiness } from "@/domain/completion";
 import { TECH_LABELS } from "@/domain/labels";
 import { useAssessmentState } from "@/state/StoreProvider";
 import { Alert } from "@/components/ui/alert";
@@ -26,7 +26,7 @@ const TECHS = ["diesel", "electric", "biofuel"] as const;
 
 export function ResultsView() {
   const { assessment, hydrated } = useAssessmentState();
-  const ready = hydrated && isAssessmentReady(assessment);
+  const ready = hydrated && assessReadiness(assessment).commercialReady;
 
   return (
     <div className="space-y-6">

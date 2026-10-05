@@ -19,34 +19,42 @@ npm test
 npm run build
 ```
 
-## Status: Batch 1 (foundation and interface shell)
+## Status: Batch 2 (complete input system)
 
-Implemented: navigation, landing page, six-step assessment wizard with local persistence, domain model, unit and currency
-system, validation architecture, results/sensitivity/scenarios placeholders, methodology and about pages.
+Implemented: the full six-step assessment wizard, a declarative field schema that drives forms, validation, conditional
+visibility, review and normalization, unit conversion, derived previews, optional source (provenance) metadata,
+assumption badges, help tooltips, persistence, demo and blank starts, confirmed reset, and the
+`NormalizedAssessmentInput` contract (see `docs/NORMALIZED_INPUT.md`).
 
-Deliberately not implemented: the calculation engine, viability classification rules, charts, scenario saving, AI features.
-No result is ever shown without a calculation behind it.
+Deliberately not implemented: TCO, NPV, payback, break-even, emissions calculation, viability classification, scenario and
+sensitivity engines, AI, reports. No result is ever shown without a calculation behind it.
+
+Developer view: open the review step with `?debug=1` (or run `npm run dev`) to inspect the exact normalized object.
 
 ## Architecture
 
 ```
-src/app/                 routes (App Router). Pages are thin; they compose components.
-src/components/ui/       design-system primitives (button, card, badge, alert, KPI card, status badge, ...)
-src/components/layout/   app shell, sidebar, top bar, mobile navigation
-src/components/landing/  marketing page sections
-src/components/assessment/ wizard, form fields, step progress, review panel
-src/components/results/  overview and results views
-src/domain/              types, field registry, validation, assessment helpers, demo data
-src/calculation/         reserved for the pure calculation engine (contract only)
-src/state/               framework-free store, persistence repository, React binding
-src/lib/                 units, currency, formatting, small utilities
+src/app/                   routes (App Router). Pages are thin.
+src/components/ui/         design-system primitives (button, card, badge, alert, help tip, assumption badge, confirm dialog, ...)
+src/components/layout/     app shell, sidebar, top bar, mobile navigation
+src/components/landing/    marketing page sections (the only place the product credit appears)
+src/components/assessment/ wizard, schema-driven field controls, review screen, developer panel
+src/domain/schema/         THE input schema: fields.ts (one entry per input), sections.ts, options.ts, types.ts
+src/domain/                stored types, reader, blank/restore, mutations, validation, checks, completion,
+                           derive (previews and unit conversion), normalize + normalized (calculation contract), demo
+src/calculation/           reserved for the pure calculation engine (contract only)
+src/state/                 framework-free store, persistence repository, confirm gate, React binding
+src/content/               glossary (help text)
+src/lib/                   units, fuel units, currency, countries, formatting
+docs/NORMALIZED_INPUT.md   field-by-field description of the calculation contract
 ```
 
 Rules the code follows:
 
 - No calculation logic in components. `src/calculation` has no React or browser imports.
-- Every numeric input is a `FieldValue`: `value` (including 0), `missing`, or `not_applicable`. Never test inputs with truthiness.
-- Canonical internal units are documented in `src/lib/units.ts`. Percentages are 0..100.
-- One registry (`src/domain/fields.ts`) defines each form input's label, unit and validation rule.
-- Persistence is behind `AssessmentRepository`. `localStorage` is one implementation and can be replaced.
-- Demo values are labelled "Illustrative demo assumption — not current market data." and are never presented as market data.
+- Every numeric input is a `FieldValue`: `value` (including 0), `missing`, or `not_applicable`. Choices keep `unknown` as a real answer.
+- Hidden (conditional) inputs read as missing to everything else, so stale values never leak into results.
+- Canonical internal units are documented in `src/lib/units.ts` and `docs/NORMALIZED_INPUT.md`. Percentages are 0..100.
+- The schema is the single source of truth: add or change an input in one place.
+- Persistence is behind `AssessmentRepository`. `localStorage` is one implementation.
+- Demo values are labelled "Illustrative assumption — not current market data." No emission factor or market price is shipped.
