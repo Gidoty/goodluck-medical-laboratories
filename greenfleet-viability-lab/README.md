@@ -1,60 +1,52 @@
 # GreenFleet Viability Lab
 
-A techno-economic decision-support prototype that compares diesel (baseline), battery-electric (BEV) and biofuel-blend
-vehicles for logistics start-ups. It is an academic proof of concept for the MSc seminar in Entrepreneurship in Transport and
-Supply Chain Management, CELTRAS, University of Port Harcourt. It is not a certified financial, engineering or
-investment-advisory system.
+Techno-economic decision support for green logistics entrepreneurs. Compares diesel (baseline), battery-electric and biofuel
+fleets under the user's own operating and financial assumptions. Academic proof of concept, University of Port Harcourt
+(CELTRAS, SGS 802). Not financial or engineering advice.
 
-This folder is a self-contained project with its own `package.json`, dependencies and build. It shares no code with the rest of
-the repository. The only root files touched are `tsconfig.json` and `eslint.config.mjs`, which now ignore this folder so the
-existing Next.js build does not try to compile it.
+This folder is a self-contained project inside a larger repository: own `package.json`, own dependencies, own build.
+`next.config.ts` pins the project root so Next.js never reads the parent project's files.
 
 ## Run
 
 ```bash
 cd greenfleet-viability-lab
 npm install
-npm run dev        # http://localhost:5173
-npm test           # engine tests (vitest)
-npm run build      # typecheck + production build into dist/
+npm run dev          # http://localhost:3000
+npm run lint
+npm run typecheck
+npm test
+npm run build
 ```
 
-## Design rules
+## Status: Batch 1 (foundation and interface shell)
 
-1. Diesel is the baseline, not an inferior option. The numbers decide the outcome.
-2. BEV and biofuel get no automatic favour. If diesel is cheaper, the app says so.
-3. Commercial viability and emissions are separate. Lower emissions never raise a classification.
-4. All figures come from deterministic code in `src/engine`. No AI touches any calculation.
-5. Every input has a unit; money fields show the selected currency (default Naira). Changing currency relabels, it does not convert.
-6. Every default is an editable, illustrative placeholder. No market price or statistic is presented as fact.
-7. Sensitivity analysis, stress tests, break-evens and a two-way table are core features.
-8. `0`, blank (missing) and `N/A` are different. Blank on a required field is an error; `0` is a real value; `N/A` is explicit.
-9. Validation rejects impossible inputs: negative distance or price, zero lifetime, percentages out of range, a horizon longer than vehicle life, fractional years.
-10. The Methodology tab lists every formula, unit, default and rule, including the live thresholds.
+Implemented: navigation, landing page, six-step assessment wizard with local persistence, domain model, unit and currency
+system, validation architecture, results/sensitivity/scenarios placeholders, methodology and about pages.
 
-## Layout
+Deliberately not implemented: the calculation engine, viability classification rules, charts, scenario saving, AI features.
+No result is ever shown without a calculation behind it.
+
+## Architecture
 
 ```
-src/engine/fields.ts       input registry: units, ranges, defaults, provenance
-src/engine/validate.ts     validation; separates 0 / missing / N/A
-src/engine/model.ts        cash flows, loan, TCO, NPV, payback, emissions
-src/engine/evaluate.ts     runs all three technologies and the comparison with diesel
-src/engine/sensitivity.ts  one-way, stress tests, break-even, two-way grid
-src/engine/decision.ts     VIABLE / CONDITIONALLY VIABLE / NOT YET VIABLE rules
-src/engine/engine.test.ts  tests
-src/ui/                    React dashboard, inputs, sensitivity, scenarios, methodology
+src/app/                 routes (App Router). Pages are thin; they compose components.
+src/components/ui/       design-system primitives (button, card, badge, alert, KPI card, status badge, ...)
+src/components/layout/   app shell, sidebar, top bar, mobile navigation
+src/components/landing/  marketing page sections
+src/components/assessment/ wizard, form fields, step progress, review panel
+src/components/results/  overview and results views
+src/domain/              types, field registry, validation, assessment helpers, demo data
+src/calculation/         reserved for the pure calculation engine (contract only)
+src/state/               framework-free store, persistence repository, React binding
+src/lib/                 units, currency, formatting, small utilities
 ```
 
-## Classification rules
+Rules the code follows:
 
-- Hard rule: operational feasibility (BEV range with safety margin and charging time; biofuel blend within the approved maximum). Failing gives NOT YET VIABLE.
-- VIABLE: NPV versus diesel is positive, payback is within the limit, and enough adverse stress tests keep NPV positive.
-- CONDITIONALLY VIABLE: NPV is positive but payback or robustness fails, or NPV is negative by no more than the near-miss tolerance.
-- NOT YET VIABLE: anything else.
-
-All thresholds are editable inputs.
-
-## Not yet included
-
-AI advisory text (it would only restate the computed results), tax and subsidies, carbon pricing, multi-vehicle fleets, and
-sourced default data. Add a cited default only with its reference stored next to the value.
+- No calculation logic in components. `src/calculation` has no React or browser imports.
+- Every numeric input is a `FieldValue`: `value` (including 0), `missing`, or `not_applicable`. Never test inputs with truthiness.
+- Canonical internal units are documented in `src/lib/units.ts`. Percentages are 0..100.
+- One registry (`src/domain/fields.ts`) defines each form input's label, unit and validation rule.
+- Persistence is behind `AssessmentRepository`. `localStorage` is one implementation and can be replaced.
+- Demo values are labelled "Illustrative demo assumption — not current market data." and are never presented as market data.
