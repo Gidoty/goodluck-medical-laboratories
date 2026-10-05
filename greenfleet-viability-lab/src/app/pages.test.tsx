@@ -20,12 +20,13 @@ import ScenariosPage from "@/app/(app)/scenarios/page";
 import SensitivityPage from "@/app/(app)/sensitivity/page";
 import LandingPage from "@/app/page";
 import { StepForm } from "@/components/assessment/step-form";
+import { ResultsBody } from "@/components/results/results-view";
 import { AppShell } from "@/components/layout/app-shell";
 import { PRODUCT_CREDIT } from "@/components/landing/product-credit";
 import { checkAssessment } from "@/domain/checks";
 import { ASSESSMENT_STEPS } from "@/domain/steps";
 import { AssessmentStoreProvider } from "@/state/StoreProvider";
-import { demo, blank, setChoiceOf } from "@/test/helpers";
+import { demo, blank, setChoiceOf, setNum } from "@/test/helpers";
 
 const html = (el: ReactElement) => renderToStaticMarkup(<AssessmentStoreProvider>{el}</AssessmentStoreProvider>);
 const CREDIT_HTML = "GreenFleet — Built by Group 8, MSc Class of 2025, CELTRAS";
@@ -65,12 +66,40 @@ describe("homepage attribution", () => {
   });
 });
 
-describe("pages render without fabricated results", () => {
-  it("the results page shows no figures", () => {
-    const markup = html(<ResultsPage />);
+describe("results page", () => {
+  const text = (el: ReactElement) => html(el).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+
+  it("shows the empty state and no figures until an assessment is complete", () => {
+    const markup = html(<ResultsBody assessment={blank()} />);
     expect(markup).toContain("Complete an assessment to generate results.");
-    const text = markup.replace(/<[^>]+>/g, " ");
-    expect(text).not.toMatch(/[₦$]\s?\d/);
+    expect(text(<ResultsBody assessment={blank()} />)).not.toMatch(/[₦$]\s?\d/);
+  });
+  it("shows calculated figures, warnings, charts and assumptions for a complete assessment", () => {
+    const t = text(<ResultsBody assessment={demo()} />);
+    for (const s of ["Cost of each option on its own", "Each alternative against diesel", "Net present value (NPV)", "Simple payback", "Discounted payback", "Present cost of ownership", "Assumptions used", "Year-by-year cash flows", "Cumulative cash flow versus diesel", "Total cost of ownership", "What the cost is made of"]) expect(t).toContain(s);
+    expect(t).toMatch(/₦[\d,]{4,}/);
+  });
+  it("labels demo results as illustrative", () => {
+    expect(text(<ResultsBody assessment={demo()} />)).toContain("These results use illustrative demo values");
+  });
+  it("never assigns a viability classification", () => {
+    const t = text(<ResultsBody assessment={demo()} />);
+    expect(t).toContain("Commercial classification pending multi-factor assessment");
+    expect(t).not.toMatch(/\bNOT YET VIABLE\b|\bCONDITIONALLY VIABLE\b|\bVIABLE\b/);
+  });
+  it("never prints NaN, Infinity, undefined or [object Object]", () => {
+    for (const a of [demo(), setNum(demo(), "bev.chargingLoss", null), setChoiceOf(demo(), "bev.batteryReplacement", "unknown"), blank()]) {
+      expect(text(<ResultsBody assessment={a} />)).not.toMatch(/NaN|Infinity|undefined|\[object Object\]/);
+    }
+  });
+  it("explains a missing payback in words", () => {
+    const t = text(<ResultsBody assessment={setNum(demo(), "bev.acquisitionPrice", 90_000_000)} />);
+    expect(t).toContain("Not achieved within analysis horizon");
+  });
+  it("discloses the exclusions", () => {
+    const t = text(<ResultsBody assessment={demo()} />);
+    expect(t).toContain("independently of financing structure");
+    expect(t).toContain("Tax effects are excluded");
   });
 });
 

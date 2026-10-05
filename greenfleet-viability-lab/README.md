@@ -19,15 +19,18 @@ npm test
 npm run build
 ```
 
-## Status: Batch 2 (complete input system)
+## Status: Batch 3 (deterministic calculation engine)
 
-Implemented: the full six-step assessment wizard, a declarative field schema that drives forms, validation, conditional
-visibility, review and normalization, unit conversion, derived previews, optional source (provenance) metadata,
-assumption badges, help tooltips, persistence, demo and blank starts, confirmed reset, and the
-`NormalizedAssessmentInput` contract (see `docs/NORMALIZED_INPUT.md`).
+Implemented: Batch 2's complete input system, plus the techno-economic engine in `src/calculation/` and the results page that
+displays it: total cost of ownership, present cost, cost per km, incremental NPV, simple and discounted payback, break-even
+distance, operating savings, year-by-year cash flows, assumptions used, warnings, and three charts.
 
-Deliberately not implemented: TCO, NPV, payback, break-even, emissions calculation, viability classification, scenario and
-sensitivity engines, AI, reports. No result is ever shown without a calculation behind it.
+See `docs/CALCULATION_ENGINE.md` (design and conventions) and `docs/NORMALIZED_INPUT.md` (input contract). The formulas are
+also on the in-app Methodology page.
+
+Deliberately not implemented: emissions, viability classification, sensitivity and scenario engines, threshold solving, AI,
+report export. No classification or recommendation is ever shown: results say "Commercial classification pending
+multi-factor assessment".
 
 Developer view: open the review step with `?debug=1` (or run `npm run dev`) to inspect the exact normalized object.
 
@@ -39,10 +42,11 @@ src/components/ui/         design-system primitives (button, card, badge, alert,
 src/components/layout/     app shell, sidebar, top bar, mobile navigation
 src/components/landing/    marketing page sections (the only place the product credit appears)
 src/components/assessment/ wizard, schema-driven field controls, review screen, developer panel
+src/components/results/    results page: tiles, tables, charts, warnings, assumptions
 src/domain/schema/         THE input schema: fields.ts (one entry per input), sections.ts, options.ts, types.ts
 src/domain/                stored types, reader, blank/restore, mutations, validation, checks, completion,
                            derive (previews and unit conversion), normalize + normalized (calculation contract), demo
-src/calculation/           reserved for the pure calculation engine (contract only)
+src/calculation/           the pure calculation engine (no React, no browser APIs); tested without the UI
 src/state/                 framework-free store, persistence repository, confirm gate, React binding
 src/content/               glossary (help text)
 src/lib/                   units, fuel units, currency, countries, formatting
@@ -51,7 +55,7 @@ docs/NORMALIZED_INPUT.md   field-by-field description of the calculation contrac
 
 Rules the code follows:
 
-- No calculation logic in components. `src/calculation` has no React or browser imports.
+- No calculation logic in components. `src/calculation` has no React or browser imports. The results page only formats what the engine returns.
 - Every numeric input is a `FieldValue`: `value` (including 0), `missing`, or `not_applicable`. Choices keep `unknown` as a real answer.
 - Hidden (conditional) inputs read as missing to everything else, so stale values never leak into results.
 - Canonical internal units are documented in `src/lib/units.ts` and `docs/NORMALIZED_INPUT.md`. Percentages are 0..100.

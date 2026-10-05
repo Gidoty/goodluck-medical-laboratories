@@ -93,3 +93,19 @@ populated only when special infrastructure is `yes`.
 ### Provenance and audit
 `provenance[fieldId] { source, reference, year }`: optional metadata the user attached to volatile inputs (prices, rates).
 `inputStatus[fieldId]`: entry status of every field, for auditing gaps.
+
+## Conventions fixed in Batch 3 (how the engine reads the fields)
+
+These removed ambiguities in the Batch 2 data model. The input form text was updated to match.
+
+| Field | Convention |
+| --- | --- |
+| Infrastructure costs (`equipmentCost`, `installationCost`, `electricalUpgradeCost`, `storageEquipmentCost`, ...) | **Project totals**, not per charger. `numberOfChargers` is informational and is never a multiplier. |
+| `bevCharging.vehiclesSharing` | **Total vehicles using the chargers, including the assessed fleet.** Cost share = min(1, fleet size / vehiclesSharing). |
+| `bevCharging.utilisationPct` | Not used for cost sharing. Utilisation and cost allocation are different concepts. |
+| Residual `amount` | **Per vehicle** (times fleet size). A percentage applies to the acquisition price; for a conversion it applies to the existing vehicle's value, and is left out with a warning if none was entered. |
+| Biofuel `fuelPricePerFuelUnit` | Price of the fuel **as bought** (for a blend, the blend). `blendPct` is descriptive and is not used to split cost. |
+| Biofuel `incrementalMaintenance` | **Added to** the entered annual maintenance, per vehicle (amount per year, or a percentage of that maintenance). Negative lowers it. |
+| `bev.chargingLossPct` | Strictly below 100% (a 100% loss would divide by zero). |
+| Upfront grant `amount` | Per vehicle. A percentage subsidy applies to the vehicle purchase cost only, not to infrastructure. |
+| Tax credit / "other" incentive | Timing is undefined, so the engine **excludes** it and reports it. |

@@ -2,6 +2,7 @@
 
 import { AlertCircle, Calculator, CheckCircle2, CircleDashed, Pencil } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Alert } from "@/components/ui/alert";
 import { AssumptionBadge, type AssumptionKind } from "@/components/ui/assumption-badge";
@@ -167,35 +168,35 @@ function DerivedRow({ label, value }: { label: string; value: string }) {
 }
 
 function CalculatePanel({ readiness }: { readiness: Readiness }) {
-  const [clicked, setClicked] = useState(false);
+  const router = useRouter();
+  const [attempted, setAttempted] = useState(false);
+  const run = () => {
+    if (readiness.commercialReady) router.push("/results");
+    else setAttempted(true);
+  };
   return (
     <Card>
       <CardBody className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">
-          <Button size="lg" onClick={() => setClicked(true)}>
+          <Button size="lg" onClick={run}>
             <Calculator aria-hidden className="size-5" /> Run Commercial Viability Assessment
           </Button>
-          <p className="text-sm text-slate-600">No result is produced in this release. The calculation engine is added in the next stage.</p>
+          <p className="text-sm text-slate-600">Calculates cost, present cost, NPV and payback for each option. No classification is made.</p>
         </div>
         <div role="status" aria-live="polite">
-          {clicked &&
-            (readiness.commercialReady ? (
-              <Alert tone="demo" title="Inputs complete">
-                Your assessment inputs are complete. The techno-economic calculation engine will process these inputs in the next development stage.
-              </Alert>
-            ) : (
-              <Alert tone="warning" title="Some required inputs are still missing">
-                <p>The assessment cannot run until these are fixed:</p>
-                <ul className="mt-1 list-disc pl-5">
-                  {readiness.missingRequired.slice(0, 6).map((m) => (
-                    <li key={m.fieldId}>
-                      <Link href={sectionHref(m.stepId, m.sectionId)} className="underline underline-offset-2">{m.label}</Link>
-                    </li>
-                  ))}
-                  {readiness.missingRequired.length === 0 && <li>Fix the highlighted problems above.</li>}
-                </ul>
-              </Alert>
-            ))}
+          {attempted && !readiness.commercialReady && (
+            <Alert tone="warning" title="Some required inputs are still missing">
+              <p>The assessment cannot run until these are fixed:</p>
+              <ul className="mt-1 list-disc pl-5">
+                {readiness.missingRequired.slice(0, 6).map((m) => (
+                  <li key={m.fieldId}>
+                    <Link href={sectionHref(m.stepId, m.sectionId)} className="underline underline-offset-2">{m.label}</Link>
+                  </li>
+                ))}
+                {readiness.missingRequired.length === 0 && <li>Fix the highlighted problems above.</li>}
+              </ul>
+            </Alert>
+          )}
         </div>
       </CardBody>
     </Card>

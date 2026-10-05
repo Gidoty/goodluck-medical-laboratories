@@ -1,133 +1,127 @@
 "use client";
 
-import { BarChart3, Banknote, Calculator, Clock, Gauge, Leaf, PiggyBank, Route, Scale, TrendingUp, Wallet } from "lucide-react";
-import { assessReadiness } from "@/domain/completion";
-import { TECH_LABELS } from "@/domain/labels";
-import { useAssessmentState } from "@/state/StoreProvider";
+import { Calculator, FlaskConical, Pencil } from "lucide-react";
+import Link from "next/link";
+import { useMemo } from "react";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { KpiCard } from "@/components/ui/kpi-card";
-import { ResponsiveTable } from "@/components/ui/responsive-table";
-import { StatusBadge } from "@/components/ui/status-badge";
-
-const KPIS = [
-  { label: "Total cost of ownership", icon: Wallet, hint: "Whole-life cost per technology" },
-  { label: "Cost per kilometre", icon: Route, hint: "Cost for every kilometre driven" },
-  { label: "Annual operating cost", icon: Banknote, hint: "Energy, maintenance and fixed costs" },
-  { label: "Net present value", icon: TrendingUp, hint: "Value versus the diesel baseline" },
-  { label: "Payback period", icon: Clock, hint: "Years to recover extra upfront cost" },
-  { label: "Annual savings", icon: PiggyBank, hint: "Yearly saving versus diesel" },
-  { label: "Emissions", icon: Leaf, hint: "Estimated greenhouse-gas emissions" },
-] as const;
-
-const TECHS = ["diesel", "electric", "biofuel"] as const;
+import { DEMO_LABEL } from "@/domain/demo";
+import { isUntouched } from "@/domain/mutations";
+import { runAssessment } from "@/domain/runAssessment";
+import { formatNumber } from "@/lib/format";
+import { useAssessmentState } from "@/state/StoreProvider";
+import type { AssessmentCalculationResult } from "@/calculation/types";
+import type { Assessment } from "@/domain/stored";
+import { resultFormatter } from "./format-results";
+import { CashFlowChart, CostComponentsChart, TcoChart } from "./results-charts";
+import { AssumptionsPanel, CashFlowTables, ComparisonTables, HeadlineTiles, TechnologyCards, WarningsPanel } from "./result-sections";
+import type { CurrencyCode } from "@/lib/currency";
 
 export function ResultsView() {
   const { assessment, hydrated } = useAssessmentState();
-  const ready = hydrated && assessReadiness(assessment).commercialReady;
+  if (!hydrated) {
+    return (
+      <Card aria-busy="true">
+        <CardBody><p role="status" className="text-sm text-slate-600">Loading your saved work…</p></CardBody>
+      </Card>
+    );
+  }
+  return <ResultsBody assessment={assessment} />;
+}
 
+/** Everything the results page shows, as a function of the assessment alone. */
+export function ResultsBody({ assessment }: { assessment: Assessment }) {
+  // Pure and instant, so results are recomputed from the saved inputs rather than stored.
+  const outcome = useMemo(() => runAssessment(assessment), [assessment]);
+
+  if (outcome.status === "invalid_inputs") {
+    const blank = isUntouched(assessment);
+    const missing = outcome.issues.filter((i) => i.code === "missing").length;
+    return (
+      <Card>
+        <CardHeader title="Headline comparison" description="The cost of diesel, battery-electric and biofuel vehicles over your analysis period." />
+        <CardBody>
+          <EmptyState icon={Calculator} title="Complete an assessment to generate results." action={<ButtonLink href={blank ? "/assessment/business" : "/assessment/review"}>{blank ? "Start New Assessment" : "Review missing inputs"}</ButtonLink>}>
+            {blank ? "Results appear here once the inputs are complete." : `${outcome.issues.length} ${outcome.issues.length === 1 ? "input needs" : "inputs need"} attention${missing > 0 ? `, including ${missing} still missing` : ""}. Results are calculated only from a complete, valid assessment.`}
+          </EmptyState>
+        </CardBody>
+      </Card>
+    );
+  }
+
+  if (outcome.status === "calculation_error") {
+    return (
+      <Alert tone="warning" title="The assessment could not be calculated">
+        <ul className="list-disc pl-5">{outcome.errors.map((e) => <li key={e.field}>{e.message}</li>)}</ul>
+        <p className="mt-2"><Link href="/assessment/review" className="font-semibold underline underline-offset-2">Review your inputs</Link></p>
+      </Alert>
+    );
+  }
+
+  return <ResultsDashboard result={outcome.result} currency={outcome.input.meta.currency} />;
+}
+
+function ResultsDashboard({ result, currency }: { result: AssessmentCalculationResult; currency: CurrencyCode }) {
+  const f = resultFormatter(currency);
+  const m = result.metadata;
+  const isDemo = m.illustrativeInputs.length > 0;
   return (
-    <div className="space-y-6">
-      <section aria-labelledby="headline-title">
-        <Card>
-          <CardHeader id="headline-title" title="Headline recommendation" description="The plain-language answer to which technology has the strongest commercial case." />
-          <CardBody>
-            <EmptyState
-              icon={Calculator}
-              title="Complete an assessment to generate results."
-              action={
-                <ButtonLink href={ready ? "/assessment/review" : "/assessment/business"}>
-                  {ready ? "Review inputs" : "Start New Assessment"}
-                </ButtonLink>
-              }
-            >
-              {ready
-                ? "Your inputs are complete. Results will appear here once the calculation engine is added in a later development batch."
-                : "Results appear here after the inputs are complete and the assessment is run."}
-            </EmptyState>
-          </CardBody>
-        </Card>
-      </section>
+    <div className="space-y-8">
+      <Card>
+        <CardBody className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-lg font-semibold text-navy-950">{m.assessmentName || "Untitled assessment"}</p>
+            <p className="mt-1 text-sm text-slate-600">
+              {formatNumber(m.fleetSize, 0)} {m.fleetSize === 1 ? "vehicle" : "vehicles"} · {m.horizonYears} {m.horizonYears === 1 ? "year" : "years"} · {formatNumber(m.annualDistancePerVehicleKm, 0)} km per vehicle per year · discount rate {formatNumber(m.discountRate * 100, 2)}% · amounts in {currency}
+            </p>
+            <p className="mt-1 text-xs text-slate-600">Calculated from your current inputs. Change an input and these figures update.</p>
+          </div>
+          <ButtonLink href="/assessment/review" variant="secondary" size="sm"><Pencil aria-hidden className="size-4" /> Review inputs</ButtonLink>
+        </CardBody>
+      </Card>
 
-      <section aria-labelledby="kpi-title">
-        <h2 id="kpi-title" className="mb-3 text-lg font-semibold text-navy-950">Key metrics</h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {KPIS.map((k) => (
-            <KpiCard key={k.label} label={k.label} icon={k.icon} value={null} hint={k.hint} />
-          ))}
+      {isDemo && (
+        <Alert tone="demo" title="These results use illustrative demo values">
+          <span className="flex items-center gap-2"><FlaskConical aria-hidden className="size-4 shrink-0" />{DEMO_LABEL} They show how the tool works and say nothing about real costs.</span>
+        </Alert>
+      )}
+
+      <Card>
+        <CardHeader title="Commercial classification" description="How these results will be interpreted." />
+        <CardBody className="space-y-2 text-sm text-navy-800">
+          <p className="font-semibold text-navy-950">Commercial classification pending multi-factor assessment</p>
+          <p>The figures below describe cost only. A classification will combine them with operational feasibility and other factors in a later stage. Environmental performance is reported separately and is not part of these numbers.</p>
+        </CardBody>
+      </Card>
+
+      <HeadlineTiles r={result} f={f} />
+      <TechnologyCards r={result} f={f} />
+      <WarningsPanel warnings={result.warnings} />
+      <ComparisonTables r={result} f={f} />
+
+      <section aria-labelledby="charts-title" className="space-y-4">
+        <h2 id="charts-title" className="text-lg font-semibold text-navy-950">Charts</h2>
+        <CashFlowChart result={result} f={f} />
+        <div className="grid gap-4 xl:grid-cols-2">
+          <TcoChart result={result} f={f} />
+          <CostComponentsChart result={result} f={f} />
         </div>
       </section>
 
-      <section aria-labelledby="compare-title">
-        <Card>
-          <CardHeader id="compare-title" title="Technology comparison" description="Diesel, battery-electric and biofuel side by side." />
-          <CardBody>
-            <ResponsiveTable caption="Technology comparison (no results yet)">
-              <thead>
-                <tr className="border-b border-line bg-navy-50 text-navy-800">
-                  <th scope="col" className="px-4 py-3 font-semibold">Metric</th>
-                  {TECHS.map((t) => (
-                    <th key={t} scope="col" className="px-4 py-3 font-semibold">{TECH_LABELS[t]}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {KPIS.map((k) => (
-                  <tr key={k.label} className="border-b border-line last:border-0">
-                    <th scope="row" className="px-4 py-3 font-medium text-navy-900">{k.label}</th>
-                    {TECHS.map((t) => (
-                      <td key={t} className="px-4 py-3 text-navy-300">
-                        <span aria-label="Not yet calculated">—</span>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </ResponsiveTable>
-          </CardBody>
-        </Card>
-      </section>
+      <CashFlowTables r={result} f={f} />
+      <AssumptionsPanel r={result} f={f} />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader title="Cumulative cash flow" description="Running balance of each alternative against diesel." />
-          <CardBody>
-            <EmptyState icon={BarChart3} title="No cash-flow chart yet">The chart appears after an assessment has been run.</EmptyState>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardHeader title="Break-even conditions" description="What would have to change for an alternative to match diesel." />
-          <CardBody>
-            <EmptyState icon={Scale} title="No break-even analysis yet">Break-even thresholds are calculated from your completed assessment.</EmptyState>
-          </CardBody>
-        </Card>
-      </div>
-
-      <section aria-labelledby="class-title">
-        <Card>
-          <CardHeader id="class-title" title="Commercial viability classification" description="Each alternative will be classified against transparent, predefined rules." />
-          <CardBody className="space-y-4">
-            <Alert tone="info">
-              No classification is assigned in this release. The decision rules are defined in a later batch. The key below only shows how
-              the three statuses will look.
-            </Alert>
-            <div>
-              <p className="mb-2 text-sm font-semibold text-navy-900">Status key (display preview)</p>
-              <div className="flex flex-wrap gap-3">
-                <StatusBadge status="viable" />
-                <StatusBadge status="conditionally_viable" />
-                <StatusBadge status="not_yet_viable" />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-slate-600">
-              <Gauge aria-hidden className="size-4" />
-              Environmental performance is reported separately from commercial viability.
-            </div>
-          </CardBody>
-        </Card>
-      </section>
+      <Card>
+        <CardHeader title="How to read these results" description={<>Read the <Link href="/methodology" className="font-semibold underline underline-offset-2">methodology</Link> for the formulas.</>} />
+        <CardBody>
+          <ul className="list-disc space-y-2 pl-5 text-sm text-navy-800">
+            {result.methodologyNotes.map((n) => <li key={n}>{n}</li>)}
+            <li>A positive net present value means the alternative has an economic advantage over diesel under the assumptions entered. It does not mean the alternative is environmentally better or operationally feasible.</li>
+          </ul>
+        </CardBody>
+      </Card>
     </div>
   );
 }

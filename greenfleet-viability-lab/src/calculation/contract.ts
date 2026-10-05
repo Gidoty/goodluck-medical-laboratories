@@ -1,9 +1,10 @@
-import type { Assessment, AssessmentResult } from "@/domain/types";
+import type { NormalizedAssessmentInput } from "@/domain/normalized";
+import type { CalculationOutcome } from "./types";
 
 /**
- * The calculation engine lives in this folder and nowhere else. It must stay pure: no React, no
- * browser APIs, no persistence. Input is a fully validated Assessment; output is an AssessmentResult.
- *
- * Batch 1 defines only the contract. The implementation arrives in a later batch, with unit tests.
+ * The calculation engine lives in this folder and nowhere else. It is pure: no React, no browser
+ * APIs, no persistence, no randomness. Input is the validated NormalizedAssessmentInput produced
+ * by the input system; output is an outcome that is either a complete result or a list of reasons
+ * why no result can be produced. It never returns partial or guessed numbers.
  */
-export type CalculateAssessment = (assessment: Assessment) => AssessmentResult;
+export type CalculateAssessment = (input: NormalizedAssessmentInput) => CalculationOutcome;

@@ -1,4 +1,3 @@
-import type { CurrencyCode } from "@/lib/currency";
 import type { UnitId } from "@/lib/units";
 import type { Assessment } from "./stored";
 
@@ -33,36 +32,14 @@ export interface SensitivityVariable {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Outputs (shape only). Nothing in Batch 1 produces these.                    */
+/* Outputs reserved for later batches. Financial results live in calculation/. */
 /* -------------------------------------------------------------------------- */
 
 export type ViabilityStatus = "viable" | "conditionally_viable" | "not_yet_viable";
-
-export interface TechnologyResult {
-  technology: TechnologyId;
-  totalCostOfOwnership: number;
-  costPerKm: number;
-  annualOperatingCost: number;
-  annualEnergyCost: number;
-  netPresentValue: number;
-  /** null when the investment is not recovered within the horizon. */
-  paybackYears: number | null;
-  annualSavingsVsBaseline: number;
-  annualEmissionsTonnesCo2e: number;
-  cumulativeCashFlow: ReadonlyArray<number>;
-}
 
 export interface ViabilityResult {
   technology: Exclude<TechnologyId, "diesel">;
   status: ViabilityStatus;
   /** Plain-language reasons, each traceable to a named rule. */
   reasons: ReadonlyArray<{ ruleId: string; text: string }>;
-}
-
-export interface AssessmentResult {
-  assessmentId: string;
-  currency: CurrencyCode;
-  computedAt: string;
-  technologies: Record<TechnologyId, TechnologyResult>;
-  viability: ReadonlyArray<ViabilityResult>;
 }

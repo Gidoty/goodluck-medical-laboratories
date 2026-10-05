@@ -31,6 +31,8 @@ export interface NumericRule {
   /** If true the value must be strictly greater than `min` (e.g. a lifetime of 0 is impossible). */
   minExclusive?: boolean;
   integer?: boolean;
+  /** If true the value must be strictly below `max` (e.g. a 100% charging loss would divide by zero). */
+  maxExclusive?: boolean;
   /** Plausibility range: outside it the value is allowed but flagged for a units check. */
   plausibleMax?: number;
 }
@@ -77,8 +79,8 @@ export function validateNumeric(
       );
     }
   }
-  if (rule.max !== undefined && v > rule.max) {
-    return issue("above_max", `${rule.label} cannot exceed ${formatNumber(rule.max, 4)} ${unit}.`);
+  if (rule.max !== undefined && (rule.maxExclusive ? v >= rule.max : v > rule.max)) {
+    return issue("above_max", rule.maxExclusive ? `${rule.label} must be less than ${formatNumber(rule.max, 4)} ${unit}.` : `${rule.label} cannot exceed ${formatNumber(rule.max, 4)} ${unit}.`);
   }
   if (rule.plausibleMax !== undefined && v > rule.plausibleMax) {
     return issue(

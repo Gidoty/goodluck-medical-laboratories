@@ -65,7 +65,7 @@ function advancedCosts(prefix: string, section: string) {
       defaultQualifier: "percent",
       required: false,
       glossary: "residualValue",
-      hint: "Enter either an amount or a percentage of the acquisition price, not both.",
+      hint: "Enter either an amount (per vehicle) or a percentage of the acquisition price, not both.",
     }),
     optionalCost("insurance", "Annual insurance cost (per vehicle)", "money_per_year"),
     optionalCost("registration", "Annual registration and licensing cost (per vehicle)", "money_per_year"),
@@ -171,7 +171,7 @@ export const FIELDS: readonly FieldDef[] = [
   num({ id: "bev.batteryReplacementYear", section: "bev-advanced", label: "Battery replacement year", unit: "years", rule: { ...POSITIVE_INT, max: 50 }, required: true, visibleWhen: (r) => r.choice("bev.batteryReplacement") === "yes", hint: "Year of operation in which the battery is replaced." }),
   num({ id: "bev.batteryReplacementCost", section: "bev-advanced", label: "Estimated battery replacement cost", unit: "money", rule: MONEY, required: true, visibleWhen: (r) => r.choice("bev.batteryReplacement") === "yes" }),
   num({ id: "bev.electricityEscalation", section: "bev-advanced", label: "Expected annual electricity-price escalation", unit: "percent", rule: ESCALATION, required: false, glossary: "escalation", hint: "Leave blank if you have no view. No escalation is assumed." }),
-  num({ id: "bev.chargingLoss", section: "bev-advanced", label: "Charging losses", unit: "percent", rule: { ...PCT, plausibleMax: 40 }, required: false, glossary: "chargingLosses", hint: "Extra energy drawn from the grid because of charger and battery losses." }),
+  num({ id: "bev.chargingLoss", section: "bev-advanced", label: "Charging losses", unit: "percent", rule: { ...PCT, maxExclusive: true, plausibleMax: 40 }, required: false, glossary: "chargingLosses", hint: "Share of grid energy lost before it reaches the vehicle. 10% means 10 of every 100 kWh drawn from the grid is lost." }),
 
   // ===== Step 4: Biofuel / alternative fuel ===========================================
   choice({ id: "biofuel.pathway", section: "bio-core", label: "Biofuel pathway", options: OPTIONS.biofuelPathway, presentation: "select", required: true, resetsOnChange: ["biofuel.blendPercent", "biofuel.fuelUnit", "biofuel.fuelPrice", "biofuel.fuelEfficiency", "env.biofuel.value"], hint: "Compatibility with your engine must come from the manufacturer or your own records." }),
@@ -181,7 +181,7 @@ export const FIELDS: readonly FieldDef[] = [
   num({ id: "biofuel.acquisitionPrice", section: "bio-core", label: "Vehicle acquisition price", unit: "money", rule: MONEY, required: true, provenance: true, visibleWhen: (r) => r.choice("biofuel.acquisitionMode") === "new_vehicle", hint: "Per vehicle." }),
   num({ id: "biofuel.existingVehicleValue", section: "bio-core", label: "Existing vehicle value", unit: "money", rule: MONEY, required: false, visibleWhen: (r) => r.choice("biofuel.acquisitionMode") === "conversion", hint: "Optional. Current value of the vehicle you would convert." }),
   num({ id: "biofuel.conversionCost", section: "bio-core", label: "Conversion / modification cost", unit: "money", rule: MONEY, required: true, visibleWhen: (r) => r.choice("biofuel.acquisitionMode") === "conversion", hint: "Per vehicle." }),
-  num({ id: "biofuel.fuelPrice", section: "bio-core", label: "Fuel price", unit: (r) => FUEL_UNITS[biofuelFuelUnit(r)].price, rule: MONEY, required: true, provenance: true }),
+  num({ id: "biofuel.fuelPrice", section: "bio-core", label: "Fuel price", unit: (r) => FUEL_UNITS[biofuelFuelUnit(r)].price, rule: MONEY, required: true, provenance: true, hint: "Price of the fuel as you buy it. For a blend, enter the price of the blend, not of the pure biofuel." }),
   qnum({
     id: "biofuel.fuelEfficiency", section: "bio-core", label: "Fuel efficiency", glossary: "fuelEfficiency", required: true, defaultQualifier: "fuel_per_100km",
     qualifiers: (r) => {
@@ -203,7 +203,7 @@ export const FIELDS: readonly FieldDef[] = [
 
   ...advancedCosts("biofuel", "bio-advanced"),
   num({ id: "biofuel.fuelEscalation", section: "bio-advanced", label: "Expected annual fuel-price escalation", unit: "percent", rule: ESCALATION, required: false, glossary: "escalation", hint: "Leave blank if you have no view. No escalation is assumed." }),
-  qnum({ id: "biofuel.incrementalMaintenance", section: "bio-advanced", label: "Incremental maintenance effect versus diesel", qualifiers: [{ id: "amount", unit: "money_per_year", rule: {} }, { id: "percent", unit: "percent", rule: { min: -100, max: 500 } }], defaultQualifier: "amount", required: false, hint: "Use a negative number if maintenance is expected to be lower." }),
+  qnum({ id: "biofuel.incrementalMaintenance", section: "bio-advanced", label: "Additional maintenance caused by this fuel (per vehicle)", qualifiers: [{ id: "amount", unit: "money_per_year", rule: {} }, { id: "percent", unit: "percent", rule: { min: -100, max: 500 } }], defaultQualifier: "amount", required: false, hint: "Added on top of the annual maintenance above (an amount per vehicle per year, or a percentage of that maintenance). Use a negative number if you expect it to be lower." }),
 
   // ===== Step 5A: Financing ===========================================================
   choice({ id: "finance.structure", section: "fin-financing", label: "Financing structure", options: OPTIONS.financingStructure, presentation: "select", required: true }),
@@ -220,11 +220,11 @@ export const FIELDS: readonly FieldDef[] = [
 
   // ===== Step 5B: Infrastructure ======================================================
   choice({ id: "bevInfra.arrangement", section: "fin-bev-infra", label: "Charging arrangement", options: OPTIONS.chargingArrangement, presentation: "select", required: false, hint: "Infrastructure costs are asked for only if you will buy or build chargers." }),
-  num({ id: "bevInfra.equipmentCost", section: "fin-bev-infra", label: "Charger equipment cost", unit: "money", rule: MONEY, required: true, visibleWhen: hasChargingInfra, hint: "Total. 0 is valid if the equipment is already owned." }),
-  num({ id: "bevInfra.installationCost", section: "fin-bev-infra", label: "Installation cost", unit: "money", rule: MONEY, required: true, visibleWhen: hasChargingInfra }),
-  num({ id: "bevInfra.electricalUpgradeCost", section: "fin-bev-infra", label: "Electrical upgrade cost", unit: "money", rule: MONEY, required: false, allowNotApplicable: true, visibleWhen: hasChargingInfra }),
+  num({ id: "bevInfra.equipmentCost", section: "fin-bev-infra", label: "Charger equipment cost", unit: "money", rule: MONEY, required: true, visibleWhen: hasChargingInfra, hint: "Total for all chargers together, not per charger. 0 is valid if the equipment is already owned." }),
+  num({ id: "bevInfra.installationCost", section: "fin-bev-infra", label: "Installation cost", unit: "money", rule: MONEY, required: true, visibleWhen: hasChargingInfra, hint: "Total for the whole installation." }),
+  num({ id: "bevInfra.electricalUpgradeCost", section: "fin-bev-infra", label: "Electrical upgrade cost", unit: "money", rule: MONEY, required: false, allowNotApplicable: true, visibleWhen: hasChargingInfra, hint: "Total, for example grid connection or wiring upgrades." }),
   num({ id: "bevInfra.chargerCount", section: "fin-bev-infra", label: "Number of chargers", unit: "vehicles", rule: { min: 1, integer: true }, required: true, visibleWhen: hasChargingInfra }),
-  num({ id: "bevInfra.vehiclesSharing", section: "fin-bev-infra", label: "Number of vehicles sharing the infrastructure", unit: "vehicles", rule: { min: 1, integer: true }, required: true, visibleWhen: hasChargingInfra }),
+  num({ id: "bevInfra.vehiclesSharing", section: "fin-bev-infra", label: "Total vehicles using these chargers", unit: "vehicles", rule: { min: 1, integer: true }, required: true, visibleWhen: hasChargingInfra, hint: "Count every vehicle that uses them, including the vehicles you are assessing. Your fleet is charged its share of the cost." }),
   num({ id: "bevInfra.lifeYears", section: "fin-bev-infra", label: "Infrastructure useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true, visibleWhen: hasChargingInfra }),
   num({ id: "bevInfra.annualMaintenance", section: "fin-bev-infra", label: "Annual charger maintenance cost", unit: "money_per_year", rule: MONEY, required: false, allowNotApplicable: true, visibleWhen: hasChargingInfra }),
   num({ id: "bevInfra.otherAnnualCost", section: "fin-bev-infra", label: "Other annual charging infrastructure cost", unit: "money_per_year", rule: MONEY, required: false, allowNotApplicable: true, visibleWhen: hasChargingInfra }),

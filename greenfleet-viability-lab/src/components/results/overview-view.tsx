@@ -74,7 +74,7 @@ export function OverviewView() {
                 <span className="grid size-7 shrink-0 place-items-center rounded-full bg-navy-100 text-xs font-bold text-navy-800">{j.n}</span>
                 <span className="min-w-0 flex-1 text-sm font-medium text-navy-900">{j.title}</span>
                 {j.state === "ready" ? (
-                  <Badge tone="forest">Inputs ready</Badge>
+                  <Badge tone="forest">Available</Badge>
                 ) : (
                   <Badge tone="neutral"><Hourglass aria-hidden className="size-3" /> Later batch</Badge>
                 )}
