@@ -137,6 +137,8 @@ export function normalizeAssessment(a: Assessment): NormalizeResult {
   const factor = (key: string, lifecycleKey: string): EmissionFactorInput => ({
     value: opt(`env.${key}.value`),
     unit: UNITS[r.unitOf(`env.${key}.value`)].label,
+    unitId: r.unitOf(`env.${key}.value`),
+    scope: choice(`env.${key}.scope`) as EmissionFactorInput["scope"],
     source: text(`env.${key}.source`),
     sourceYear: opt(`env.${key}.year`),
     notes: text(`env.${key}.notes`),
@@ -206,7 +208,7 @@ export function normalizeAssessment(a: Assessment): NormalizeResult {
         usefulLifeYears: opt("bioInfra.lifeYears"),
       },
     },
-    environmentalAssumptions: { diesel: factor("diesel", "diesel"), gridElectricity: factor("grid", "grid"), biofuel: { ...factor("biofuel", "biofuel"), unit: UNITS[FUEL_UNITS[fuelUnit].emissionFactor].label } },
+    environmentalAssumptions: { diesel: factor("diesel", "diesel"), gridElectricity: factor("grid", "grid"), biofuel: { ...factor("biofuel", "biofuel"), unit: UNITS[FUEL_UNITS[fuelUnit].emissionFactor].label, unitId: FUEL_UNITS[fuelUnit].emissionFactor } },
     provenance: Object.fromEntries(
       Object.entries(a.provenance)
         .filter(([id, p]) => r.isVisible(id) && (p.source !== null || p.reference.trim() !== "" || p.year.status === "value"))

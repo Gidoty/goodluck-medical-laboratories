@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Alert } from "@/components/ui/alert";
 import type { FieldIssue } from "@/domain/checks";
 import { createReader } from "@/domain/reader";
@@ -66,6 +66,24 @@ function SectionBlock({ section, assessment, issues, hasFields, children }: { se
   // The form mounts only after saved work has loaded, so reading the URL here cannot cause a hydration mismatch.
   const [startOpen] = useState(() => collapsible && ((typeof window !== "undefined" && window.location.hash === `#${anchor}`) || issues.some((i) => i.sectionId === section.id) || sectionHasEntries(section.id, assessment)));
 
+  // A client-side link such as "Add Emission Factors" sets the hash after this first render, so open the target section then too.
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const openIfTarget = () => {
+      if (window.location.hash === `#${anchor}` && detailsRef.current && !detailsRef.current.open) {
+        detailsRef.current.open = true;
+        detailsRef.current.scrollIntoView({ block: "start" });
+      }
+    };
+    openIfTarget();
+    window.addEventListener("hashchange", openIfTarget);
+    const t = window.setTimeout(openIfTarget, 150);
+    return () => {
+      window.removeEventListener("hashchange", openIfTarget);
+      window.clearTimeout(t);
+    };
+  }, [anchor]);
+
   if (!collapsible) {
     return (
       <div id={anchor} role="group" aria-labelledby={`${anchor}-title`} className="scroll-mt-28">
@@ -78,7 +96,7 @@ function SectionBlock({ section, assessment, issues, hasFields, children }: { se
     );
   }
   return (
-    <details id={anchor} open={startOpen || undefined} className="group scroll-mt-28 rounded-xl border border-line bg-surface">
+    <details ref={detailsRef} id={anchor} open={startOpen || undefined} className="group scroll-mt-28 rounded-xl border border-line bg-surface">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-3 marker:hidden [&::-webkit-details-marker]:hidden">
         <span>
           <span className="block text-sm font-semibold text-navy-950">

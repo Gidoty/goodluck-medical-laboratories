@@ -303,7 +303,7 @@ describe("normalized output", () => {
   it("includes emission factors with unit, source, year and notes when entered", () => {
     let a = withNums(demo(), { "env.diesel.value": 2.5, "env.diesel.year": 2020 });
     a = setText(a, "env.diesel.source", "Example report");
-    expect(ok(a).environmentalAssumptions.diesel).toEqual({ value: 2.5, unit: "kg CO2e/litre", source: "Example report", sourceYear: 2020, notes: null, lifecycleAdjustmentPct: null });
+    expect(ok(a).environmentalAssumptions.diesel).toEqual({ value: 2.5, unit: "kg CO2e/litre", unitId: "kgco2e_per_litre", scope: null, source: "Example report", sourceYear: 2020, notes: null, lifecycleAdjustmentPct: null });
     expect(ok(demo()).environmentalAssumptions.diesel.value).toBeNull();
   });
 });

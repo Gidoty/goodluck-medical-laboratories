@@ -16,6 +16,7 @@ import type { AssessmentCalculationResult } from "@/calculation/types";
 import type { Assessment } from "@/domain/stored";
 import { resultFormatter } from "./format-results";
 import { CashFlowChart, CostComponentsChart, TcoChart } from "./results-charts";
+import { CompletenessIndicators, DimensionSummary, DomainWarnings, EnvironmentalSection, OperationalSection, economicWarnings } from "./analysis-sections";
 import { AssumptionsPanel, CashFlowTables, ComparisonTables, HeadlineTiles, TechnologyCards, WarningsPanel } from "./result-sections";
 import type { CurrencyCode } from "@/lib/currency";
 
@@ -60,10 +61,10 @@ export function ResultsBody({ assessment }: { assessment: Assessment }) {
     );
   }
 
-  return <ResultsDashboard result={outcome.result} currency={outcome.input.meta.currency} />;
+  return <ResultsDashboard result={outcome.result} currency={outcome.input.meta.currency} arrangement={outcome.input.infrastructure?.bevCharging?.arrangement ?? null} />;
 }
 
-function ResultsDashboard({ result, currency }: { result: AssessmentCalculationResult; currency: CurrencyCode }) {
+function ResultsDashboard({ result, currency, arrangement }: { result: AssessmentCalculationResult; currency: CurrencyCode; arrangement: string | null }) {
   const f = resultFormatter(currency);
   const m = result.metadata;
   const isDemo = m.illustrativeInputs.length > 0;
@@ -96,10 +97,19 @@ function ResultsDashboard({ result, currency }: { result: AssessmentCalculationR
         </CardBody>
       </Card>
 
-      <HeadlineTiles r={result} f={f} />
-      <TechnologyCards r={result} f={f} />
-      <WarningsPanel warnings={result.warnings} />
-      <ComparisonTables r={result} f={f} />
+      <DimensionSummary r={result} />
+      <CompletenessIndicators r={result} />
+
+      <section aria-labelledby="econ-title" className="space-y-6">
+        <div>
+          <h2 id="econ-title" className="text-xl font-semibold text-navy-950">Economic attractiveness</h2>
+          <p className="text-sm text-slate-600">Cost only. Nothing in this section says whether the vehicles can do the work or what they emit.</p>
+        </div>
+        <HeadlineTiles r={result} f={f} />
+        <TechnologyCards r={result} f={f} />
+        <WarningsPanel warnings={economicWarnings(result.warnings)} />
+        <ComparisonTables r={result} f={f} />
+      </section>
 
       <section aria-labelledby="charts-title" className="space-y-4">
         <h2 id="charts-title" className="text-lg font-semibold text-navy-950">Charts</h2>
@@ -111,6 +121,11 @@ function ResultsDashboard({ result, currency }: { result: AssessmentCalculationR
       </section>
 
       <CashFlowTables r={result} f={f} />
+
+      <OperationalSection r={result} arrangement={arrangement} />
+      <EnvironmentalSection r={result} />
+      <DomainWarnings r={result} />
+
       <AssumptionsPanel r={result} f={f} />
 
       <Card>

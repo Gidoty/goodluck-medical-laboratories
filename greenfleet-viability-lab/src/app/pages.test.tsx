@@ -26,7 +26,7 @@ import { PRODUCT_CREDIT } from "@/components/landing/product-credit";
 import { checkAssessment } from "@/domain/checks";
 import { ASSESSMENT_STEPS } from "@/domain/steps";
 import { AssessmentStoreProvider } from "@/state/StoreProvider";
-import { demo, blank, setChoiceOf, setNum } from "@/test/helpers";
+import { demo, blank, setChoiceOf, setNum, setText } from "@/test/helpers";
 
 const html = (el: ReactElement) => renderToStaticMarkup(<AssessmentStoreProvider>{el}</AssessmentStoreProvider>);
 const CREDIT_HTML = "GreenFleet — Built by Group 8, MSc Class of 2025, CELTRAS";
@@ -95,6 +95,28 @@ describe("results page", () => {
   it("explains a missing payback in words", () => {
     const t = text(<ResultsBody assessment={setNum(demo(), "bev.acquisitionPrice", 90_000_000)} />);
     expect(t).toContain("Not achieved within analysis horizon");
+  });
+
+  it("keeps economic, operational and environmental sections separate", () => {
+    const t = text(<ResultsBody assessment={demo()} />);
+    for (const s of ["Economic attractiveness", "Operational feasibility", "Environmental performance", "Three separate questions, three separate answers", "Economic data", "Operational data", "Environmental data", "Baseline configuration", "Review Operational Inputs"]) expect(t).toContain(s);
+    expect(t).toContain("Estimated operational energy/fuel-related GHG emissions");
+  });
+  it("shows emissions as unavailable, never zero, when no factor was entered", () => {
+    const t = text(<ResultsBody assessment={demo()} />);
+    expect(t).toContain("Not available");
+    expect(t).toContain("Add Emission Factors");
+    expect(t).not.toMatch(/\b0(\.0+)? ?tCO2e/);
+  });
+  it("calculates emissions from the factors entered on the form", () => {
+    let a = demo();
+    a = setNum(a, "env.diesel.value", 2.7);
+    a = setNum(a, "env.grid.value", 0.4);
+    a = setText(a, "env.diesel.source", "Test source");
+    const t = text(<ResultsBody assessment={a} />);
+    expect(t).toMatch(/\d[\d,.]* tCO2e/);
+    expect(t).toContain("Test source");
+    expect(t).not.toMatch(/NaN|Infinity|undefined|\[object Object\]/);
   });
   it("discloses the exclusions", () => {
     const t = text(<ResultsBody assessment={demo()} />);

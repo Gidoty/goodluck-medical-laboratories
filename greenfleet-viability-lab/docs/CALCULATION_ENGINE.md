@@ -20,6 +20,10 @@ primary result, so the comparison does not depend on how vehicles are financed a
 | `finance.ts` | Pure arithmetic: discount factors, escalation, replacement schedule, payback, interpolation. |
 | `types.ts` | The result model. |
 | `notes.ts` | Fixed methodology statements shown with the results. |
+| `environmental/` | Batch 4. Operational energy/fuel-related emissions (`index.ts`, `units.ts`, `types.ts`). Reads only the normalized input. |
+| `operational/` | Batch 4. Rule-based BEV and biofuel feasibility (`bev.ts`, `biofuel.ts`, `status.ts`, `index.ts`). Reads only the normalized input. |
+| `completeness.ts` | Three separate data-completeness states (economic, operational, environmental). |
+| `dimensions.ts` | Side-by-side summary per alternative. Copies each layer's own answer; no combined verdict. |
 
 ## Conventions
 
@@ -41,10 +45,32 @@ primary result, so the comparison does not depend on how vehicles are financed a
 - **Infrastructure:** project totals, share = min(1, fleet / vehicles using it), paid once at Year 0; replacement and terminal value not modelled (warned).
 - **Incentives:** only those entered. Grants and subsidies at Year 0 on the first purchase; tax credits and "other" are excluded (timing undefined).
 - **Payback:** first year the running total of incremental cash flow reaches zero, interpolated; `immediate` if there is no deficit at Year 0; `not_achieved` (null years) otherwise. `sustained` reports whether it stays non-negative afterwards.
-- **Not modelled:** financing, tax, revenue/IRR, general inflation, maintenance inflation, emissions, operational feasibility, classification.
+- **Not modelled:** financing, tax, revenue/IRR, general inflation, maintenance inflation, classification, sensitivity, carbon pricing.
 
 ## Verification
 
 `src/calculation/fixtures.ts` documents **Verification Case 1** (0% discount; every figure hand-checkable) and
 `engine.test.ts` contains **Verification Case 2** (10% discount, escalation, replacement, residual, incentives, shared
 infrastructure) checked against an independent loop-based script. All values are abstract currency units, not market data.
+
+## Batch 4: two further layers (independent of the economic engine)
+
+Three questions are answered separately and never merged: **economic attractiveness** (NPV, TCO), **operational feasibility**
+(can it do the work) and **environmental performance** (estimated operational emissions). No layer reads another layer's output.
+The environmental and operational engines take the normalized input only. There is no score, no weighting and no classification.
+
+### Environmental (`src/calculation/environmental/`)
+- `emissions (kg CO2e) = physical quantity x user-supplied factor`. The physical quantity is the same litres or kWh the cost model uses (a test checks this).
+- BEV grid kWh = delivered kWh / (1 - charging loss). Without a loss rate, none is applied and a note says so.
+- `change % = (diesel - alternative) / diesel x 100`; positive is labelled "Emissions reduction", negative "Emissions increase".
+- Canonical unit kg CO2e. Factor units are read from the unit id (`kgco2e_per_litre`, `gco2e_per_kwh`, `kgco2_per_litre`, ...): g converts to kg, a CO2-only factor is flagged, and a unit that does not match the physical quantity (litre, kg, m3, kWh) makes that technology **unavailable** rather than guessed.
+- No factor ships with the software. A missing factor means "unavailable", never zero.
+- Scope labels (direct, fuel cycle, lifecycle, not stated) are recorded; a mismatch between compared factors is warned about. Provenance counts only when source text is present.
+- Lifecycle adjustment is recorded and warned about but **not applied** (how to apply it is undefined). No embodied emissions, no carbon price, no monetisation.
+
+### Operational (`src/calculation/operational/`)
+- Check statuses: satisfied, conditional, constrained, insufficient, not_assessed. Overall: Suitable, Conditional, Constrained, Insufficient data (`status.ts`, `overallStatus`).
+- Rule 1: any constrained check gives Constrained. Rule 2: a core check with insufficient data (or a must-be-assessed check not assessed) gives Insufficient data. Rule 3: any conditional or unknown check gives Conditional. Rule 4: Suitable. The rule used is returned in `ruleTrace`.
+- BEV: range (daily distance vs usable range, no safety buffer), single route, charging, payload (core checks: range and route). Biofuel: supply (core, must be assessed) and infrastructure. Diesel is reported as "baseline".
+- Charging time, refuelling distance and downtime are shown as entered (downtime per month x 12). None is priced.
+- Completeness counts answered evidence items against an explicit total; "unknown" does not count.

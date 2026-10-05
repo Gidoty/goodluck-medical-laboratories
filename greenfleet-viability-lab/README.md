@@ -19,7 +19,7 @@ npm test
 npm run build
 ```
 
-## Status: Batch 3 (deterministic calculation engine)
+## Status: Batch 4 (environmental and operational layers)
 
 Implemented: Batch 2's complete input system, plus the techno-economic engine in `src/calculation/` and the results page that
 displays it: total cost of ownership, present cost, cost per km, incremental NPV, simple and discounted payback, break-even
@@ -28,8 +28,13 @@ distance, operating savings, year-by-year cash flows, assumptions used, warnings
 See `docs/CALCULATION_ENGINE.md` (design and conventions) and `docs/NORMALIZED_INPUT.md` (input contract). The formulas are
 also on the in-app Methodology page.
 
-Deliberately not implemented: emissions, viability classification, sensitivity and scenario engines, threshold solving, AI,
-report export. No classification or recommendation is ever shown: results say "Commercial classification pending
+Batch 4 adds two analytical layers, each independent of the cost engine and of each other: estimated operational
+energy/fuel-related GHG emissions (from emission factors the user supplies; none are shipped) and rule-based operational
+feasibility for battery-electric and biofuel (Suitable, Conditional, Constrained, Insufficient data). The results page shows
+Economic, Operational and Environmental sections separately, with three separate data-completeness indicators.
+
+Deliberately not implemented: viability classification, sensitivity and scenario engines, threshold solving, AI,
+report export, carbon pricing, lifecycle (embodied) emissions. No classification or recommendation is ever shown: results say "Commercial classification pending
 multi-factor assessment".
 
 Developer view: open the review step with `?debug=1` (or run `npm run dev`) to inspect the exact normalized object.

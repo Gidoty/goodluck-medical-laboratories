@@ -62,6 +62,11 @@ export const OPTIONS = {
     ["mixed", "Mixed"],
     ["unknown", "Unknown"],
   ]),
+  emissionScope: opts([
+    ["direct", "Direct only (burning the fuel, or using the electricity)"],
+    ["fuel_cycle", "Fuel or energy cycle (production and delivery included)"],
+    ["lifecycle", "Full lifecycle (including vehicles and equipment)"],
+  ]),
   yesNoUnknown: YES_NO_UNKNOWN,
 } as const;
 

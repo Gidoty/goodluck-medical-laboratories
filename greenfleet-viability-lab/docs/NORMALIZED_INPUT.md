@@ -88,7 +88,9 @@ populated only when special infrastructure is `yes`.
 
 ### Environmental assumptions (optional)
 `diesel` (kg CO2e/litre), `gridElectricity` (kg CO2e/kWh), `biofuel` (kg CO2e per `fuelUnit`), each
-`{ value, unit, source, sourceYear, notes, lifecycleAdjustmentPct }`. **No factor is ever pre-filled**; `value` is `null` until the user supplies one.
+`{ value, unit, unitId, scope, source, sourceYear, notes, lifecycleAdjustmentPct }`. `unit` is the display label and `unitId` the
+machine id the engine reads (for example `kgco2e_per_litre`). `scope` is `direct | fuel_cycle | lifecycle | null` (null = not stated).
+The biofuel factor is per unit of the fuel **as bought** (for a blend, the blend). `lifecycleAdjustmentPct` is carried but not applied. **No factor is ever pre-filled**; `value` is `null` until the user supplies one.
 
 ### Provenance and audit
 `provenance[fieldId] { source, reference, year }`: optional metadata the user attached to volatile inputs (prices, rates).

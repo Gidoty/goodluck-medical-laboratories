@@ -18,8 +18,8 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   escalation: { term: "Price escalation", text: "How much you expect a price to rise (or fall) each year. Leave it blank if you have no view. Nothing is assumed for you." },
   analysisHorizon: { term: "Analysis period", text: "The number of years over which the investment is judged. Longer periods favour vehicles with lower running costs." },
   usableRange: { term: "Usable range", text: "How far the vehicle can really go on one charge with your loads, roads and weather, not the brochure figure." },
-  emissionFactor: { term: "Emission factor", text: "Kilograms of greenhouse gas released per unit of fuel or electricity. It must come from a source you can name." },
-  lifecycleAdjustment: { term: "Lifecycle adjustment", text: "An optional percentage added to an emission factor to cover emissions from producing the fuel or electricity. Leave blank if your factor already includes them." },
+  emissionFactor: { term: "Emission factor", text: "Kilograms of greenhouse gas (as CO2-equivalent) released per unit of fuel or electricity. It must come from a source you can name. GreenFleet does not supply one." },
+  lifecycleAdjustment: { term: "Lifecycle adjustment", text: "An optional percentage you can record for emissions from producing the fuel or electricity. It is stored but not applied to the results yet. To count those emissions, use an emission factor that already includes them." },
   incentive: { term: "Incentive", text: "A grant, subsidy or tax benefit that lowers a vehicle's cost. Only enter one you are confident you will receive." },
   provenance: { term: "Source of a number", text: "Optional. Saying where a number came from, such as a supplier quotation or your own records, makes the assessment easier to trust and to check." },
 };

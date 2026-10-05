@@ -94,10 +94,11 @@ function incentiveFields(tech: "diesel" | "bev" | "biofuel", label: string): Fie
   ];
 }
 
-function emissionFactor(key: string, label: string, unit: UnitId | ((r: Reader) => UnitId)): FieldDef[] {
+function emissionFactor(key: string, label: string, unit: UnitId | ((r: Reader) => UnitId), valueHint?: string): FieldDef[] {
   const base = { section: "fin-env" } as const;
   return [
-    num({ id: `env.${key}.value`, ...base, label: `${label} emission factor`, unit, rule: { min: 0, max: 1000 }, required: false, glossary: "emissionFactor" }),
+    num({ id: `env.${key}.value`, ...base, label: `${label} emission factor`, unit, rule: { min: 0, max: 1000 }, required: false, glossary: "emissionFactor", hint: valueHint }),
+    choice({ id: `env.${key}.scope`, ...base, label: `${label}: what the factor covers`, options: OPTIONS.emissionScope, presentation: "select", required: false, hint: "If you know it. GreenFleet warns when the factors being compared cover different things." }),
     text({ id: `env.${key}.source`, ...base, label: `${label}: source or reference`, required: false, placeholder: "e.g. report, dataset or supplier document" }),
     num({ id: `env.${key}.year`, ...base, label: `${label}: source year`, unit: "calendar_year", rule: { min: 1900, max: 2100, integer: true }, required: false, hint: "Calendar year of the source, e.g. 2023." }),
     text({ id: `env.${key}.notes`, ...base, label: `${label}: notes`, required: false, multiline: true }),
@@ -198,7 +199,7 @@ export const FIELDS: readonly FieldDef[] = [
 
   choice({ id: "biofuel.fuelAvailability", section: "bio-supply", label: "Fuel availability", options: OPTIONS.fuelAvailability, presentation: "select", required: false }),
   num({ id: "biofuel.additionalRefuellingKm", section: "bio-supply", label: "Additional refuelling distance (per vehicle per day)", unit: "km_per_day", rule: MONEY, required: false, hint: "Extra distance driven to reach this fuel." }),
-  num({ id: "biofuel.downtime", section: "bio-supply", label: "Operational downtime from fuel availability", unit: "hours_per_month", rule: { min: 0, max: 744 }, required: false }),
+  num({ id: "biofuel.downtime", section: "bio-supply", label: "Operational downtime from fuel availability", unit: "hours_per_month", rule: { min: 0, max: 744 }, required: false, hint: "Hours per month that a vehicle cannot run, or is delayed, because the fuel is not available." }),
   choice({ id: "biofuel.specialInfrastructure", section: "bio-supply", label: "Special storage or infrastructure required?", options: OPTIONS.yesNoUnknown, presentation: "radio", required: false, hint: "If yes, enter the costs in Step 5." }),
 
   ...advancedCosts("biofuel", "bio-advanced"),
@@ -237,12 +238,12 @@ export const FIELDS: readonly FieldDef[] = [
   num({ id: "bioInfra.lifeYears", section: "fin-bio-infra", label: "Infrastructure useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true, visibleWhen: (r) => r.choice("biofuel.specialInfrastructure") === "yes" }),
 
   // ===== Step 5C: Environmental assumptions ===========================================
-  ...emissionFactor("diesel", "Diesel", "kgco2e_per_litre"),
-  ...emissionFactor("grid", "Grid electricity", "kgco2e_per_kwh"),
-  ...emissionFactor("biofuel", "Biofuel", (r) => FUEL_UNITS[biofuelFuelUnit(r)].emissionFactor),
-  num({ id: "env.lifecycle.diesel", section: "fin-env", label: "Diesel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment" }),
-  num({ id: "env.lifecycle.grid", section: "fin-env", label: "Electricity lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment" }),
-  num({ id: "env.lifecycle.biofuel", section: "fin-env", label: "Biofuel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment" }),
+  ...emissionFactor("diesel", "Diesel", "kgco2e_per_litre", "Greenhouse gases as CO2-equivalent (CO2e) per litre of diesel. Enter a figure from a source you can name."),
+  ...emissionFactor("grid", "Grid electricity", "kgco2e_per_kwh", "CO2e per kWh drawn from the grid or generator you charge from, not per kWh at the vehicle."),
+  ...emissionFactor("biofuel", "Biofuel", (r) => FUEL_UNITS[biofuelFuelUnit(r)].emissionFactor, "Emissions per unit of the fuel as you buy it. For a blend, enter the factor of the blend, not of the pure biofuel."),
+  num({ id: "env.lifecycle.diesel", section: "fin-env", label: "Diesel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results yet, because how it should be used is not defined." }),
+  num({ id: "env.lifecycle.grid", section: "fin-env", label: "Electricity lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results yet, because how it should be used is not defined." }),
+  num({ id: "env.lifecycle.biofuel", section: "fin-env", label: "Biofuel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results yet, because how it should be used is not defined." }),
 ];
 
 export const FIELD_BY_ID: Readonly<Record<string, FieldDef>> = Object.fromEntries(FIELDS.map((f) => [f.id, f]));

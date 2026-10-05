@@ -153,9 +153,50 @@ export default function MethodologyPage() {
               <li>Tax, depreciation allowances and VAT.</li>
               <li>Revenue. Both options are assumed to do the same transport work, so this is a cost comparison and no internal rate of return is calculated.</li>
               <li>Inflation in general. Only the escalation rates you enter are applied, to the prices you apply them to. Maintenance is held constant. Results are a scenario, not a full inflation model.</li>
-              <li>Whether a battery-electric vehicle can do the daily route, or whether biofuel is reliably available. Those are warned about, not priced.</li>
-              <li>Emissions, which are reported separately in a later stage.</li>
+              <li>Whether a battery-electric vehicle can do the daily route, or whether biofuel is reliably available. These are checked in the separate operational feasibility layer and are never priced into the cost figures.</li>
+              <li>Emissions. They are estimated in the separate environmental layer and are never given a price.</li>
             </ul>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Environmental methodology" summary="Estimated operational energy/fuel-related GHG emissions, from factors you supply.">
+          <div className="space-y-3">
+            <p>This layer estimates <strong>operational energy/fuel-related greenhouse gas emissions</strong>. It is not a life-cycle assessment. Vehicle and battery manufacturing, disposal and infrastructure emissions are not included, and no embodied emissions are estimated.</p>
+            <Formula meaning="Physical use is the same litres or kWh the cost calculation uses. The factor is the one you entered, converted to kg of CO2e per litre, kg, m³ or kWh.">emissions (kg CO2e) = physical energy or fuel use × emission factor</Formula>
+            <Formula meaning="Electricity is counted at the grid or charger. Charging losses are included only when you entered a loss rate; otherwise this is stated.">grid kWh = kWh delivered to the vehicle ÷ (1 − charging loss)</Formula>
+            <Formula meaning="Positive means the alternative emits less than diesel. A negative result is labelled an increase, never a reduction.">change against diesel (%) = (diesel − alternative) ÷ diesel × 100</Formula>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>GreenFleet ships no emission factors. Every factor, its unit, source, year and scope is yours. With no factor, the figure is shown as unavailable, never as zero.</li>
+              <li>Factors are applied as constants for the whole period. They do not depend on any price.</li>
+              <li>Unit checks: a factor per litre cannot be applied to kWh. A mismatch makes that technology unavailable instead of guessing a conversion. Grams convert to kilograms. A CO2-only factor is flagged because it is not CO2e.</li>
+              <li>If the factors compared cover different things (for example direct against fuel-cycle), a warning says so. Scope labels are recorded as you give them.</li>
+              <li>The biofuel factor applies to the fuel as bought. For a blend, enter the factor of the blend.</li>
+              <li>The lifecycle adjustment percentage is recorded and shown but not applied, because how it should be used is not defined.</li>
+              <li>Emissions are not converted to money. No carbon price is used.</li>
+            </ul>
+          </div>
+        </Collapsible>
+
+        <Collapsible title="Operational feasibility methodology" summary="Transparent rule checks on whether each option can do the transport task.">
+          <div className="space-y-3">
+            <p>This layer asks whether the option can plausibly do the work you described. It uses your own inputs and fixed rules. It does not use costs or emissions, and it does not produce a score.</p>
+            <p><strong>Statuses.</strong> Suitable: no operational constraint is identified from the data entered. Conditional: operation appears possible but depends on a stated condition. Constrained: at least one entered fact conflicts with the duty cycle. Insufficient data: the evidence needed to judge is not available.</p>
+            <p><strong>How the overall status is set.</strong> Rule 1: any constrained check makes the option constrained. Rule 2: otherwise, if a core check lacks data, the option is insufficient data. Rule 3: otherwise, any conditional or unknown check makes it conditional. Rule 4: otherwise it is suitable. The rule that applied is recorded.</p>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">Battery electric</h3>
+            <Formula meaning="Negative margin means the daily distance is longer than the stated usable range. No safety buffer is assumed.">range margin = usable range − daily distance</Formula>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>Daily distance within range: satisfied. Above range with depot-only charging: constrained, unless each route fits the range and vehicles can recharge between routes (conditional). Above range with daytime charging available: conditional. Above range with charging unknown: insufficient data.</li>
+              <li>A single route longer than the range is a stronger problem than a long day: constrained with depot-only charging, conditional if a charge is possible during the route.</li>
+              <li>Payload: effective capacity = capacity − reduction (kg), or capacity × (1 − reduction %). Constrained when average payload exceeds it. An unknown impact is reported as uncertainty, not guessed.</li>
+              <li>Charging time is shown as you entered it, per vehicle and for the fleet. It is not lost productive time and is not priced.</li>
+            </ul>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">Biofuel</h3>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>Reliable supply: satisfied. Intermittent: conditional. Limited: conditional, or constrained when needed infrastructure is not specified. Unknown: insufficient data.</li>
+              <li>Infrastructure that is needed but not fully specified is conditional. Unknown need is insufficient data.</li>
+              <li>Extra refuelling distance is shown as entered per vehicle per day. Downtime per month is multiplied by 12 for a yearly figure. Neither is priced.</li>
+            </ul>
+            <p><strong>Data completeness</strong> counts how many evidence items were answered out of a stated total. &ldquo;Unknown&rdquo; does not count as answered. Diesel is shown as the baseline configuration with no constraint collected.</p>
           </div>
         </Collapsible>
 
@@ -182,7 +223,7 @@ export default function MethodologyPage() {
         <Collapsible title="Environmental assumptions" summary="Emission factors and how emissions are reported.">
           <div className="space-y-3">
             <p>Emission estimates depend on emission factors that you supply or confirm. The software does not assume a fuel or grid factor is correct for your context.</p>
-            <p>Emissions are reported next to, but separately from, commercial results.</p>
+            <p>Emissions are reported next to, but separately from, commercial and operational results. Economic attractiveness, operational feasibility and environmental performance are three answers that are never merged into one score.</p>
           </div>
         </Collapsible>
 

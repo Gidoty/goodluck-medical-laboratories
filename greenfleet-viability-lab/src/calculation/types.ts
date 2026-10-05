@@ -1,3 +1,6 @@
+import type { EnvironmentalCompleteness, EnvironmentalPerformanceResult } from "./environmental/types";
+import type { OperationalFeasibilityResult, OperationalStatus } from "./operational/types";
+
 /**
  * Result model of the techno-economic engine.
  *
@@ -61,18 +64,22 @@ export type CostVector = Record<CostCategory, number>;
 export type WarningSeverity = "info" | "warning";
 export type WarningScope = "general" | TechId | "bev_vs_diesel" | "biofuel_vs_diesel";
 
+/** Which analytical layer a warning belongs to. Absent means the economic (Batch 3) layer. */
+export type AnalysisDomain = "economic" | "environmental" | "operational";
+
 export interface CalcWarning {
   code: string;
   severity: WarningSeverity;
   scope: WarningScope;
   message: string;
+  domain?: AnalysisDomain;
 }
 
 export type AssumptionStatus = "user_input" | "derived" | "convention" | "missing" | "excluded";
 
 export interface AssumptionRecord {
   id: string;
-  group: "scope" | "operations" | "diesel" | "bev" | "biofuel" | "finance" | "infrastructure" | "method";
+  group: "scope" | "operations" | "diesel" | "bev" | "biofuel" | "finance" | "infrastructure" | "environment" | "operational" | "method";
   label: string;
   /** Human-readable value. The token {cur} stands for the currency symbol, which the UI fills in. */
   value: string;
@@ -195,6 +202,28 @@ export interface CalculationMetadata {
   fleetHorizonDistanceKm: number;
 }
 
+export type EconomicDataState = "complete" | "partial" | "insufficient";
+
+/** Three separate data-completeness indicators. They are never merged into one percentage. */
+export interface DataCompletenessSummary {
+  /** Complete when no optional assumption that shapes the cost figures is missing or left out. */
+  economic: { state: EconomicDataState; missing: string[] };
+  operational: OperationalFeasibilityResult["dataCompleteness"];
+  environmental: { state: EnvironmentalCompleteness; unavailable: TechId[] };
+}
+
+/**
+ * What each analytical layer says about one alternative. The three answers are reported side by
+ * side and never combined: a favourable NPV does not change an operational constraint, and lower
+ * emissions do not change a negative NPV.
+ */
+export interface DimensionSummary {
+  technology: GreenTechId;
+  economic: { direction: NpvDirection; npv: number; label: string };
+  operational: { status: OperationalStatus; label: string };
+  environmental: { state: "lower" | "higher" | "unchanged" | "unavailable"; percentChange: number | null; label: string; reason: string | null };
+}
+
 export interface AssessmentCalculationResult {
   metadata: CalculationMetadata;
   diesel: TechnologyEconomics;
@@ -209,6 +238,12 @@ export interface AssessmentCalculationResult {
   /** Inputs that were missing or deliberately left out of the primary calculation. */
   assumptionsMissing: AssumptionRecord[];
   methodologyNotes: string[];
+  /** Estimated operational energy/fuel-related GHG emissions. Independent of the financial figures. */
+  environmental: EnvironmentalPerformanceResult;
+  /** Rule-based operational feasibility. Independent of the financial figures. */
+  operational: OperationalFeasibilityResult;
+  dataCompleteness: DataCompletenessSummary;
+  dimensions: Record<GreenTechId, DimensionSummary>;
 }
 
 export interface CalculationError {

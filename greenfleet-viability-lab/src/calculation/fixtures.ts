@@ -34,7 +34,7 @@ export function baseInput(): NormalizedAssessmentInput {
     utilisationPct: null,
   };
   const noIncentive = { type: null, amount: null, percentOfPurchasePrice: null } as const;
-  const emission = { value: null, unit: "", source: null, sourceYear: null, notes: null, lifecycleAdjustmentPct: null };
+  const emission = (unit: string, unitId: string) => ({ value: null, unit, unitId, scope: null, source: null, sourceYear: null, notes: null, lifecycleAdjustmentPct: null });
   const costs = { annualInsurance: null, annualRegistration: null, otherFixedAnnualCost: null, otherVariableCostPerKm: null };
   return {
     schemaVersion: 1,
@@ -63,7 +63,7 @@ export function baseInput(): NormalizedAssessmentInput {
       bevCharging: noInfra,
       biofuel: { investmentRequired: "no", storageEquipmentCost: null, refuellingInfrastructureCost: null, installationCost: null, annualMaintenanceCost: null, usefulLifeYears: null },
     },
-    environmentalAssumptions: { diesel: { ...emission }, gridElectricity: { ...emission }, biofuel: { ...emission } },
+    environmentalAssumptions: { diesel: emission("kg CO2e/litre", "kgco2e_per_litre"), gridElectricity: emission("kg CO2e/kWh", "kgco2e_per_kwh"), biofuel: emission("kg CO2e/litre", "kgco2e_per_litre") },
     provenance: {},
     inputStatus: {},
   };

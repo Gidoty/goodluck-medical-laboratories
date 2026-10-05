@@ -217,7 +217,7 @@ export function WarningsPanel({ warnings }: { warnings: CalcWarning[] }) {
 
 /* ------------------------------ assumptions ------------------------------ */
 
-const GROUP_TITLE: Record<AssumptionRecord["group"], string> = { scope: "Scope", operations: "Distance and use", diesel: "Diesel", bev: "Battery electric", biofuel: "Biofuel", finance: "Finance", infrastructure: "Infrastructure", method: "Method" };
+const GROUP_TITLE: Record<AssumptionRecord["group"], string> = { environment: "Environmental", operational: "Operational", scope: "Scope", operations: "Distance and use", diesel: "Diesel", bev: "Battery electric", biofuel: "Biofuel", finance: "Finance", infrastructure: "Infrastructure", method: "Method" };
 
 function badgeFor(a: AssumptionRecord, illustrative: ReadonlySet<string>): AssumptionKind {
   switch (a.status) {

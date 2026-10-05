@@ -1,7 +1,11 @@
 import type { NormalizedAssessmentInput } from "@/domain/normalized";
 import { assembleEconomics, buildContext } from "./assemble";
 import { createCollector, fmtNum, type Collector } from "./collector";
+import { buildCompleteness } from "./completeness";
 import { compareWithDiesel } from "./compare";
+import { summarizeDimensions } from "./dimensions";
+import { calculateEnvironmentalPerformance } from "./environmental";
+import { evaluateOperationalFeasibility } from "./operational";
 import { checkNormalizedInput } from "./input-checks";
 import { ENGINE_VERSION, METHODOLOGY_NOTES } from "./notes";
 import { buildBevSpec, buildBiofuelSpec, buildDieselSpec } from "./specs";
@@ -35,7 +39,14 @@ export function calculateAssessment(input: NormalizedAssessmentInput): Calculati
   paybackWarnings(bevVsDiesel, "bev_vs_diesel", "battery-electric", col);
   paybackWarnings(biofuelVsDiesel, "biofuel_vs_diesel", "biofuel", col);
 
-  const assumptions = col.assumptions;
+  // Environmental and operational layers read the same normalized input but not the financial results,
+  // so neither can change a cost figure and neither is changed by one.
+  const environmental = calculateEnvironmentalPerformance(input);
+  const operational = evaluateOperationalFeasibility(input);
+  const economicAssumptions = [...col.assumptions];
+  const assumptions = [...economicAssumptions, ...environmental.assumptions];
+  const partial = { bevVsDiesel, biofuelVsDiesel, environmental, operational };
+
   const result: AssessmentCalculationResult = {
     metadata: {
       engineVersion: ENGINE_VERSION,
@@ -61,6 +72,10 @@ export function calculateAssessment(input: NormalizedAssessmentInput): Calculati
     assumptionsUsed: assumptions.filter((a) => a.status === "user_input" || a.status === "derived" || a.status === "convention"),
     assumptionsMissing: assumptions.filter((a) => a.status === "missing" || a.status === "excluded"),
     methodologyNotes: [...METHODOLOGY_NOTES],
+    environmental,
+    operational,
+    dataCompleteness: buildCompleteness(economicAssumptions, operational, environmental),
+    dimensions: summarizeDimensions(partial),
   };
   return { ok: true, result };
 }

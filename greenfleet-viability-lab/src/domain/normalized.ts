@@ -87,9 +87,16 @@ export interface IncentiveInput {
   percentOfPurchasePrice: number | null;
 }
 
+export type EmissionScopeInput = "direct" | "fuel_cycle" | "lifecycle";
+
 export interface EmissionFactorInput {
   value: number | null;
+  /** Display label of the unit, e.g. "kg CO2e/litre". */
   unit: string;
+  /** Machine-readable unit id, e.g. "kgco2e_per_litre". The engine checks it against the quantity it is applied to. */
+  unitId: string;
+  /** What the factor covers, if the user said. Null means not stated. */
+  scope: EmissionScopeInput | null;
   source: string | null;
   sourceYear: number | null;
   notes: string | null;
