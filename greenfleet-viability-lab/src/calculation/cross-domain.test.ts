@@ -39,10 +39,11 @@ describe("B. negative NPV and a suitable BEV", () => {
 
 describe("C. lower emissions with a negative NPV", () => {
   const r = run(merge(FACTORS, { bev: { upfrontVehicleCost: 20000 } } as Patch));
-  it("is reported as both, with no viability wording", () => {
+  it("is reported as both, and lower emissions do not rescue the commercial label (updated in Batch 5: classification now exists)", () => {
     expect(r.dimensions.bev.environmental.state).toBe("lower");
     expect(r.dimensions.bev.economic.direction).toBe("disadvantage");
-    expect(JSON.stringify(r)).not.toMatch(/NOT YET VIABLE|CONDITIONALLY VIABLE|"VIABLE"/i);
+    expect(r.commercial.bev.classification).toBe("NOT_YET_VIABLE");
+    expect(JSON.stringify(r.commercial.bev.classification)).not.toMatch(/^"VIABLE"$/);
   });
 });
 

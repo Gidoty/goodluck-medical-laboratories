@@ -8,6 +8,7 @@ import { calculateEnvironmentalPerformance } from "./environmental";
 import { evaluateOperationalFeasibility } from "./operational";
 import { checkNormalizedInput } from "./input-checks";
 import { ENGINE_VERSION, METHODOLOGY_NOTES } from "./notes";
+import { classifyCommercialViability } from "./viability";
 import { buildBevSpec, buildBiofuelSpec, buildDieselSpec } from "./specs";
 import type { AssessmentCalculationResult, CalculationOutcome, IncrementalAnalysis } from "./types";
 
@@ -47,6 +48,16 @@ export function calculateAssessment(input: NormalizedAssessmentInput): Calculati
   const assumptions = [...economicAssumptions, ...environmental.assumptions];
   const partial = { bevVsDiesel, biofuelVsDiesel, environmental, operational };
 
+  const dataCompleteness = buildCompleteness(economicAssumptions, operational, environmental);
+  const classify = (tech: "bev" | "biofuel") =>
+    classifyCommercialViability({
+      technology: tech,
+      economic: { diesel, green: tech === "bev" ? bev : biofuel, incremental: tech === "bev" ? bevVsDiesel : biofuelVsDiesel, warnings: col.warnings.filter((w) => w.scope === tech || w.scope === `${tech}_vs_diesel`), horizonYears: T },
+      operational: operational[tech],
+      environmental: environmental[tech === "bev" ? "bevVsDiesel" : "biofuelVsDiesel"],
+      completeness: dataCompleteness,
+    });
+
   const result: AssessmentCalculationResult = {
     metadata: {
       engineVersion: ENGINE_VERSION,
@@ -74,8 +85,9 @@ export function calculateAssessment(input: NormalizedAssessmentInput): Calculati
     methodologyNotes: [...METHODOLOGY_NOTES],
     environmental,
     operational,
-    dataCompleteness: buildCompleteness(economicAssumptions, operational, environmental),
+    dataCompleteness,
     dimensions: summarizeDimensions(partial),
+    commercial: { bev: classify("bev"), biofuel: classify("biofuel") },
   };
   return { ok: true, result };
 }

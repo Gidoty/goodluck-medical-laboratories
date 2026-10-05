@@ -159,6 +159,48 @@ export default function MethodologyPage() {
           </div>
         </Collapsible>
 
+        <Collapsible title="Commercial viability policy v1.0" summary="GreenFleet Commercial Viability Policy v1.0: how each alternative is classified against diesel." defaultOpen>
+          <div className="space-y-3">
+            <p><strong>The decision rules are prototype modelling policies intended for transparent comparative analysis. They are not universal investment laws.</strong> The question answered is: under your stated operating, financial and infrastructure assumptions, is this green alternative commercially viable relative to the diesel baseline? Battery electric and biofuel are each classified against diesel. Diesel is the baseline and gets no label.</p>
+            <p>The classification is <strong>hierarchical and rule-based</strong>. There is no weighted score, no points and no green or sustainability score. Every label can be traced to explicit rules, and the &ldquo;Why this result?&rdquo; panel on the results page shows the steps.</p>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">The four labels</h3>
+            <ul className="list-disc space-y-1 pl-5">
+              <li><strong>VIABLE.</strong> Under the entered assumptions, the alternative shows a favourable economic case relative to diesel and no material unresolved operational constraint. It is not a guarantee of future profit and not investment advice.</li>
+              <li><strong>CONDITIONALLY VIABLE.</strong> A potentially credible commercial case, but one or more remediable conditions, uncertainties or dependencies must be resolved. This includes a case that is close to break-even.</li>
+              <li><strong>NOT YET VIABLE.</strong> Under the current assumptions the alternative does not establish a sufficiently credible commercial case against diesel: materially unfavourable economics, an unresolved hard operational constraint, or both. &ldquo;Yet&rdquo; is deliberate, because changing prices, utilisation, financing, infrastructure or operating conditions may change the result.</li>
+              <li><strong>INSUFFICIENT EVIDENCE.</strong> Essential information is missing, so a defensible label is not possible. Incomplete data is never forced into one of the other three.</li>
+            </ul>
+            <p>These are different from the operational statuses (Suitable, Conditional, Constrained, Insufficient data), which describe only the duty cycle.</p>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">Decision order</h3>
+            <ol className="list-decimal space-y-1 pl-5">
+              <li><strong>Consistency.</strong> The economic results are cross-checked (the NPV must match the discounted cumulative cash flow and the present-cost difference). A contradiction is reported and is never classified.</li>
+              <li><strong>Evidence sufficiency.</strong> Economic evidence must support a comparison with diesel, and the critical operational items must be known. Environmental factors are <em>not</em> required.</li>
+              <li><strong>Operational feasibility.</strong> A <em>hard operational constraint</em> prevents VIABLE and, with nothing that resolves it, gives NOT YET VIABLE. A <em>remediable condition</em> allows CONDITIONALLY VIABLE.</li>
+              <li><strong>Economic attractiveness.</strong> Favourable, near break-even or unfavourable (below).</li>
+              <li><strong>Conditions and material uncertainties.</strong> Any left over turn an otherwise VIABLE result into CONDITIONALLY VIABLE.</li>
+            </ol>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">Economic case</h3>
+            <p>The primary indicator is the incremental NPV against diesel. Payback, the total-cost difference and the year-one operating saving are shown as support and are not used blindly. A payback is judged against your analysis horizon. If the alternative is cheaper at Year 0, payback is immediate and no ratio needing a positive extra investment is forced.</p>
+            <Formula meaning="Used only to judge how close the NPV is to zero. It is not a return on investment.">NPV materiality ratio = incremental NPV ÷ denominator</Formula>
+            <ul className="list-disc space-y-1 pl-5">
+              <li><strong>Prototype near-break-even tolerance: ±5% of the additional initial investment</strong> (alternative Year-0 net cost minus diesel Year-0 net cost), when that is positive and at least 1% of the diesel present cost. Otherwise (zero, negative or trivially small) the denominator is the <strong>diesel present cost</strong>. This 5% is a model policy assumption, not a universal law and not an academic consensus. It sits in one policy object and is easy to change.</li>
+              <li><strong>Favourable:</strong> NPV above zero by more than the tolerance. <strong>Near break-even:</strong> |ratio| within the tolerance, including an NPV of exactly zero. <strong>Unfavourable:</strong> NPV below zero by more than the tolerance. A result outside the tolerance but only slightly negative is therefore not called near break-even, and a clearly negative NPV is never softened into CONDITIONALLY VIABLE.</li>
+              <li><strong>Numerical tolerance</strong> is separate: an NPV is treated as exactly zero when it is within one billionth of the diesel present cost, which only absorbs floating-point noise.</li>
+            </ul>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">Hard constraints, conditions and unknowns</h3>
+            <ul className="list-disc space-y-1 pl-5">
+              <li><strong>Hard constraints</strong> (no remedy identified in what you entered): the day or a single route is longer than the BEV range with depot-only charging; the average payload exceeds the effective BEV capacity; biofuel supply is limited and the infrastructure it needs is not specified.</li>
+              <li><strong>Remediable conditions</strong>: daytime charging is required; vehicles must recharge at the depot between routes; charging arrangements need reconciling; biofuel supply is intermittent or limited; required biofuel infrastructure is not fully specified.</li>
+              <li><strong>Critical unknowns</strong> (give INSUFFICIENT EVIDENCE): the BEV range or daily distance is missing, or the day or a route is longer than the range and charging availability is unknown; biofuel availability is missing or unknown.</li>
+              <li><strong>Non-critical unknowns</strong> are carried as material uncertainties and give CONDITIONALLY VIABLE, not INSUFFICIENT EVIDENCE: an unknown battery replacement requirement (a lifecycle cost that is not in the cost figures), an unknown BEV payload impact, an unconfirmed charging arrangement, an unknown need for biofuel infrastructure.</li>
+            </ul>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">Environmental performance</h3>
+            <p>Environmental performance is a fourth dimension. It is reported beside the label (lower, higher, equal, or unavailable) and does <strong>not</strong> change it under this policy. Lower emissions do not rescue negative economics, higher emissions do not cancel a favourable and feasible case, and a missing emission factor does not stop classification. The result always says which of these applies.</p>
+            <h3 className="pt-1 text-base font-semibold text-navy-950">Limits</h3>
+            <p>The label depends on your inputs, uses no market data, and does not cover tax, revenue, financing or risk. It does not say how far an assumption must move to change the label. That is a later stage.</p>
+          </div>
+        </Collapsible>
+
         <Collapsible title="Environmental methodology" summary="Estimated operational energy/fuel-related GHG emissions, from factors you supply.">
           <div className="space-y-3">
             <p>This layer estimates <strong>operational energy/fuel-related greenhouse gas emissions</strong>. It is not a life-cycle assessment. Vehicle and battery manufacturing, disposal and infrastructure emissions are not included, and no embodied emissions are estimated.</p>

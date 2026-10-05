@@ -16,7 +16,8 @@ import type { AssessmentCalculationResult } from "@/calculation/types";
 import type { Assessment } from "@/domain/stored";
 import { resultFormatter } from "./format-results";
 import { CashFlowChart, CostComponentsChart, TcoChart } from "./results-charts";
-import { CompletenessIndicators, DimensionSummary, DomainWarnings, EnvironmentalSection, OperationalSection, economicWarnings } from "./analysis-sections";
+import { CommercialHeadline, CommercialMatrix, CommercialPolicyNote, WhyPanels } from "./commercial-sections";
+import { CompletenessIndicators, DomainWarnings, EnvironmentalSection, OperationalSection, economicWarnings } from "./analysis-sections";
 import { AssumptionsPanel, CashFlowTables, ComparisonTables, HeadlineTiles, TechnologyCards, WarningsPanel } from "./result-sections";
 import type { CurrencyCode } from "@/lib/currency";
 
@@ -89,21 +90,16 @@ function ResultsDashboard({ result, currency, arrangement }: { result: Assessmen
         </Alert>
       )}
 
-      <Card>
-        <CardHeader title="Commercial classification" description="How these results will be interpreted." />
-        <CardBody className="space-y-2 text-sm text-navy-800">
-          <p className="font-semibold text-navy-950">Commercial classification pending multi-factor assessment</p>
-          <p>The figures below describe cost only. A classification will combine them with operational feasibility and other factors in a later stage. Environmental performance is reported separately and is not part of these numbers.</p>
-        </CardBody>
-      </Card>
-
-      <DimensionSummary r={result} />
+      <CommercialHeadline r={result} f={f} />
+      <CommercialMatrix r={result} />
+      <WhyPanels r={result} f={f} />
       <CompletenessIndicators r={result} />
+      <CommercialPolicyNote r={result} />
 
       <section aria-labelledby="econ-title" className="space-y-6">
         <div>
           <h2 id="econ-title" className="text-xl font-semibold text-navy-950">Economic attractiveness</h2>
-          <p className="text-sm text-slate-600">Cost only. Nothing in this section says whether the vehicles can do the work or what they emit.</p>
+          <p className="text-sm text-slate-600">Cost only. Nothing in this section says whether the vehicles can do the work or what they emit. The commercial classification above combines this with operational feasibility by fixed rules.</p>
         </div>
         <HeadlineTiles r={result} f={f} />
         <TechnologyCards r={result} f={f} />

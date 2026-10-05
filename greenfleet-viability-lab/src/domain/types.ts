@@ -35,7 +35,7 @@ export interface SensitivityVariable {
 /* Outputs reserved for later batches. Financial results live in calculation/. */
 /* -------------------------------------------------------------------------- */
 
-export type ViabilityStatus = "viable" | "conditionally_viable" | "not_yet_viable";
+export type ViabilityStatus = "viable" | "conditionally_viable" | "not_yet_viable" | "insufficient_evidence";
 
 export interface ViabilityResult {
   technology: Exclude<TechnologyId, "diesel">;

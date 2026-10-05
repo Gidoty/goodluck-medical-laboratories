@@ -181,7 +181,7 @@ function CalculatePanel({ readiness }: { readiness: Readiness }) {
           <Button size="lg" onClick={run}>
             <Calculator aria-hidden className="size-5" /> Run Commercial Viability Assessment
           </Button>
-          <p className="text-sm text-slate-600">Calculates cost, present cost, NPV and payback for each option. No classification is made.</p>
+          <p className="text-sm text-slate-600">Calculates cost, NPV and payback, checks operational feasibility, and classifies each alternative against diesel by fixed rules.</p>
         </div>
         <div role="status" aria-live="polite">
           {attempted && !readiness.commercialReady && (

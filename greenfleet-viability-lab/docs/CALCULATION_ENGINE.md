@@ -23,6 +23,7 @@ primary result, so the comparison does not depend on how vehicles are financed a
 | `environmental/` | Batch 4. Operational energy/fuel-related emissions (`index.ts`, `units.ts`, `types.ts`). Reads only the normalized input. |
 | `operational/` | Batch 4. Rule-based BEV and biofuel feasibility (`bev.ts`, `biofuel.ts`, `status.ts`, `index.ts`). Reads only the normalized input. |
 | `completeness.ts` | Three separate data-completeness states (economic, operational, environmental). |
+| `viability/` | Batch 5. Commercial Viability Policy v1.0: economic case, gates, classification, reason codes, trace. See `docs/COMMERCIAL_VIABILITY_POLICY.md`. |
 | `dimensions.ts` | Side-by-side summary per alternative. Copies each layer's own answer; no combined verdict. |
 
 ## Conventions
@@ -74,3 +75,7 @@ The environmental and operational engines take the normalized input only. There 
 - BEV: range (daily distance vs usable range, no safety buffer), single route, charging, payload (core checks: range and route). Biofuel: supply (core, must be assessed) and infrastructure. Diesel is reported as "baseline".
 - Charging time, refuelling distance and downtime are shown as entered (downtime per month x 12). None is priced.
 - Completeness counts answered evidence items against an explicit total; "unknown" does not count.
+
+## Batch 5: commercial classification
+
+After the three layers are computed, `classifyCommercialViability` is called once per green alternative and returns `result.commercial`. It reads the Batch 3 incremental results, the Batch 4 operational result and the completeness summary. It reads the environmental comparison only to describe it. The Batch 3 formulas are untouched. Details: `docs/COMMERCIAL_VIABILITY_POLICY.md`.

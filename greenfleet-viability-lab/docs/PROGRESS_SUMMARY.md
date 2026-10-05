@@ -1,4 +1,4 @@
-# GreenFleet Viability Lab: progress summary (Batches 1 to 4)
+# GreenFleet Viability Lab: progress summary (Batches 1 to 5)
 
 **Project:** web decision-support tool comparing diesel, battery-electric (BEV) and biofuel fleets for logistics start-ups. Academic prototype, University of Port Harcourt (CELTRAS).
 **Where:** folder `greenfleet-viability-lab/` in repo `gidoty/goodluck-medical-laboratories`, branch `ccr-7360588a-pkyx8s`. Independent of the rest of the repo.
@@ -18,7 +18,7 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - Pure engine in `src/calculation/` (no React). Entry points: `calculateAssessment(normalizedInput)` and `runAssessment(assessment)`.
 - Calculates per technology: total cost of ownership, present cost, cost per km, year-by-year costs in 13 categories. Per alternative versus diesel: incremental cash flow, NPV, simple and discounted payback, break-even distance, operating savings.
 - Results page: headline tiles, cost cards, comparison tables, three charts (cumulative cash flow, TCO, cost components), warnings, "Assumptions used", year-by-year table. Formulas are on the Methodology page.
-- Shows "Commercial classification pending multi-factor assessment". No viability label is assigned.
+- Showed "Commercial classification pending multi-factor assessment" (replaced in Batch 5).
 
 ## Batch 4: environmental and operational layers
 - Principle: economic attractiveness, operational feasibility and environmental performance are three separate answers. They are shown side by side and never combined. No score, no classification.
@@ -30,6 +30,15 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - Methodology page gained "Environmental methodology" and "Operational feasibility methodology".
 - Demo data still contains no emission factors, so demo emissions show as unavailable until you enter your own.
 
+## Batch 5: commercial viability decision engine
+- `src/calculation/viability/` implements **GreenFleet Commercial Viability Policy v1.0** (full text in `docs/COMMERCIAL_VIABILITY_POLICY.md`). BEV and biofuel are each classified against diesel as VIABLE, CONDITIONALLY VIABLE, NOT YET VIABLE or INSUFFICIENT EVIDENCE. Diesel stays the unlabelled baseline.
+- Hierarchical rules, no weighted score: consistency check, evidence sufficiency, operational feasibility (hard constraint vs remediable condition), economic case (favourable / near break-even / unfavourable), then conditions and material uncertainties.
+- Economic case uses the Batch 3 NPV (unchanged). Near break-even = |NPV| within ±5% of the additional initial investment (positive and at least 1% of diesel present cost), else of the diesel present cost. Prototype policy values, held in one policy object. Floating-point tolerance is separate.
+- Environmental performance is shown beside the label and never changes it. Missing emission factors do not block classification. Unknown battery replacement gives CONDITIONALLY VIABLE.
+- Each result carries reason codes, supporting evidence, conditions, uncertainties, hard constraints, next steps, evidence completeness, a decision trace and the policy version.
+- Results page: headline classification cards (with Conditions to Resolve / Primary barriers / What is missing / viable wording), a dimensions matrix, "Why this result?" panels with the trace, and a policy note. The "pending" message is gone. Methodology page has the policy section.
+- Not built: sensitivity, scenarios, threshold solving, AI, export, saved-scenario storage.
+
 ## Rules to keep
 - Asset perspective only. Loans, interest and equity are stored but excluded from NPV and TCO.
 - Escalation applies only if the user entered it. A blank is held constant and shown as a missing assumption.
@@ -40,13 +49,13 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - No market prices or emission factors are shipped. Demo values are labelled "Illustrative assumption, not current market data."
 
 ## Quality status
-328 automated tests (228 from Batches 1 to 3, plus 100 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
+399 automated tests (328 from Batches 1 to 4, plus 71 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
 
 ## Already in the code for later batches
-Types exist for `SensitivityVariable`, `Scenario`, `ViabilityStatus`, and a `StatusBadge` component. Sensitivity and Scenarios pages are placeholders.
+Types exist for `SensitivityVariable` and `Scenario`. `StatusBadge` now shows the four commercial labels. Sensitivity and Scenarios pages are placeholders.
 
 ## Not built yet
-Viability classification (multi-factor), sensitivity and scenario engines, threshold solving ("what would make it viable"), AI interpretation, report export, saved scenarios.
+Sensitivity and scenario engines, threshold solving ("what would make it viable"), AI interpretation, report export, saved scenarios.
 
 ## Decisions to confirm
 - A converted biofuel vehicle replaced within the horizon repeats the conversion cost (no replacement vehicle price is entered).
@@ -54,3 +63,6 @@ Viability classification (multi-factor), sensitivity and scenario engines, thres
 - Battery replacement repeats in each later vehicle cycle.
 - Demo data has no emission factors. Say if you want clearly labelled illustrative ones added to the demo.
 - Biofuel downtime is read as hours per month per vehicle. Refuelling distance is not annualised, because no refuelling frequency is collected.
+- Gate 1 runs before the economic case: a missing critical operational item gives INSUFFICIENT EVIDENCE even with a negative NPV. Say if you prefer a clearly negative NPV to win.
+- Limited biofuel supply alone is a condition (no required fuel volume is collected). Limited supply plus unspecified needed infrastructure is a hard constraint.
+- The 5% tolerance and 1% denominator floor are prototype policy values.

@@ -51,7 +51,7 @@ export function InheritedBevValues({ assessment }: { assessment: Assessment }) {
         <Row label="Required daily distance (from Step 1)" value={d.dailyDistanceKm === null ? "Not entered yet" : `${formatNumber(d.dailyDistanceKm, 2)} km/day`} />
         <Row label="Usable range per full charge (from above)" value={range.status === "value" ? `${formatNumber(range.value, 2)} km` : "Not entered yet"} />
       </dl>
-      <p className="mt-2 text-xs text-slate-600">GreenFleet will compare these in a later stage. No feasibility rule is applied yet.</p>
+      <p className="mt-2 text-xs text-slate-600">GreenFleet compares these on the results page, using fixed operational feasibility rules.</p>
     </div>
   );
 }

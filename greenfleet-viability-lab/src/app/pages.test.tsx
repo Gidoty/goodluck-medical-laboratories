@@ -82,10 +82,17 @@ describe("results page", () => {
   it("labels demo results as illustrative", () => {
     expect(text(<ResultsBody assessment={demo()} />)).toContain("These results use illustrative demo values");
   });
-  it("never assigns a viability classification", () => {
+  it("shows a real commercial classification for the two alternatives, and none for diesel (Batch 5)", () => {
     const t = text(<ResultsBody assessment={demo()} />);
-    expect(t).toContain("Commercial classification pending multi-factor assessment");
-    expect(t).not.toMatch(/\bNOT YET VIABLE\b|\bCONDITIONALLY VIABLE\b|\bVIABLE\b/);
+    expect(t).not.toContain("Commercial classification pending multi-factor assessment");
+    expect(t).toContain("Commercial viability against diesel");
+    expect(t).toMatch(/VIABLE|NOT YET VIABLE|INSUFFICIENT EVIDENCE/);
+    expect(t).toContain("GreenFleet Commercial Viability Policy v1.0");
+    expect(t).toContain("Why this result?");
+    expect(t).toContain("Baseline");
+  });
+  it("never shows a score or a weighting", () => {
+    expect(text(<ResultsBody assessment={demo()} />)).not.toMatch(/viability score|green score|sustainability score|\d+\s*\/\s*100/i);
   });
   it("never prints NaN, Infinity, undefined or [object Object]", () => {
     for (const a of [demo(), setNum(demo(), "bev.chargingLoss", null), setChoiceOf(demo(), "bev.batteryReplacement", "unknown"), blank()]) {
@@ -99,7 +106,7 @@ describe("results page", () => {
 
   it("keeps economic, operational and environmental sections separate", () => {
     const t = text(<ResultsBody assessment={demo()} />);
-    for (const s of ["Economic attractiveness", "Operational feasibility", "Environmental performance", "Three separate questions, three separate answers", "Economic data", "Operational data", "Environmental data", "Baseline configuration", "Review Operational Inputs"]) expect(t).toContain(s);
+    for (const s of ["Economic attractiveness", "Operational feasibility", "Environmental performance", "Decision dimensions side by side", "Economic data", "Operational data", "Environmental data", "Baseline configuration", "Review Operational Inputs"]) expect(t).toContain(s);
     expect(t).toContain("Estimated operational energy/fuel-related GHG emissions");
   });
   it("shows emissions as unavailable, never zero, when no factor was entered", () => {

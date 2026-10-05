@@ -19,7 +19,7 @@ npm test
 npm run build
 ```
 
-## Status: Batch 4 (environmental and operational layers)
+## Status: Batch 5 (commercial viability decision engine)
 
 Implemented: Batch 2's complete input system, plus the techno-economic engine in `src/calculation/` and the results page that
 displays it: total cost of ownership, present cost, cost per km, incremental NPV, simple and discounted payback, break-even
@@ -33,9 +33,10 @@ energy/fuel-related GHG emissions (from emission factors the user supplies; none
 feasibility for battery-electric and biofuel (Suitable, Conditional, Constrained, Insufficient data). The results page shows
 Economic, Operational and Environmental sections separately, with three separate data-completeness indicators.
 
-Deliberately not implemented: viability classification, sensitivity and scenario engines, threshold solving, AI,
-report export, carbon pricing, lifecycle (embodied) emissions. No classification or recommendation is ever shown: results say "Commercial classification pending
-multi-factor assessment".
+Batch 5 adds the rule-based commercial classification of battery electric and biofuel against diesel (VIABLE, CONDITIONALLY VIABLE, NOT YET VIABLE, INSUFFICIENT EVIDENCE) under GreenFleet Commercial Viability Policy v1.0 (`docs/COMMERCIAL_VIABILITY_POLICY.md`). There is no weighted score, and environmental performance does not change the label.
+
+Deliberately not implemented: sensitivity and scenario engines, threshold solving, AI,
+report export, carbon pricing, lifecycle (embodied) emissions. The classification is decision support under your assumptions, not investment advice.
 
 Developer view: open the review step with `?debug=1` (or run `npm run dev`) to inspect the exact normalized object.
 

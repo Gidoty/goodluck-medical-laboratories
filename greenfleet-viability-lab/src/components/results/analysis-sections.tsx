@@ -11,9 +11,7 @@ import { OPERATIONAL_STATUS_MEANING, type CheckStatus, type OperationalCheck, ty
 import type { TechnologyEmissions } from "@/calculation/environmental/types";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useId } from "react";
-import { NPV_LABEL } from "./format-results";
 
-const GREEN: readonly GreenTechId[] = ["bev", "biofuel"];
 const TECHS: readonly TechId[] = ["diesel", "bev", "biofuel"];
 const NO_VALUE = "Not available";
 
@@ -39,32 +37,6 @@ export function OperationalStatusPill({ status }: { status: OperationalStatus })
 }
 
 const CHECK_WORD: Record<CheckStatus, string> = { satisfied: "Satisfied", conditional: "Conditional", constrained: "Constrained", insufficient: "Insufficient data", not_assessed: "Not assessed" };
-
-/* ------------------------- three-part summary ------------------------- */
-
-export function DimensionSummary({ r }: { r: AssessmentCalculationResult }) {
-  return (
-    <section aria-labelledby="dims-title" className="space-y-3">
-      <h2 id="dims-title" className="text-lg font-semibold text-navy-950">Three separate questions, three separate answers</h2>
-      <p className="text-sm text-slate-600">Cost, operation and emissions are assessed independently. None of them changes another, and they are not combined into one verdict.</p>
-      <div className="grid gap-4 lg:grid-cols-2">
-        {GREEN.map((g) => {
-          const d = r.dimensions[g];
-          return (
-            <Card key={g} className="p-5">
-              <h3 className="text-base font-semibold text-navy-950">{TECH_NAMES[g]} vs diesel</h3>
-              <dl className="mt-2 divide-y divide-line text-sm">
-                <div className="py-2"><dt className="text-slate-600">Economic</dt><dd className="font-semibold text-navy-950">{NPV_LABEL[d.economic.direction]}</dd></div>
-                <div className="py-2"><dt className="text-slate-600">Operational</dt><dd className="pt-1"><OperationalStatusPill status={d.operational.status} /></dd></div>
-                <div className="py-2"><dt className="text-slate-600">Environmental</dt><dd className="font-semibold text-navy-950">{d.environmental.label}{d.environmental.percentChange !== null && ` (${formatNumber(Math.abs(d.environmental.percentChange), 1)}%)`}</dd></div>
-              </dl>
-            </Card>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
 
 /* ------------------------- completeness ------------------------- */
 

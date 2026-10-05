@@ -1,4 +1,5 @@
 import type { EnvironmentalCompleteness, EnvironmentalPerformanceResult } from "./environmental/types";
+import type { CommercialViabilityResult } from "./viability/types";
 import type { OperationalFeasibilityResult, OperationalStatus } from "./operational/types";
 
 /**
@@ -244,6 +245,8 @@ export interface AssessmentCalculationResult {
   operational: OperationalFeasibilityResult;
   dataCompleteness: DataCompletenessSummary;
   dimensions: Record<GreenTechId, DimensionSummary>;
+  /** Batch 5: hierarchical, rule-based commercial classification of each green alternative against diesel. Diesel has none. */
+  commercial: Record<GreenTechId, CommercialViabilityResult>;
 }
 
 export interface CalculationError {
