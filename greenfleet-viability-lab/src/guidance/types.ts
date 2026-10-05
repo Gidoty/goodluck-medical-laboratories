@@ -18,6 +18,7 @@ export type GuidanceId =
   | "results.why"
   | "methodology"
   | "sensitivity"
+  | "thresholds"
   | "scenarios"
   | "about";
 

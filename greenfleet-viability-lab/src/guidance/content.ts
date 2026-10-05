@@ -30,7 +30,7 @@ export const TOUR_STEPS: readonly TourStep[] = [
   { id: "review", title: "Review and calculate", where: "Step 6: Review & Calculate", href: "/assessment/review", body: "Check every assumption and see what is missing. Then run the assessment. GreenFleet never fills a blank with an invented value." },
   { id: "results", title: "Results", where: "Sidebar: Results", href: "/results", body: "Four separate answers: economic performance, operational feasibility, environmental performance and a commercial classification against diesel. Each has a help button." },
   { id: "method", title: "Methodology", where: "Sidebar: Methodology", href: "/methodology", body: "Every formula, assumption and decision rule, for anyone who wants to check the work." },
-  { id: "upcoming", title: "Sensitivity and Scenarios", where: "Sidebar: Sensitivity Analysis, Saved Scenarios", href: "/sensitivity", body: "These are upcoming tools. Sensitivity analysis will show how changing key assumptions affects the result, and scenarios will let you keep and compare cases. They are not available yet." },
+  { id: "analysis", title: "Sensitivity and Scenarios", where: "Sidebar: Sensitivity Analysis, Saved Scenarios", href: "/sensitivity", body: "Sensitivity analysis changes one assumption at a time to show how strongly it affects results, and it includes What Would Make It Viable? thresholds. Scenarios let you keep and compare sets of assumptions without changing your Base Case." },
 ];
 
 const FINANCE_NOTE = "GreenFleet's primary project NPV and TCO evaluate the underlying vehicle and infrastructure investment independently of debt financing. Loan information is stored separately and is not double-counted in project economics.";
@@ -222,20 +222,46 @@ export const GUIDANCE: Record<GuidanceId, GuidanceContent> = {
   sensitivity: {
     id: "sensitivity",
     title: "Sensitivity analysis",
-    shortDescription: "Coming in a later stage.",
-    whatYouAreDoing: "Sensitivity analysis will allow you to examine how changing key assumptions affects the result.",
-    warnings: ["This tool is not available yet. Nothing on this page calculates anything."],
-    whatHappensNext: "For now, you can change inputs in the assessment and read the updated results.",
-    links: [{ label: "Go to Results", href: "/results" }],
+    shortDescription: "How strongly each assumption moves the result.",
+    whatYouAreDoing: "Sensitivity analysis changes one assumption at a time to show how strongly it affects results. Everything else stays at your Base Case, which is your current assessment.",
+    whatGreenFleetDoes: "Every point is a full recalculation by the same engine as the Results page. The page shows the incremental NPV, the commercial classification and the operational status at each tested value. A ranking of assumptions (the driver chart) shows which ones move the NPV most under the tested ranges.",
+    definitions: [
+      { term: "Prototype sensitivity range", text: "-20%, -10%, base, +10% and +20%. It is a convention for exploring, not an academically justified universal range. You can set your own." },
+      { term: "Percentage range", text: "Changes the value by a percentage of the base value. It is unavailable when the base value is zero. Use an absolute range then." },
+      { term: "Driver ranking", text: "Each assumption is tested at the low and high end of the same range. The NPV spread between the two ranks them. It is sensitivity influence under the tested ranges, not proof of cause." },
+      { term: "Classification change", text: "The commercial classification is rule-based. A change between two tested values means a rule boundary lies between them." },
+    ],
+    tips: ["Start with the assumptions you are least sure of.", "The line chart marks the NPV = 0 line and your Base Case. If the NPV crosses zero inside the range, the solved crossing is marked too."],
+    warnings: ["Results hold under the tested assumptions. They are not forecasts."],
+    whatHappensNext: "Use the scenario tool to keep and compare combinations of changes.",
+    links: [{ label: "Go to Results", href: "/results" }, { label: "View full methodology", href: "/methodology" }],
+  },
+  thresholds: {
+    id: "thresholds",
+    title: "What would make it viable?",
+    shortDescription: "Working backwards from a target to the value an assumption would need to reach.",
+    whatYouAreDoing: "\"What Would Make It Viable?\" works backwards from a target result to estimate the value an assumption would need to reach.",
+    definitions: [
+      { term: "Economic break-even", text: "The point at which the alternative's incremental NPV relative to diesel is approximately zero." },
+      { term: "Commercial transition", text: "The point at which GreenFleet Policy v1.0 changes the commercial classification." },
+      { term: "Why they can differ", text: "Operational constraints can remain after the economics reach break-even. Reaching economic break-even does not by itself make an alternative commercially viable." },
+      { term: "All else equal", text: "Every threshold changes one assumption and holds every other assumption at your Base Case. It is not a forecast, and thresholds for different assumptions are not additive." },
+      { term: "Viability margin", text: "For an alternative that is already viable, how far an assumption can move before incremental NPV reaches zero or the classification changes." },
+    ],
+    whatGreenFleetDoes: "A numerical solver calls the same engine repeatedly, brackets the target, checks the result behaves consistently, and then confirms the answer by recalculating at the solved value. If no reliable threshold exists, it says so and shows no number.",
+    tips: ["Barriers are grouped as economic, operational, and evidence. Only economic barriers can be solved by a price or cost.", "Fuel availability and charging access are categories. They are shown as required changes, never as numbers.", "Use Create Scenario at This Threshold to compare the solved value with your Base Case."],
+    warnings: ["Solver bounds are computational limits, not market limits.", "Thresholds are model-derived values based on the entered assumptions. They are not forecasts or guaranteed market outcomes."],
   },
   scenarios: {
     id: "scenarios",
-    title: "Saved scenarios",
-    shortDescription: "Coming in a later stage.",
-    whatYouAreDoing: "Saved scenarios will allow you to keep different sets of assumptions and compare them.",
-    warnings: ["This tool is not available yet. Nothing is saved on this page."],
-    whatHappensNext: "For now, your single assessment is saved in this browser as you work.",
-    links: [{ label: "Go to Overview", href: "/overview" }],
+    title: "Scenarios",
+    shortDescription: "Compare alternative sets of assumptions with the Base Case.",
+    whatYouAreDoing: "Scenarios compare coherent alternative sets of assumptions without changing your Base Case.",
+    whatYouNeed: ["A name for the scenario", "One or more assumptions to change, and the new value for each"],
+    whatGreenFleetDoes: "A scenario stores only the changes. It is run through the same engine as the Base Case, and the comparison shows what changed, the NPV, cost, payback, operational status, emissions result and commercial classification.",
+    tips: ["Scenarios you create are marked USER-CREATED. GreenFleet does not ship scenarios, and none is a market forecast.", "The scenario with the lowest cost is not automatically the best. Check the operational status and the classification.", "Scenarios are saved in this browser. You can keep up to 12 so the comparison stays readable.", "If you change your Base Case later, saved scenarios are applied to the new Base Case."],
+    warnings: ["Scenario results are model-derived estimates under the entered assumptions, not forecasts."],
+    links: [{ label: "Go to Sensitivity", href: "/sensitivity" }],
   },
   about: {
     id: "about",
@@ -256,7 +282,8 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
   { id: "finance", title: "Finance & Infrastructure", entries: ["assessment.finance", "assessment.review"] },
   { id: "results", title: "Understanding Results", entries: ["results.overview", "results.economic", "results.operational", "results.environmental"] },
   { id: "commercial", title: "Commercial Viability", entries: ["results.commercial", "results.why"] },
-  { id: "methodology", title: "Methodology", entries: ["methodology", "sensitivity", "scenarios"] },
+  { id: "analysis", title: "Sensitivity, Scenarios & Thresholds", entries: ["sensitivity", "thresholds", "scenarios"] },
+  { id: "methodology", title: "Methodology", entries: ["methodology"] },
 ];
 
 export const FINANCE_NOTE_TEXT = FINANCE_NOTE;

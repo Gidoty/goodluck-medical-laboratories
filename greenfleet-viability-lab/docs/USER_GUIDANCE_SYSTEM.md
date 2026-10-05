@@ -70,3 +70,6 @@ covered keyboard open and Escape, focus return, tap targets, and overflow on des
 ## Limitations
 No spotlight tour. No search. Welcome is not shown on the landing page. Help text is English only. The Help panel does not know which
 Results section is on screen, so section buttons open those entries directly.
+
+## Batch 6 update
+The Sensitivity, Scenarios and new "thresholds" entries now describe working tools (one assumption at a time, Base Case never changed, all else equal, economic break-even versus commercial transition, viability margin). The tour step and the Help index (ten topics) were updated, and the Batch 5.1 tests that expected "not available yet" were changed to match.

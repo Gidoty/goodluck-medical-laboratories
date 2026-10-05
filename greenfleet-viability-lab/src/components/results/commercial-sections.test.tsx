@@ -38,8 +38,8 @@ describe("commercial classification UI: all four states", () => {
     expect(t).toContain("NOT YET VIABLE");
     expect(t).toContain("Primary barriers under current assumptions");
     expect(t).toContain("These results may change if key assumptions change.");
-    expect(t).toContain("Explore What Could Change This Result");
-    expect(html).toContain('href="/sensitivity"');
+    expect(t).toContain("Explore What Would Make It Viable");
+    expect(html).toContain('href="/sensitivity#bev"');
   });
   it("INSUFFICIENT EVIDENCE: says what is missing and links to the inputs, with no forced label", () => {
     const html = renderToStaticMarkup(<CommercialHeadline r={run(longDay(null))} f={f} />);

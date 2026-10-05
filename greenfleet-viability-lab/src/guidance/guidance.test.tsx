@@ -175,8 +175,8 @@ describe("guidance registry", () => {
     expect(guidanceIdForPath("/nowhere")).toBe("home");
     for (const s of ASSESSMENT_STEPS) expect(GUIDANCE[STEP_GUIDANCE[s.id]]).toBeDefined();
   });
-  it("the help index covers the nine topics and points only at real entries", () => {
-    expect(HELP_TOPICS.map((t) => t.title)).toEqual(["Getting Started", "Entering Fleet Data", "Diesel Baseline", "Battery Electric Vehicles", "Biofuel", "Finance & Infrastructure", "Understanding Results", "Commercial Viability", "Methodology"]);
+  it("the help index covers the ten topics and points only at real entries (Batch 6 added Sensitivity, Scenarios & Thresholds)", () => {
+    expect(HELP_TOPICS.map((t) => t.title)).toEqual(["Getting Started", "Entering Fleet Data", "Diesel Baseline", "Battery Electric Vehicles", "Biofuel", "Finance & Infrastructure", "Understanding Results", "Commercial Viability", "Sensitivity, Scenarios & Thresholds", "Methodology"]);
     for (const t of HELP_TOPICS) for (const e of t.entries) expect(GUIDANCE[e]).toBeDefined();
     for (const id of relatedEntries("results.overview")) expect(GUIDANCE[id]).toBeDefined();
   });
@@ -245,15 +245,21 @@ describe("page guidance content (the task's required explanations)", () => {
     const t = body("results.why");
     for (const s of ["exact rules GreenFleet followed", "Evidence gate", "Operational gate", "Economic gate", "Conditions", "Uncertainties", "Hard constraints", "Reason codes"]) expect(t).toContain(s);
   });
-  it("27/28. sensitivity and scenarios guidance does not claim the feature exists", () => {
+  it("27/28. (updated in Batch 6) sensitivity, scenarios and thresholds guidance now describes the working tools", () => {
     const s = body("sensitivity");
-    expect(s).toContain("Sensitivity analysis will allow you to examine how changing key assumptions affects the result.");
-    expect(s).toContain("not available yet");
+    expect(s).toContain("Sensitivity analysis changes one assumption at a time to show how strongly it affects results");
+    expect(s).toContain("Prototype sensitivity range");
+    expect(s).not.toMatch(/not available yet|coming in a later/i);
     const c = body("scenarios");
-    expect(c).toContain("will allow you to keep different sets of assumptions");
-    expect(c).toContain("not available yet");
-    for (const t of [s, c]) expect(t).not.toMatch(/\byou can (run|compare|save)\b/i);
-    expect(TOUR_STEPS.find((x) => x.id === "upcoming")!.body).toContain("not available yet");
+    expect(c).toContain("Scenarios compare coherent alternative sets of assumptions without changing your Base Case");
+    expect(c).toContain("USER-CREATED");
+    expect(c).not.toMatch(/not available yet|coming in a later/i);
+    const t = body("thresholds");
+    expect(t).toContain("works backwards from a target result to estimate the value an assumption would need to reach");
+    for (const w of ["Economic break-even", "Commercial transition", "all else equal", "Viability margin", "approximately zero", "changes the commercial classification"]) expect(t.toLowerCase()).toContain(w.toLowerCase());
+    expect(t).toContain("Reaching economic break-even does not by itself make an alternative commercially viable");
+    expect(t).toContain("never as numbers");
+    expect(JSON.stringify(TOUR_STEPS)).not.toMatch(/not available yet/);
   });
   it("home guidance explains the scope and the limits", () => {
     const t = body("home");

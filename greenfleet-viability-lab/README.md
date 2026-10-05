@@ -19,7 +19,7 @@ npm test
 npm run build
 ```
 
-## Status: Batch 5.1 (user guidance on top of the Batch 5 decision engine)
+## Status: Batch 6 (sensitivity, scenarios and thresholds)
 
 Implemented: Batch 2's complete input system, plus the techno-economic engine in `src/calculation/` and the results page that
 displays it: total cost of ownership, present cost, cost per km, incremental NPV, simple and discounted payback, break-even
@@ -33,9 +33,9 @@ energy/fuel-related GHG emissions (from emission factors the user supplies; none
 feasibility for battery-electric and biofuel (Suitable, Conditional, Constrained, Insufficient data). The results page shows
 Economic, Operational and Environmental sections separately, with three separate data-completeness indicators.
 
-Batch 5.1 adds contextual Help, a first-visit welcome and a restartable Quick Tour (`docs/USER_GUIDANCE_SYSTEM.md`). Batch 5 adds the rule-based commercial classification of battery electric and biofuel against diesel (VIABLE, CONDITIONALLY VIABLE, NOT YET VIABLE, INSUFFICIENT EVIDENCE) under GreenFleet Commercial Viability Policy v1.0 (`docs/COMMERCIAL_VIABILITY_POLICY.md`). There is no weighted score, and environmental performance does not change the label.
+Batch 6 adds one-way, driver and two-way sensitivity, saved scenarios with comparison, and the "What would make it viable?" threshold analysis (`docs/SENSITIVITY_AND_THRESHOLD_ENGINE.md`). Batch 5.1 adds contextual Help, a first-visit welcome and a restartable Quick Tour (`docs/USER_GUIDANCE_SYSTEM.md`). Batch 5 adds the rule-based commercial classification of battery electric and biofuel against diesel (VIABLE, CONDITIONALLY VIABLE, NOT YET VIABLE, INSUFFICIENT EVIDENCE) under GreenFleet Commercial Viability Policy v1.0 (`docs/COMMERCIAL_VIABILITY_POLICY.md`). There is no weighted score, and environmental performance does not change the label.
 
-Deliberately not implemented: sensitivity and scenario engines, threshold solving, AI,
+Deliberately not implemented: Monte Carlo, optimisation, AI,
 report export, carbon pricing, lifecycle (embodied) emissions. The classification is decision support under your assumptions, not investment advice.
 
 Developer view: open the review step with `?debug=1` (or run `npm run dev`) to inspect the exact normalized object.

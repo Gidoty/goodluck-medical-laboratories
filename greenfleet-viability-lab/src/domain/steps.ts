@@ -27,7 +27,7 @@ export const JOURNEY = [
   { n: 5, title: "Configure financing and infrastructure", state: "ready" },
   { n: 6, title: "Run techno-economic assessment", state: "ready" },
   { n: 7, title: "View comparative results", state: "ready" },
-  { n: 8, title: "Run scenario and sensitivity analysis", state: "planned" },
+  { n: 8, title: "Run scenario and sensitivity analysis", state: "ready" },
   { n: 9, title: "Receive commercial viability classification", state: "ready" },
-  { n: 10, title: "Explore \"What Would Make It Viable?\" thresholds", state: "planned" },
+  { n: 10, title: "Explore \"What Would Make It Viable?\" thresholds", state: "ready" },
 ] as const;

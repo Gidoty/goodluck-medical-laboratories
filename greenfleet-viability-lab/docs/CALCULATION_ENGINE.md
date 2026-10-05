@@ -79,3 +79,7 @@ The environmental and operational engines take the normalized input only. There 
 ## Batch 5: commercial classification
 
 After the three layers are computed, `classifyCommercialViability` is called once per green alternative and returns `result.commercial`. It reads the Batch 3 incremental results, the Batch 4 operational result and the completeness summary. It reads the environmental comparison only to describe it. The Batch 3 formulas are untouched. Details: `docs/COMMERCIAL_VIABILITY_POLICY.md`.
+
+## Batch 6: analysis on top of the engine
+
+`sensitivity/`, `scenario/` and `threshold/` (with shared `analysis/`) change a clone of the normalized input and call `calculateAssessment` again. They add no formula. See `docs/SENSITIVITY_AND_THRESHOLD_ENGINE.md`.

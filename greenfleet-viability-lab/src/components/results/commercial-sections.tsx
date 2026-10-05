@@ -13,6 +13,7 @@ import type { ViabilityStatus } from "@/domain/types";
 import { OPERATIONAL_STATUS_LABEL } from "@/calculation/operational/types";
 import { TECH_NAMES, type AssessmentCalculationResult, type GreenTechId } from "@/calculation/types";
 import type { CommercialClassification, CommercialViabilityResult, EconomicCase } from "@/calculation/viability/types";
+import { ctaLabelFor } from "@/calculation/threshold";
 import { OperationalStatusPill } from "./analysis-sections";
 import type { ResultFormatter } from "./format-results";
 
@@ -39,6 +40,7 @@ function Guidance({ c, f }: { c: CommercialViabilityResult; f: ResultFormatter }
       <div className="mt-4 rounded-lg border border-forest-200 bg-forest-50/60 p-3 text-sm text-forest-950">
         <p>Under the entered assumptions, this alternative establishes a favourable commercial case relative to diesel with no identified material operational constraint.</p>
         <p className="mt-1 text-xs font-medium">Decision-support result, not investment advice.</p>
+        <div className="mt-3"><ButtonLink href={`/sensitivity#${c.technology}`} variant="secondary" size="sm">{ctaLabelFor(c.classification)}</ButtonLink></div>
       </div>
     );
   }
@@ -56,6 +58,7 @@ function Guidance({ c, f }: { c: CommercialViabilityResult; f: ResultFormatter }
             </li>
           ))}
         </ul>
+        <div className="mt-3"><ButtonLink href={`/sensitivity#${c.technology}`} variant="secondary" size="sm">{ctaLabelFor(c.classification)}</ButtonLink></div>
       </div>
     );
   }
@@ -68,7 +71,7 @@ function Guidance({ c, f }: { c: CommercialViabilityResult; f: ResultFormatter }
           {c.hardConstraints.map((h) => <li key={h.checkId + h.code}>{f.text(h.text)}</li>)}
         </ul>
         <p className="mt-2 text-xs">These results may change if key assumptions change.</p>
-        <div className="mt-3"><ButtonLink href="/sensitivity" variant="secondary" size="sm">Explore What Could Change This Result</ButtonLink></div>
+        <div className="mt-3"><ButtonLink href={`/sensitivity#${c.technology}`} variant="secondary" size="sm">{ctaLabelFor(c.classification)}</ButtonLink></div>
       </div>
     );
   }

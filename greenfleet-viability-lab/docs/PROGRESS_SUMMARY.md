@@ -1,4 +1,4 @@
-# GreenFleet Viability Lab: progress summary (Batches 1 to 5.1)
+# GreenFleet Viability Lab: progress summary (Batches 1 to 6)
 
 **Project:** web decision-support tool comparing diesel, battery-electric (BEV) and biofuel fleets for logistics start-ups. Academic prototype, University of Port Harcourt (CELTRAS).
 **Where:** folder `greenfleet-viability-lab/` in repo `gidoty/goodluck-medical-laboratories`, branch `ccr-7360588a-pkyx8s`. Independent of the rest of the repo.
@@ -47,6 +47,15 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - Home has a "How GreenFleet Works" panel. Sensitivity and Scenarios help says plainly that those tools are not available yet.
 - No calculation, operational rule, environmental rule or Policy v1.0 change.
 
+## Batch 6: sensitivity, scenarios and thresholds
+- Three isolated engines (`src/calculation/sensitivity|scenario|threshold`, shared `analysis/`) that call the existing engine. Nothing in the financial, environmental, operational or Policy v1.0 code changed. The Base Case is cloned, never mutated. Details: `docs/SENSITIVITY_AND_THRESHOLD_ENGINE.md`.
+- **Sensitivity page**: Base Case card, "What would make it viable?" (heading becomes "...fully viable?" or "Viability margin"), one-way sensitivity with a chart (NPV = 0 line, Base Case marker, solved crossing), a driver (tornado) chart and table, and a limited two-way grid with an economic break-even frontier.
+- **Thresholds**: economic break-even and Policy v1.0 classification transitions, solved by bracketing, a monotonic check, bisection and engine verification. Ten explicit statuses; failure states carry no number. Economic break-even is kept separate from commercial viability, and barriers are grouped as economic, operational and evidence. Categories such as fuel availability are qualitative remedies only.
+- **Scenarios page**: build, edit, duplicate, rename and delete named sets of overrides (up to 12, saved in this browser), compare with the Base Case, and create a scenario from a solved threshold.
+- Results page buttons route to the analysis. Help, tour text and Methodology now describe the working tools.
+- Tests changed on purpose: the Batch 5.1 "coming later" guidance tests and the Batch 5 "Explore What Could Change This Result" CTA test, because Batch 6 activates those features; the cross-domain help-topic count (nine to ten).
+- Not built: Monte Carlo, optimisation, report export, AI interpretation.
+
 ## Rules to keep
 - Asset perspective only. Loans, interest and equity are stored but excluded from NPV and TCO.
 - Escalation applies only if the user entered it. A blank is held constant and shown as a missing assumption.
@@ -57,13 +66,13 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - No market prices or emission factors are shipped. Demo values are labelled "Illustrative assumption, not current market data."
 
 ## Quality status
-439 automated tests (399 from Batches 1 to 5, plus 40 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
+521 automated tests (439 from Batches 1 to 5.1, plus 82 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
 
 ## Already in the code for later batches
-Types exist for `SensitivityVariable` and `Scenario`. `StatusBadge` now shows the four commercial labels. Sensitivity and Scenarios pages are placeholders.
+`StatusBadge` shows the four commercial labels. Sensitivity and Scenarios pages are placeholders.
 
 ## Not built yet
-Sensitivity and scenario engines, threshold solving ("what would make it viable"), AI interpretation, report export, saved scenarios.
+AI interpretation, report export, Monte Carlo analysis.
 
 ## Decisions to confirm
 - A converted biofuel vehicle replaced within the horizon repeats the conversion cost (no replacement vehicle price is entered).
