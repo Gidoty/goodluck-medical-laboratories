@@ -50,6 +50,7 @@ export interface ReportIdentity {
   authorship: string;
   reportVersion: string;
   appVersion: string;
+  prototypeVersion: string;
   engineVersion: string;
   policyId: string;
   policyVersion: string;

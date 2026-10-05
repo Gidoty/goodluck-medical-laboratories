@@ -6,7 +6,9 @@ import { BADGE_STATUS } from "@/components/results/commercial-sections";
 import type { ResultFormatter } from "@/components/results/format-results";
 import { CashFlowChart, TcoChart } from "@/components/results/results-charts";
 import { formatValue } from "@/calculation/analysis/format";
+import { DEMO_NOTICE } from "@/domain/demo";
 import { OPERATIONAL_STATUS_LABEL } from "@/calculation/operational/types";
+import { availableEconomicEvidenceNote } from "@/calculation/viability";
 import { TECH_NAMES, type AssessmentCalculationResult, type GreenTechId } from "@/calculation/types";
 import { CLASSIFICATION_LABEL } from "@/calculation/viability/types";
 import { formatDateTime, formatNumber } from "@/lib/format";
@@ -152,6 +154,7 @@ export function ReportDocument({ model: m, result, f }: { model: ReportModel; re
           <div key={c.technology} className="report-card rounded-xl border border-line p-4">
             <div className="flex flex-wrap items-center gap-3"><h3 className="text-base font-semibold text-navy-950">{TECH_NAMES[c.technology]} against diesel</h3><StatusBadge status={BADGE_STATUS[c.classification]} size="md" /></div>
             <p className="mt-2 text-sm font-medium text-navy-950">{f.text(c.primaryReason)}</p>
+            {c.classification === "INSUFFICIENT_EVIDENCE" && availableEconomicEvidenceNote(c.economicCase) && <p className="mt-1 text-sm text-slate-800">{availableEconomicEvidenceNote(c.economicCase)} It is shown for information and does not decide the label.</p>}
             <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
               <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Economic case</dt><dd className="font-medium">{c.economicCase.replace(/_/g, " ").toLowerCase()}</dd></div>
               <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Operational status</dt><dd className="font-medium">{OPERATIONAL_STATUS_LABEL[c.operationalStatus]}</dd></div>
@@ -328,10 +331,11 @@ export function ReportDocument({ model: m, result, f }: { model: ReportModel; re
           <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Currency</dt><dd className="font-medium">{id.currency}</dd></div>
           <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Analysis horizon</dt><dd className="font-medium">{id.horizonYears} years</dd></div>
           <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Report version</dt><dd className="font-medium">{id.reportVersion} (application {id.appVersion})</dd></div>
+          <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Prototype version</dt><dd className="font-medium">{id.prototypeVersion}</dd></div>
           <div className="flex justify-between gap-3 border-b border-line py-1"><dt className="text-slate-700">Calculation engine</dt><dd className="font-medium">{id.engineVersion}</dd></div>
           <div className="flex justify-between gap-3 border-b border-line py-1 sm:col-span-2"><dt className="text-slate-700">Decision policy</dt><dd className="font-medium">{id.policyId}</dd></div>
         </dl>
-        {id.dataOrigin === "demo" && <p className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">This report uses illustrative demo values. They say nothing about real costs.</p>}
+        {id.dataOrigin === "demo" && <p className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">{DEMO_NOTICE} This report uses illustrative demo values, which say nothing about real costs.</p>}
         <p className="mt-6 text-sm font-medium text-navy-700">{id.authorship}</p>
       </header>
       {sections.map((s, i) => <Section key={s.id} n={i + 1} id={s.id} title={s.title} pageBreak={s.pageBreak}>{s.node}</Section>)}

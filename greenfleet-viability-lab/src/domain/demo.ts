@@ -3,8 +3,10 @@ import { notApplicable, value } from "./fieldValue";
 import { FIELD_BY_ID } from "./schema/fields";
 import type { Assessment, StoredValue } from "./stored";
 
-export const DEMO_NAME = "Illustrative Demo Assessment";
+export const DEMO_NAME = "SYNTHETIC DEMONSTRATION: General walkthrough";
 export const DEMO_LABEL = "Illustrative assumption — not current market data.";
+/** Shown wherever demonstration values are loaded: wizard, results, report and presentation. */
+export const DEMO_NOTICE = "Illustrative synthetic values for demonstration only. These are not current market prices or investment recommendations.";
 
 type DemoEntry = number | string | "NA" | { q: number; unit: string };
 
@@ -76,6 +78,70 @@ const DEMO: Readonly<Record<string, DemoEntry>> = {
   "bevInfra.lifeYears": 10,
 };
 
+export type DemoCaseId = "strong_bev" | "conditional_bev" | "not_yet_viable_bev" | "intermittent_biofuel" | "insufficient_evidence";
+
+export interface DemoCase {
+  id: DemoCaseId;
+  number: number;
+  title: string;
+  /** What the case is for, in one sentence. */
+  purpose: string;
+  /** What the engine returns for this case, verified by tests. Used in the documentation and the presenter notes only. */
+  expected: { bev: string; biofuel: string };
+  /** Changes to the shared base values. `null` removes a base value. */
+  changes: Readonly<Record<string, DemoEntry | null>>;
+}
+
+/**
+ * Five SYNTHETIC DEMONSTRATION CASES. They start from the same illustrative base values above and change only what the
+ * case needs. No emission factor is included, so emissions show as "Unavailable" in every case (deliberately).
+ * Each expected result is asserted in src/validation/demo-cases.test.ts. They are teaching fixtures, not market data.
+ */
+export const DEMO_CASES: readonly DemoCase[] = [
+  {
+    id: "strong_bev",
+    number: 1,
+    title: "Strong battery-electric case",
+    purpose: "A favourable economic case, a suitable operation and adequate evidence give VIABLE for the battery-electric vehicle. Biofuel is shown alongside for contrast.",
+    expected: { bev: "VIABLE", biofuel: "NOT YET VIABLE" },
+    changes: { "bev.batteryReplacement": "no", "bev.batteryReplacementYear": null, "bev.batteryReplacementCost": null },
+  },
+  {
+    id: "conditional_bev",
+    number: 2,
+    title: "Positive NPV, daytime charging needed",
+    purpose: "Shows that a positive NPV does not make a result VIABLE: the day is longer than the range, so daytime charging is a condition to resolve.",
+    expected: { bev: "CONDITIONALLY VIABLE", biofuel: "NOT YET VIABLE" },
+    changes: { "ops.dailyDistance": 260, "bev.chargingOpportunity": "public_available", "bev.batteryReplacement": "no", "bev.batteryReplacementYear": null, "bev.batteryReplacementCost": null },
+  },
+  {
+    id: "not_yet_viable_bev",
+    number: 3,
+    title: "Negative NPV and a range constraint",
+    purpose: "Two separate barriers: unfavourable economics and a day longer than the range with depot-only charging. Gives a worked 'What would make it viable?' with an economic threshold and a range remedy.",
+    expected: { bev: "NOT YET VIABLE", biofuel: "NOT YET VIABLE" },
+    changes: { "ops.dailyDistance": 240, "ops.operatingDays": 100, "bev.acquisitionPrice": 20_000_000, "bev.batteryReplacement": "no", "bev.batteryReplacementYear": null, "bev.batteryReplacementCost": null },
+  },
+  {
+    id: "intermittent_biofuel",
+    number: 4,
+    title: "Attractive biofuel, intermittent supply",
+    purpose: "Biofuel is economically attractive, but supply is intermittent. This is a categorical condition: GreenFleet names it and never turns it into a number.",
+    expected: { bev: "VIABLE", biofuel: "CONDITIONALLY VIABLE" },
+    changes: { "biofuel.fuelPrice": 700, "biofuel.fuelAvailability": "intermittent" },
+  },
+  {
+    id: "insufficient_evidence",
+    number: 5,
+    title: "Critical evidence missing",
+    purpose: "Charging access and fuel availability are unknown. GreenFleet withholds the label rather than manufacture certainty, and still discloses that the available economic evidence is unfavourable.",
+    expected: { bev: "INSUFFICIENT EVIDENCE", biofuel: "INSUFFICIENT EVIDENCE" },
+    changes: { "ops.dailyDistance": 240, "ops.operatingDays": 100, "bev.acquisitionPrice": 20_000_000, "bev.chargingOpportunity": "unknown", "bev.batteryReplacement": "no", "bev.batteryReplacementYear": null, "bev.batteryReplacementCost": null, "biofuel.fuelAvailability": "unknown" },
+  },
+];
+
+export const demoCaseById = (id: DemoCaseId): DemoCase => DEMO_CASES.find((c) => c.id === id)!;
+
 function demoStored(id: string, entry: DemoEntry): StoredValue {
   const def = FIELD_BY_ID[id];
   if (!def) throw new Error(`Demo references unknown field "${id}"`);
@@ -93,9 +159,19 @@ function demoStored(id: string, entry: DemoEntry): StoredValue {
   }
 }
 
-export function createDemoAssessment(id: string, nowIso: string): Assessment {
+/** The general walkthrough demo (no case), or one of the five synthetic demonstration cases. */
+export function createDemoAssessment(id: string, nowIso: string, caseId?: DemoCaseId): Assessment {
   const blank = createBlankAssessment(id, nowIso);
+  const entries: Record<string, DemoEntry> = { ...DEMO };
+  if (caseId) {
+    const c = demoCaseById(caseId);
+    for (const [k, v] of Object.entries(c.changes)) {
+      if (v === null) delete entries[k];
+      else entries[k] = v;
+    }
+    entries["business.assessmentName"] = `SYNTHETIC DEMONSTRATION CASE ${c.number}: ${c.title}`;
+  }
   const inputs = { ...blank.inputs };
-  for (const [fieldId, entry] of Object.entries(DEMO)) inputs[fieldId] = demoStored(fieldId, entry);
-  return { ...blank, inputs, origin: "demo", illustrative: Object.keys(DEMO) };
+  for (const [fieldId, entry] of Object.entries(entries)) inputs[fieldId] = demoStored(fieldId, entry);
+  return { ...blank, inputs, origin: "demo", illustrative: Object.keys(entries) };
 }

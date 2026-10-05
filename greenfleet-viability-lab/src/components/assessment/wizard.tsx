@@ -7,7 +7,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { checkAssessment } from "@/domain/checks";
 import { stepCompletions } from "@/domain/completion";
-import { DEMO_LABEL } from "@/domain/demo";
+import { DEMO_NOTICE } from "@/domain/demo";
 import { neighbours, stepById, type StepId } from "@/domain/steps";
 import { useAssessmentState } from "@/state/StoreProvider";
 import { ReviewScreen } from "./review-screen";
@@ -48,7 +48,7 @@ export function AssessmentWizard({ stepId }: { stepId: StepId }) {
 
       {assessment.illustrative.length > 0 && (
         <Alert tone="demo" title="Illustrative demo values are loaded">
-          {DEMO_LABEL} Replace them with your own figures. A value stops being labelled as illustrative as soon as you edit it.
+          {DEMO_NOTICE} Replace them with your own figures. A value stops being labelled as illustrative as soon as you edit it.
         </Alert>
       )}
 

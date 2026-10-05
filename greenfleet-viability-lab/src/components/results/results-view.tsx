@@ -7,7 +7,7 @@ import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { DEMO_LABEL } from "@/domain/demo";
+import { DEMO_NOTICE } from "@/domain/demo";
 import { isUntouched } from "@/domain/mutations";
 import { runAssessment } from "@/domain/runAssessment";
 import { formatNumber } from "@/lib/format";
@@ -94,7 +94,7 @@ function ResultsDashboard({ result, currency, arrangement, provenance, input }: 
 
       {isDemo && (
         <Alert tone="demo" title="These results use illustrative demo values">
-          <span className="flex items-center gap-2"><FlaskConical aria-hidden className="size-4 shrink-0" />{DEMO_LABEL} They show how the tool works and say nothing about real costs.</span>
+          <span className="flex items-center gap-2"><FlaskConical aria-hidden className="size-4 shrink-0" />{DEMO_NOTICE} They show how the tool works and say nothing about real costs.</span>
         </Alert>
       )}
 

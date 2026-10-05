@@ -18,16 +18,16 @@ export function neighbours(id: StepId): { prev?: AssessmentStep; next?: Assessme
   return { prev: ASSESSMENT_STEPS[i - 1], next: ASSESSMENT_STEPS[i + 1] };
 }
 
-/** The ten stages of the eventual user journey, and what exists today. */
+/** The ten stages of the user journey. */
 export const JOURNEY = [
-  { n: 1, title: "Define business and fleet context", state: "ready" },
-  { n: 2, title: "Configure diesel baseline", state: "ready" },
-  { n: 3, title: "Configure battery-electric alternative", state: "ready" },
-  { n: 4, title: "Configure biofuel alternative", state: "ready" },
-  { n: 5, title: "Configure financing and infrastructure", state: "ready" },
-  { n: 6, title: "Run techno-economic assessment", state: "ready" },
-  { n: 7, title: "View comparative results", state: "ready" },
-  { n: 8, title: "Run scenario and sensitivity analysis", state: "ready" },
-  { n: 9, title: "Receive commercial viability classification", state: "ready" },
-  { n: 10, title: "Explore \"What Would Make It Viable?\" thresholds", state: "ready" },
+  { n: 1, title: "Define business and fleet context" },
+  { n: 2, title: "Configure diesel baseline" },
+  { n: 3, title: "Configure battery-electric alternative" },
+  { n: 4, title: "Configure biofuel alternative" },
+  { n: 5, title: "Configure financing and infrastructure" },
+  { n: 6, title: "Run techno-economic assessment" },
+  { n: 7, title: "View comparative results" },
+  { n: 8, title: "Run scenario and sensitivity analysis" },
+  { n: 9, title: "Receive commercial viability classification" },
+  { n: 10, title: "Explore \"What Would Make It Viable?\" thresholds" },
 ] as const;

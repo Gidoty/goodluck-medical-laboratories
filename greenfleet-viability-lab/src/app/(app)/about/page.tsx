@@ -1,4 +1,4 @@
-import { REPORT_DISCLAIMER } from "@/reporting/identity";
+import { PROTOTYPE_STATUS, PROTOTYPE_VERSION, REPORT_DISCLAIMER } from "@/reporting/identity";
 import type { Metadata } from "next";
 import { Card, CardBody } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -30,6 +30,12 @@ export default function AboutPage() {
             <p className="text-sm text-slate-600">
               The prototype supports learning and discussion. {REPORT_DISCLAIMER}
             </p>
+            <div className="rounded-lg border border-line bg-navy-50/50 p-3 text-sm">
+              <p><span className="font-semibold text-navy-950">Version:</span> {PROTOTYPE_VERSION}. Status: {PROTOTYPE_STATUS}.</p>
+              <p className="mt-1 text-slate-700">The version names this software. It is separate from the Commercial Viability Policy v1.0, which versions the decision rules.</p>
+              <h2 className="mt-3 text-sm font-semibold text-navy-950">Prototype validation</h2>
+              <p className="mt-1 text-slate-700">Calculations are deterministic. They are checked against independent, hand-calculated benchmark cases, and the Policy v1.0 rules are checked against a full decision table. Nothing is sent from your browser: assessments, scenarios and reports stay on your device.</p>
+            </div>
           </CardBody>
         </Card>
         <Card>

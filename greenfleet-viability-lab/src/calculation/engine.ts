@@ -6,6 +6,7 @@ import { compareWithDiesel } from "./compare";
 import { summarizeDimensions } from "./dimensions";
 import { calculateEnvironmentalPerformance } from "./environmental";
 import { evaluateOperationalFeasibility } from "./operational";
+import { firstNonFinite } from "./finite";
 import { checkNormalizedInput } from "./input-checks";
 import { ENGINE_VERSION, METHODOLOGY_NOTES } from "./notes";
 import { classifyCommercialViability } from "./viability";
@@ -34,6 +35,13 @@ export function calculateAssessment(input: NormalizedAssessmentInput): Calculati
   const biofuel = assembleEconomics(ctx, buildBiofuelSpec(input, ctx, col));
   const bevVsDiesel = compareWithDiesel(ctx, diesel, bev, "bev");
   const biofuelVsDiesel = compareWithDiesel(ctx, diesel, biofuel, "biofuel");
+
+  // Inputs that pass validation can still overflow double precision (for example a fleet of 1e308 vehicles).
+  // Refuse them with a message rather than show Infinity or NaN.
+  const overflow = firstNonFinite({ diesel, bev, biofuel, bevVsDiesel, biofuelVsDiesel }, "economics");
+  if (overflow) {
+    return { ok: false, errors: [{ field: "result", message: "The inputs are too large for the calculation: a result overflowed the number range. Check the units and the size of the fleet, prices and distances." }] };
+  }
 
   generalAssumptions(input, ctx.fleetHorizonDistanceKm, col);
   operationalWarnings(input, col);

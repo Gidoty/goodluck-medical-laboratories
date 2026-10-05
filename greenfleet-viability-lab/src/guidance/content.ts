@@ -1,7 +1,8 @@
+import { REPORT_DISCLAIMER } from "@/reporting/identity";
 import type { GuidanceContent, GuidanceId, HelpTopic, TourStep } from "./types";
 
-export const DISCLAIMER =
-  "GreenFleet is an academic decision-support prototype. Guidance explains how to use the model and does not constitute financial, investment, engineering or regulatory advice.";
+/** The one core disclaimer, shared by Help, About, the report and the export metadata. */
+export const DISCLAIMER = REPORT_DISCLAIMER;
 
 export const WELCOME = {
   title: "Welcome to GreenFleet",
@@ -128,7 +129,7 @@ export const GUIDANCE: Record<GuidanceId, GuidanceContent> = {
     shortDescription: "Four separate answers to four different questions.",
     whatYouAreDoing: "You are reading the outcome of the assessment you ran.",
     whatGreenFleetDoes: "GreenFleet presents separate dimensions: 1. Economic Performance, 2. Operational Feasibility, 3. Environmental Performance, 4. Commercial Viability.",
-    whyItMatters: "These dimensions answer different questions and should not be interpreted as interchangeable. A cheaper option may not suit your routes, and a cleaner option may not pay for itself.",
+    whyItMatters: "These dimensions answer different questions and should not be interpreted as interchangeable. A cheaper option may not suit your routes, and an option with lower estimated emissions may not pay for itself.",
     tips: ["Start with the commercial classification cards at the top, then open Why this result? to see the reasoning.", "Change an input and the results update. Nothing is stored apart from your inputs."],
     warnings: ["Results are model-based conclusions under your assumptions. They are not a forecast or investment advice."],
     links: [{ label: "Review inputs", href: "/assessment/review" }, { label: "View full methodology", href: "/methodology" }],
@@ -140,7 +141,7 @@ export const GUIDANCE: Record<GuidanceId, GuidanceContent> = {
     definitions: [
       { term: "Total cost of ownership (TCO)", text: "The estimated total cost of owning and operating the technology over the selected analysis horizon." },
       { term: "Present cost", text: "The value today of future costs after applying the selected discount rate." },
-      { term: "Cost per km", text: "Estimated lifecycle cost divided by distance travelled." },
+      { term: "Cost per km", text: "Cost over the analysis period divided by the fleet distance driven over the same period. It is shown for the total cost of ownership and for the present cost." },
       { term: "Incremental NPV vs diesel", text: "The present-value economic advantage or disadvantage of choosing the alternative instead of diesel." },
       { term: "Positive NPV", text: "An economic advantage over diesel under the entered assumptions." },
       { term: "Negative NPV", text: "An economic disadvantage compared with diesel under the entered assumptions." },
@@ -192,7 +193,7 @@ export const GUIDANCE: Record<GuidanceId, GuidanceContent> = {
     ],
     whatGreenFleetDoes: "A fixed set of ordered rules decides the label. There is no score and no weighting. Diesel is the baseline and is not classified.",
     warnings: ["Environmental performance is reported separately and does not determine the commercial classification under Policy v1.0.", "A label is decision support under your assumptions. It is not investment advice."],
-    tips: ["NOT YET VIABLE means the result may change if key assumptions change. A later stage will show which ones."],
+    tips: ["NOT YET VIABLE means the result may change if key assumptions change. The Sensitivity page shows which assumptions move it, and what value of each would change the label."],
     links: [{ label: "Read the policy", href: "/methodology" }],
   },
   "results.why": {
@@ -324,4 +325,3 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
   { id: "methodology", title: "Methodology", entries: ["methodology"] },
 ];
 
-export const FINANCE_NOTE_TEXT = FINANCE_NOTE;

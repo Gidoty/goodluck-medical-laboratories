@@ -1,7 +1,7 @@
 {
   "name": "greenfleet-viability-lab",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "GreenFleet Viability Lab: techno-economic decision support for green logistics entrepreneurs.",
   "scripts": {
     "dev": "next dev",

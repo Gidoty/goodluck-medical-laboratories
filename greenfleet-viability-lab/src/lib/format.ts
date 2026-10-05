@@ -10,6 +10,9 @@ const nf = (maxFractionDigits: number, minFractionDigits = 0) =>
 const FULL = nf(0);
 const COMPACT = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 
+/** Below this an amount is treated as arithmetic noise and shown as zero. */
+const SUB_UNIT_NOISE = 1e-6;
+
 const isUsable = (v: number | null | undefined): v is number => typeof v === "number" && Number.isFinite(v);
 
 /**
@@ -37,6 +40,11 @@ export function formatMoney(
   if (!isUsable(value)) return EMPTY_VALUE;
   const symbol = CURRENCIES[currency].symbol;
   const abs = Math.abs(cleanFloat(value));
+  // A real but sub-unit amount must not read as "zero": an NPV of 0.3 next to "Economic advantage" would look contradictory.
+  // Floating-point noise (below one millionth of a unit) is still shown as zero. Display only: raw values are never rounded.
+  if (!options.compact && options.fractionDigits === undefined && abs >= SUB_UNIT_NOISE && FULL.format(abs) === "0") {
+    return `${value < 0 ? "> -" : "< "}${symbol}1`;
+  }
   const body = options.compact
     ? COMPACT.format(abs)
     : options.fractionDigits !== undefined

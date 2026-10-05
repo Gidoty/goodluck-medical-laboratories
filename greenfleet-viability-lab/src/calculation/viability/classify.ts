@@ -8,6 +8,7 @@ import type {
   CommercialViabilityResult,
   CriticalMissing,
   EconomicAssessment,
+  EconomicCase,
   EnvironmentalContext,
   HardOperationalConstraint,
   MaterialUncertainty,
@@ -80,6 +81,20 @@ function describeEnvironment(tech: GreenTechId, c: EmissionsComparison): Environ
     ? `Estimated operational GHG emissions are ${lower ? "lower" : "higher"} than diesel under the supplied emission factors (percentage not defined).`
     : `Estimated operational GHG emissions are${pct} ${lower ? "lower" : "higher"} than diesel under the supplied emission factors.`;
   return { ...base, state: lower ? "lower" : "higher", text };
+}
+
+/**
+ * When the evidence gate is not passed, the label is withheld. Whatever economic evidence IS available
+ * is still disclosed, in words, so that a negative NPV is not hidden behind "insufficient evidence".
+ * It is information only: it is never used to choose the label.
+ */
+export function availableEconomicEvidenceNote(econCase: EconomicCase): string | null {
+  switch (econCase) {
+    case "FAVOURABLE": return "Available economic evidence is favourable (incremental NPV versus diesel is positive and above the near-break-even tolerance).";
+    case "NEAR_BREAK_EVEN": return "Available economic evidence is close to break-even.";
+    case "UNFAVOURABLE": return "Available economic evidence is unfavourable (incremental NPV versus diesel is negative and beyond the near-break-even tolerance).";
+    default: return null;
+  }
 }
 
 function paybackText(status: string | null, years: number | null, horizon: number): string {
@@ -161,6 +176,8 @@ export function classifyCommercialViability(input: ClassifyInput, policy: Commer
   if (!sufficient) {
     classification = "INSUFFICIENT_EVIDENCE";
     t("operational", `Operational status = ${operational.status === "insufficient_data" ? "Insufficient data" : operational.status}.`);
+    const note = availableEconomicEvidenceNote(econ.case);
+    if (note) t("economic", `${note} It is shown for information and was not used to classify, because the evidence gate was not passed.`);
   } else {
     t("operational", `Operational status = ${operational.status}.`);
     for (const c of hardConstraints) t("operational", `Hard operational constraint: ${c.text}`);

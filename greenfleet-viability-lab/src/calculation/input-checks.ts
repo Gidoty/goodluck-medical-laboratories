@@ -1,4 +1,5 @@
 import type { NormalizedAssessmentInput } from "@/domain/normalized";
+import { MAX_REPLACEMENT_EVENTS } from "./finite";
 import type { CalculationError } from "./types";
 
 const isNum = (x: unknown): x is number => typeof x === "number" && Number.isFinite(x);
@@ -35,6 +36,10 @@ export function checkNormalizedInput(input: NormalizedAssessmentInput): Calculat
     need(`${key}.upfrontVehicleCost`, v.upfrontVehicleCost, `${name} vehicle cost`, nonNeg, "cannot be negative");
     need(`${key}.annualMaintenanceCost`, v.annualMaintenanceCost, `${name} maintenance cost`, nonNeg, "cannot be negative");
     need(`${key}.usefulLifeYears`, v.usefulLifeYears, `${name} useful life`, positive, "must be greater than zero");
+    const horizon = input.operations?.analysisHorizonYears;
+    if (isNum(v.usefulLifeYears) && v.usefulLifeYears > 0 && isNum(horizon) && horizon / v.usefulLifeYears > MAX_REPLACEMENT_EVENTS) {
+      bad(`${key}.usefulLifeYears`, `${name} useful life is too short for the analysis period: it would need more than ${MAX_REPLACEMENT_EVENTS.toLocaleString("en-US")} vehicle replacements. Check the unit (years).`);
+    }
     optional(`${key}.annualInsurance`, v.annualInsurance, `${name} insurance`, nonNeg, "cannot be negative");
     optional(`${key}.annualRegistration`, v.annualRegistration, `${name} licensing cost`, nonNeg, "cannot be negative");
     optional(`${key}.otherFixedAnnualCost`, v.otherFixedAnnualCost, `${name} other fixed cost`, nonNeg, "cannot be negative");

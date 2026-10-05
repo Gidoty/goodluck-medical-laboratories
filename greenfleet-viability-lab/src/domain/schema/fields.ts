@@ -117,7 +117,7 @@ export const FIELDS: readonly FieldDef[] = [
 
   num({ id: "fleet.size", section: "fleet", label: "Number of vehicles being evaluated", unit: "vehicles", rule: { min: 1, integer: true }, required: true }),
   choice({ id: "fleet.vehicleCategory", section: "fleet", label: "Vehicle category", options: OPTIONS.vehicleCategory, presentation: "select", required: false }),
-  qnum({ id: "fleet.payloadCapacity", section: "fleet", label: "Payload capacity", qualifiers: payloadQualifiers(POSITIVE), defaultQualifier: "kg", required: false, glossary: "payload", hint: "Recommended. Used for cost per tonne-km later." }),
+  qnum({ id: "fleet.payloadCapacity", section: "fleet", label: "Payload capacity", qualifiers: payloadQualifiers(POSITIVE), defaultQualifier: "kg", required: false, glossary: "payload", hint: "Optional. Used to check the battery-electric payload when a payload reduction applies." }),
   qnum({ id: "fleet.averagePayload", section: "fleet", label: "Average payload carried", qualifiers: payloadQualifiers(POSITIVE), defaultQualifier: "kg", required: false, glossary: "payload" }),
 
   num({ id: "ops.dailyDistance", section: "operating", label: "Average distance per vehicle per day", unit: "km_per_day", rule: { ...POSITIVE, plausibleMax: 1500 }, required: true, glossary: "utilisation", visibleWhen: (r) => r.choice("ops.distanceMode") !== "annual" }),
@@ -160,7 +160,7 @@ export const FIELDS: readonly FieldDef[] = [
   num({ id: "bev.annualMaintenance", section: "bev-core", label: "Annual maintenance cost (per vehicle)", unit: "money_per_year", rule: MONEY, required: true }),
   num({ id: "bev.usefulLife", glossary: "usefulLife", section: "bev-core", label: "Vehicle useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true }),
   num({ id: "bev.usableRange", section: "bev-core", label: "Usable driving range per full charge", unit: "km", rule: { ...POSITIVE, plausibleMax: 1500 }, required: true, glossary: "usableRange", hint: "Real-world range with your load and conditions, not the brochure figure." }),
-  num({ id: "bev.batteryCapacity", section: "bev-core", label: "Battery capacity", unit: "kwh", rule: { ...POSITIVE, plausibleMax: 1500 }, required: false, hint: "Recommended." }),
+  num({ id: "bev.batteryCapacity", section: "bev-core", label: "Battery capacity", unit: "kwh", rule: { ...POSITIVE, plausibleMax: 1500 }, required: false, hint: "Optional. Recorded for reference. It does not change the cost figures." }),
 
   choice({ id: "bev.chargingOpportunity", glossary: "chargingOpportunity", section: "bev-ops", label: "Charging opportunity during the operating day", options: OPTIONS.chargingOpportunity, presentation: "select", required: false }),
   num({ id: "bev.chargingDowntime", glossary: "chargingDowntime", section: "bev-ops", label: "Average charging downtime per operating day", unit: "hours_per_day", rule: { min: 0, max: 24 }, required: false }),
@@ -241,9 +241,9 @@ export const FIELDS: readonly FieldDef[] = [
   ...emissionFactor("diesel", "Diesel", "kgco2e_per_litre", "Greenhouse gases as CO2-equivalent (CO2e) per litre of diesel. Enter a figure from a source you can name."),
   ...emissionFactor("grid", "Grid electricity", "kgco2e_per_kwh", "CO2e per kWh drawn from the grid or generator you charge from, not per kWh at the vehicle."),
   ...emissionFactor("biofuel", "Biofuel", (r) => FUEL_UNITS[biofuelFuelUnit(r)].emissionFactor, "Emissions per unit of the fuel as you buy it. For a blend, enter the factor of the blend, not of the pure biofuel."),
-  num({ id: "env.lifecycle.diesel", section: "fin-env", label: "Diesel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results yet, because how it should be used is not defined." }),
-  num({ id: "env.lifecycle.grid", section: "fin-env", label: "Electricity lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results yet, because how it should be used is not defined." }),
-  num({ id: "env.lifecycle.biofuel", section: "fin-env", label: "Biofuel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results yet, because how it should be used is not defined." }),
+  num({ id: "env.lifecycle.diesel", section: "fin-env", label: "Diesel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results, because how it should be used is not defined." }),
+  num({ id: "env.lifecycle.grid", section: "fin-env", label: "Electricity lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results, because how it should be used is not defined." }),
+  num({ id: "env.lifecycle.biofuel", section: "fin-env", label: "Biofuel lifecycle adjustment", unit: "percent", rule: { min: -100, max: 1000 }, required: false, glossary: "lifecycleAdjustment", hint: "Recorded only. Not applied to the results, because how it should be used is not defined." }),
 ];
 
 export const FIELD_BY_ID: Readonly<Record<string, FieldDef>> = Object.fromEntries(FIELDS.map((f) => [f.id, f]));

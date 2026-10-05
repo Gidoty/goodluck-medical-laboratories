@@ -112,6 +112,15 @@ function technologyEmissions(tech: TechId, use: PhysicalUse, raw: EmissionFactor
   const { factor } = resolved;
   const byYearKg = use.byYear.map((q) => q * factor.kgPerUnit); // physical use x factor, never price
   const horizonKg = byYearKg.reduce((a, b) => a + b, 0);
+  // An overflowing figure is unavailable, never Infinity (and never zero).
+  if (!Number.isFinite(horizonKg) || byYearKg.some((x) => !Number.isFinite(x))) {
+    const reason = "The emissions figure is too large to calculate. Check the emission factor and its unit.";
+    return {
+      technology: tech, status: "unavailable", unavailableReason: reason, physicalUse: use,
+      annualEmissionsKg: null, annualEmissionsTonnes: null, horizonEmissionsKg: null, horizonEmissionsTonnes: null,
+      emissionsPerKmKg: null, byYearKg: null, factor: null, scopeLabel: SCOPE_LABEL.not_stated, warnings: [...resolved.warnings, warning("EMISSION_FIGURE_OVERFLOW", tech, reason)],
+    };
+  }
   const annualKg = byYearKg[1] ?? 0;
   const annualKm = distance[1] ?? 0;
   return {

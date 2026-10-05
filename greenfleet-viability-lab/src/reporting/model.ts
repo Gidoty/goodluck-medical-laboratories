@@ -10,7 +10,7 @@ import { CLASSIFICATION_LABEL } from "@/calculation/viability/types";
 import type { AnalysisRecord } from "./analysisRecord";
 import { buildEvidenceQuality } from "./evidence";
 import { buildExecutiveSummary, buildKeyTakeaways, optionLabel } from "./executive";
-import { APP_NAME, APP_VERSION, REPORT_AUTHORSHIP, REPORT_DISCLAIMER, REPORT_TITLE, REPORT_VERSION, THRESHOLD_NOTE } from "./identity";
+import { APP_NAME, APP_VERSION, PROTOTYPE_VERSION, REPORT_AUTHORSHIP, REPORT_DISCLAIMER, REPORT_TITLE, REPORT_VERSION, THRESHOLD_NOTE } from "./identity";
 import { buildLimitations } from "./limitations";
 import { classifyAssumption, contextOf, sourceOf } from "./provenance";
 import {
@@ -276,6 +276,7 @@ export function buildReportModel(args: ReportInputs): ReportModel {
       authorship: REPORT_AUTHORSHIP,
       reportVersion: REPORT_VERSION,
       appVersion: APP_VERSION,
+      prototypeVersion: PROTOTYPE_VERSION,
       engineVersion: result.metadata.engineVersion,
       policyId: COMMERCIAL_VIABILITY_POLICY_V1.id,
       policyVersion: COMMERCIAL_VIABILITY_POLICY_V1.version,

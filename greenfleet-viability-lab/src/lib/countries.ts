@@ -9,4 +9,3 @@ export const COUNTRIES = [
   { id: "other", label: "Other" },
 ] as const;
 
-export type CountryId = (typeof COUNTRIES)[number]["id"];

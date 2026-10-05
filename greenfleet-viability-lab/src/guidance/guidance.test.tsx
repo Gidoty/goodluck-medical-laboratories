@@ -268,7 +268,8 @@ describe("page guidance content (the task's required explanations)", () => {
     expect(t).toContain("does not guarantee investment outcomes");
   });
   it("40. the prototype disclaimer is present in Help and wording is as specified", () => {
-    expect(DISCLAIMER).toBe("GreenFleet is an academic decision-support prototype. Guidance explains how to use the model and does not constitute financial, investment, engineering or regulatory advice.");
+    // Batch 8: Help, About, the report and the export metadata share one core statement (REPORT_DISCLAIMER).
+    expect(DISCLAIMER).toBe("GreenFleet is an academic decision-support prototype. Results are model-derived estimates based on the entered assumptions and should not be interpreted as financial, investment, engineering, regulatory or procurement advice.");
     expect(body("about")).toContain("academic decision-support prototype");
   });
   it("the welcome text and four-step journey match the specification", () => {

@@ -4,7 +4,7 @@ import { COMMERCIAL_VIABILITY_POLICY_V1 } from "@/calculation/viability";
 import type { Scenario } from "@/calculation/scenario";
 import type { AnalysisRecord } from "./analysisRecord";
 import { cellRaw } from "./cells";
-import { APP_NAME, APP_VERSION, REPORT_VERSION } from "./identity";
+import { APP_NAME, APP_VERSION, PROTOTYPE_VERSION, REPORT_DISCLAIMER, REPORT_VERSION } from "./identity";
 import type { ReportModel } from "./types";
 
 export type CsvKind = "comparison" | "cashflow" | "sensitivity" | "drivers" | "scenarios" | "scenario_changes" | "thresholds";
@@ -54,6 +54,8 @@ const meta = (m: ReportModel): Field[][] => [
   ["# currency", m.identity.currency],
   ["# analysis_horizon_years", m.identity.horizonYears],
   ["# policy", `${m.identity.policyId}`],
+  ["# prototype", m.identity.prototypeVersion],
+  ["# disclaimer", REPORT_DISCLAIMER],
   ["# application_version", `${m.identity.appVersion} (report ${m.identity.reportVersion}, engine ${m.identity.engineVersion})`],
 ];
 
@@ -145,9 +147,10 @@ export function buildJsonExport(args: { model: ReportModel; input: NormalizedAss
   const { model: m, input, result, analysis, scenarios } = args;
   return {
     exportType: "greenfleet-assessment",
+    disclaimer: REPORT_DISCLAIMER,
     exportSchemaVersion: 1,
     generatedAt: m.identity.generatedAt,
-    application: { name: APP_NAME, version: APP_VERSION, reportVersion: REPORT_VERSION, engineVersion: result.metadata.engineVersion },
+    application: { name: APP_NAME, prototypeVersion: PROTOTYPE_VERSION, version: APP_VERSION, reportVersion: REPORT_VERSION, engineVersion: result.metadata.engineVersion },
     policy: { id: COMMERCIAL_VIABILITY_POLICY_V1.id, version: COMMERCIAL_VIABILITY_POLICY_V1.version, nearBreakEvenTolerancePct: COMMERCIAL_VIABILITY_POLICY_V1.nearBreakEvenTolerancePct },
     currency: input.meta.currency,
     analysisHorizonYears: input.operations.analysisHorizonYears,

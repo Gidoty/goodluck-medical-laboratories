@@ -37,7 +37,6 @@ export const emptyRecord = (fingerprint: string, now: string): AnalysisRecord =>
 /** Returns the record only when it belongs to these inputs. */
 export const recordFor = (record: AnalysisRecord | null, input: NormalizedAssessmentInput): AnalysisRecord | null => (record && record.fingerprint === fingerprintInput(input) ? record : null);
 
-export const hasAnyAnalysis = (r: AnalysisRecord | null): boolean => !!r && (Object.keys(r.viability).length > 0 || Object.keys(r.drivers).length > 0 || Object.keys(r.oneWay).length > 0);
 
 interface Storage {
   getItem(key: string): string | null;

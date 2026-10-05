@@ -31,7 +31,6 @@ export const getGuidance = (id: GuidanceId): GuidanceContent => GUIDANCE[id];
 export const helpTopics = (): readonly HelpTopic[] => HELP_TOPICS;
 
 /** The topic that contains an entry, so the drawer can show its neighbours. */
-export const topicOf = (id: GuidanceId): HelpTopic | undefined => HELP_TOPICS.find((t) => t.entries.includes(id));
 
 /** Entries shown below the main one on a page that has sub-sections (the results dashboard). */
 export const relatedEntries = (id: GuidanceId): GuidanceId[] =>

@@ -13,13 +13,6 @@ const CONFIG = {
   insufficient_evidence: { label: "INSUFFICIENT EVIDENCE", Icon: CircleHelp, style: "border-slate-400 bg-slate-100 text-slate-800" },
 } as const satisfies Record<ViabilityStatus, { label: string; Icon: typeof XCircle; style: string }>;
 
-export const VIABILITY_LABEL: Record<ViabilityStatus, string> = {
-  viable: CONFIG.viable.label,
-  conditionally_viable: CONFIG.conditionally_viable.label,
-  not_yet_viable: CONFIG.not_yet_viable.label,
-  insufficient_evidence: CONFIG.insufficient_evidence.label,
-};
-
 export function StatusBadge({ status, size = "md" }: { status: ViabilityStatus; size?: "sm" | "md" | "lg" }) {
   const { label, Icon, style } = CONFIG[status];
   return (

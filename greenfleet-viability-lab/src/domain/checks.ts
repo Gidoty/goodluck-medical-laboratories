@@ -130,4 +130,3 @@ export function checkAssessment(a: Assessment): FieldIssue[] {
   return [...FIELDS.flatMap((f) => validateField(f, r)), ...validateProvenance(a), ...crossFieldChecks(a, r)];
 }
 
-export const issuesForStep = (issues: readonly FieldIssue[], step: StepId) => issues.filter((i) => i.stepId === step);

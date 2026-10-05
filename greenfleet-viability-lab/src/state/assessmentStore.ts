@@ -1,5 +1,5 @@
 import { createBlankAssessment } from "@/domain/blank";
-import { createDemoAssessment } from "@/domain/demo";
+import { createDemoAssessment, type DemoCaseId } from "@/domain/demo";
 import type { NumericField } from "@/domain/fieldValue";
 import { setChoice, setCurrency, setInput, setProvenance, setQNumber } from "@/domain/mutations";
 import type { Assessment, ProvenanceEntry } from "@/domain/stored";
@@ -21,7 +21,8 @@ export interface AssessmentActions {
   setQNumber(id: string, patch: { value?: NumericField; qualifier?: string }): void;
   setProvenance(id: string, patch: Partial<ProvenanceEntry>): void;
   setCurrency(currency: CurrencyCode): void;
-  loadDemo(): void;
+  /** Loads the general walkthrough demo, or one of the five synthetic demonstration cases. UI must ask for confirmation first when work would be lost. */
+  loadDemo(caseId?: DemoCaseId): void;
   /** Discards everything and starts a fresh blank assessment. UI must ask for confirmation first. */
   reset(): void;
 }
@@ -78,9 +79,9 @@ export function createAssessmentStore({ repository, now = () => new Date(), newI
     setQNumber: (id, patch) => update((a, t) => setQNumber(a, id, patch, t)),
     setProvenance: (id, patch) => update((a, t) => setProvenance(a, id, patch, t)),
     setCurrency: (currency) => update((a, t) => setCurrency(a, currency, t)),
-    loadDemo: () => {
+    loadDemo: (caseId) => {
       hydrate();
-      commit(createDemoAssessment(newId(), iso()));
+      commit(createDemoAssessment(newId(), iso(), caseId));
     },
     reset: () => {
       repository.clear();

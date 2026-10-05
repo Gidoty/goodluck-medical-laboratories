@@ -19,7 +19,16 @@ describe("formatMoney", () => {
   it("puts the minus sign before the symbol and never prints negative zero", () => {
     expect(formatMoney(-2500, "NGN")).toBe("-₦2,500");
     expect(formatMoney(-0, "NGN")).toBe("₦0");
-    expect(formatMoney(-0.2, "NGN")).toBe("₦0");
+    expect(formatMoney(-1e-9, "NGN")).toBe("₦0"); // arithmetic noise is zero
+  });
+  it("Batch 8 rounding audit: a real amount below one unit is not displayed as zero", () => {
+    expect(formatMoney(0.3, "NGN")).toBe("< ₦1");
+    expect(formatMoney(-0.3, "NGN")).toBe("> -₦1");
+    expect(formatMoney(0.4999, "NGN")).toBe("< ₦1");
+    expect(formatMoney(0.5, "NGN")).toBe("₦1");
+    expect(formatMoney(-0.5, "NGN")).toBe("-₦1");
+    expect(formatMoney(0.3, "NGN", { fractionDigits: 2 })).toBe("₦0.30");
+    expect(formatMoney(0, "NGN")).toBe("₦0");
   });
   it("supports fixed decimals", () => {
     expect(formatMoney(12.5, "NGN", { fractionDigits: 2 })).toBe("₦12.50");

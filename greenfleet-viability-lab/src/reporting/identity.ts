@@ -8,6 +8,14 @@ import pkg from "../../package.json";
 export const APP_NAME = "GreenFleet Viability Lab";
 export const REPORT_TITLE = "Commercial Viability Assessment";
 export const REPORT_VERSION = "1.0";
+
+/**
+ * The frozen prototype identifier. It names the delivered software and is NOT the version of the Commercial
+ * Viability Policy ("GreenFleet Commercial Viability Policy v1.0"), which versions the decision rules.
+ * The two change independently.
+ */
+export const PROTOTYPE_VERSION = "GreenFleet MSc Prototype v1.0";
+export const PROTOTYPE_STATUS = "MSc Prototype Feature Freeze";
 export const APP_VERSION: string = pkg.version;
 export const REPORT_AUTHORSHIP = "Built by Group 8, MSc Class of 2025, CELTRAS";
 

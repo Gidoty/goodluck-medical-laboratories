@@ -45,7 +45,7 @@ export default function MethodologyPage() {
           <div className="space-y-3">
             <p>Each technology is assessed over the same analysis horizon, on the same route and utilisation. Diesel is the reference case. It is not treated as inferior, and no technology receives a favourable result unless your numbers produce one.</p>
             <p>Commercial viability and environmental performance are separate dimensions. A technology can emit less and still be commercially unattractive, and the application reports both.</p>
-            <p>Calculations are deterministic and auditable. Generative AI, if added later, will only describe results in plain language and will never create or change a figure.</p>
+            <p>Calculations are deterministic and auditable. GreenFleet does not use generative AI. Every figure and every sentence comes from the deterministic rules described on this page.</p>
           </div>
         </Collapsible>
 

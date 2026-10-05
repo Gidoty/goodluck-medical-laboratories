@@ -8,7 +8,9 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { BADGE_STATUS } from "@/components/results/commercial-sections";
 import type { ResultFormatter } from "@/components/results/format-results";
 import { TECH_NAMES, type AssessmentCalculationResult, type GreenTechId } from "@/calculation/types";
+import { DEMO_NOTICE } from "@/domain/demo";
 import { OPERATIONAL_STATUS_LABEL } from "@/calculation/operational/types";
+import { availableEconomicEvidenceNote } from "@/calculation/viability";
 import { cellText } from "@/reporting/cells";
 import { buildReportModel } from "@/reporting/model";
 import { buildPresentationScreens, keyToAction, presentationReducer, type ScreenId } from "@/reporting/presentation";
@@ -42,7 +44,7 @@ export function PresentationScreen({ id, m, result, f }: { id: ScreenId; m: Repo
           <p className="text-xl text-navy-900 sm:text-2xl">{m.identity.assessmentName}{m.identity.businessName ? `, ${m.identity.businessName}` : ""}</p>
           <p className="text-lg text-slate-700">This is the Base Case: your current assessment, in {m.identity.currency}, over {m.identity.horizonYears} years.</p>
           <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{m.profile.slice(0, 9).map((p) => <div key={p.label} className="rounded-xl border border-line bg-surface p-4"><dt className="text-sm text-slate-700">{p.label}</dt><dd className="text-xl font-semibold text-navy-950">{p.value}</dd></div>)}</dl>
-          {m.identity.dataOrigin === "demo" && <p className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-amber-950">Illustrative demo values. They say nothing about real costs.</p>}
+          {m.identity.dataOrigin === "demo" && <p className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-amber-950">{DEMO_NOTICE} They say nothing about real costs.</p>}
         </div>
       );
     case "comparison": {
@@ -94,6 +96,7 @@ export function PresentationScreen({ id, m, result, f }: { id: ScreenId; m: Repo
               <h3 className="text-xl font-semibold text-navy-950">{TECH_NAMES[c.technology]} against diesel</h3>
               <div className="mt-3 scale-110 origin-left"><StatusBadge status={BADGE_STATUS[c.classification]} size="lg" /></div>
               <p className="mt-5 text-xl leading-snug text-navy-950">{f.text(c.primaryReason)}</p>
+              {c.classification === "INSUFFICIENT_EVIDENCE" && availableEconomicEvidenceNote(c.economicCase) && <p className="mt-3 text-lg text-slate-800">{availableEconomicEvidenceNote(c.economicCase)} It is shown for information and does not decide the label.</p>}
               <p className="mt-3 text-base text-slate-700">Operational: {OPERATIONAL_STATUS_LABEL[c.operationalStatus]}. {f.text(c.environmentalContext)}</p>
             </div>
           ))}

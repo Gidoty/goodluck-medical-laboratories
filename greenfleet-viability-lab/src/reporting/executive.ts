@@ -2,6 +2,7 @@ import type { NormalizedAssessmentInput } from "@/domain/normalized";
 import { OPTIONS } from "@/domain/schema/options";
 import { TECH_NAMES, type AssessmentCalculationResult, type GreenTechId } from "@/calculation/types";
 import { CLASSIFICATION_LABEL, type CommercialViabilityResult } from "@/calculation/viability/types";
+import { availableEconomicEvidenceNote } from "@/calculation/viability";
 import { formatNumber } from "@/lib/format";
 import type { AnalysisRecord } from "./analysisRecord";
 import { joinList, phraseOf } from "./phrases";
@@ -22,7 +23,8 @@ export function technologySentences(t: GreenTechId, c: CommercialViabilityResult
   const name = LOWER[t];
   if (c.classification === "INSUFFICIENT_EVIDENCE") {
     const why = c.criticalMissing[0]?.text.replace(/\.$/, "") ?? "essential information is missing";
-    return [`GreenFleet cannot classify the ${name} alternative because ${lc(why)}.`, c.environmentalContext.text];
+    const note = availableEconomicEvidenceNote(c.economicCase);
+    return [`GreenFleet cannot classify the ${name} alternative because ${lc(why)}.`, ...(note ? [note] : []), c.environmentalContext.text];
   }
   const out = [`Under the entered assumptions, the ${name} alternative is ${CLASSIFICATION_LABEL[c.classification]} relative to diesel.`];
   out.push(`Its economic case is ${ECON[c.economicCase] ?? "not determined"}, with an incremental NPV of ${money(c.economic.npv ?? 0)}.`);
@@ -79,7 +81,8 @@ export function buildKeyTakeaways(result: AssessmentCalculationResult, evidence:
   const out: string[] = [];
   for (const t of GREEN) {
     const c = result.commercial[t];
-    out.push(c.classification === "INSUFFICIENT_EVIDENCE" ? `${TECH_NAMES[t]} cannot be classified: essential information is missing.` : `${TECH_NAMES[t]} is ${CLASSIFICATION_LABEL[c.classification]} relative to diesel under the entered assumptions.`);
+    const note = c.classification === "INSUFFICIENT_EVIDENCE" ? availableEconomicEvidenceNote(c.economicCase) : null;
+    out.push(c.classification === "INSUFFICIENT_EVIDENCE" ? `${TECH_NAMES[t]} cannot be classified: essential information is missing.${note ? ` ${note}` : ""}` : `${TECH_NAMES[t]} is ${CLASSIFICATION_LABEL[c.classification]} relative to diesel under the entered assumptions.`);
   }
   for (const t of GREEN) {
     const d = analysis?.drivers[t];

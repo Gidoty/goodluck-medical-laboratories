@@ -1,11 +1,10 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, CircleDashed, Hourglass } from "lucide-react";
+import { ArrowRight, CheckCircle2, CircleDashed } from "lucide-react";
 import { useMemo } from "react";
 import { Collapsible } from "@/components/ui/collapsible";
 import { HOW_GREENFLEET_WORKS } from "@/guidance/content";
 import { StartActions } from "@/components/assessment/start-actions";
-import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { stepCompletions } from "@/domain/completion";
@@ -80,11 +79,6 @@ export function OverviewView() {
               <li key={j.n} className="flex items-start gap-3">
                 <span className="grid size-7 shrink-0 place-items-center rounded-full bg-navy-100 text-xs font-bold text-navy-800">{j.n}</span>
                 <span className="min-w-0 flex-1 text-sm font-medium text-navy-900">{j.title}</span>
-                {j.state === "ready" ? (
-                  <Badge tone="forest">Available</Badge>
-                ) : (
-                  <Badge tone="neutral"><Hourglass aria-hidden className="size-3" /> Coming later</Badge>
-                )}
               </li>
             ))}
           </ol>

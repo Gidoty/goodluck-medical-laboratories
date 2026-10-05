@@ -14,6 +14,7 @@ import { OPERATIONAL_STATUS_LABEL } from "@/calculation/operational/types";
 import { TECH_NAMES, type AssessmentCalculationResult, type GreenTechId } from "@/calculation/types";
 import type { CommercialClassification, CommercialViabilityResult, EconomicCase } from "@/calculation/viability/types";
 import { ctaLabelFor } from "@/calculation/threshold";
+import { availableEconomicEvidenceNote } from "@/calculation/viability";
 import { OperationalStatusPill } from "./analysis-sections";
 import type { ResultFormatter } from "./format-results";
 
@@ -82,6 +83,7 @@ function Guidance({ c, f }: { c: CommercialViabilityResult; f: ResultFormatter }
       <ul className="mt-1 list-disc space-y-1 pl-5">
         {c.criticalMissing.length > 0 ? c.criticalMissing.map((m) => <li key={m.checkId}>{f.text(m.text)}</li>) : <li>{f.text(c.primaryReason)}</li>}
       </ul>
+      {availableEconomicEvidenceNote(c.economicCase) && <p className="mt-2">{availableEconomicEvidenceNote(c.economicCase)} <span className="text-xs">Shown for information. It does not decide the label.</span></p>}
       <p className="mt-2 text-xs">GreenFleet does not force incomplete data into a viability label.</p>
       {target && <div className="mt-3"><ButtonLink href={target} variant="secondary" size="sm">Complete Missing Inputs</ButtonLink></div>}
     </div>
