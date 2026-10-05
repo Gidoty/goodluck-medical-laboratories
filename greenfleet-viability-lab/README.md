@@ -92,6 +92,7 @@ Rules the code follows:
 
 | Document | Contents |
 | --- | --- |
+| `docs/PROJECT_DOCUMENTARY.md` | The whole project in one readable document: purpose, method, design, checking, limits |
 | `docs/PROGRESS_SUMMARY.md` | What each batch built, and the rules to keep |
 | `docs/NORMALIZED_INPUT.md` | The input contract |
 | `docs/CALCULATION_ENGINE.md` | Formulas, conventions and layers |
