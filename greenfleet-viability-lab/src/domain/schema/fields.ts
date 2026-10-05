@@ -127,7 +127,7 @@ export const FIELDS: readonly FieldDef[] = [
   num({ id: "ops.analysisHorizon", section: "operating", label: "Expected project / analysis period", unit: "years", rule: { ...POSITIVE_INT, max: 50 }, required: true, glossary: "analysisHorizon", hint: "Whole years over which the investment is evaluated." }),
 
   choice({ id: "ops.distanceMode", section: "operating-advanced", label: "Enter annual distance directly", options: OPTIONS.distanceMode, presentation: "switch", switchOn: "annual", defaultValue: "daily", required: false, hint: "Switch on to enter kilometres per year instead of kilometres per day." }),
-  num({ id: "ops.routeDistance", section: "operating-advanced", label: "Average route distance", unit: "km", rule: POSITIVE, required: false }),
+  num({ id: "ops.routeDistance", glossary: "routeDistance", section: "operating-advanced", label: "Average route distance", unit: "km", rule: POSITIVE, required: false }),
   num({ id: "ops.tripsPerDay", section: "operating-advanced", label: "Average trips per day", unit: "trips_per_day", rule: { ...POSITIVE, plausibleMax: 100 }, required: false }),
 
   // ===== Step 2: Diesel baseline ======================================================
@@ -142,7 +142,7 @@ export const FIELDS: readonly FieldDef[] = [
   }),
   num({ id: "diesel.fuelPrice", section: "diesel-core", label: "Diesel price", unit: "money_per_litre", rule: MONEY, required: true, provenance: true, hint: "The price you pay, not a national average." }),
   num({ id: "diesel.annualMaintenance", section: "diesel-core", label: "Annual maintenance cost (per vehicle)", unit: "money_per_year", rule: MONEY, required: true }),
-  num({ id: "diesel.usefulLife", section: "diesel-core", label: "Vehicle useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true }),
+  num({ id: "diesel.usefulLife", glossary: "usefulLife", section: "diesel-core", label: "Vehicle useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true }),
   ...advancedCosts("diesel", "diesel-advanced"),
   num({ id: "diesel.fuelEscalation", section: "diesel-advanced", label: "Expected annual fuel-price escalation", unit: "percent", rule: ESCALATION, required: false, glossary: "escalation", hint: "Leave blank if you have no view. No escalation is assumed." }),
 
@@ -158,17 +158,17 @@ export const FIELDS: readonly FieldDef[] = [
   }),
   num({ id: "bev.electricityTariff", section: "bev-core", label: "Electricity tariff", unit: "money_per_kwh", rule: MONEY, required: true, provenance: true, hint: "What you actually pay at the charger, including any generator or tariff premium." }),
   num({ id: "bev.annualMaintenance", section: "bev-core", label: "Annual maintenance cost (per vehicle)", unit: "money_per_year", rule: MONEY, required: true }),
-  num({ id: "bev.usefulLife", section: "bev-core", label: "Vehicle useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true }),
+  num({ id: "bev.usefulLife", glossary: "usefulLife", section: "bev-core", label: "Vehicle useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true }),
   num({ id: "bev.usableRange", section: "bev-core", label: "Usable driving range per full charge", unit: "km", rule: { ...POSITIVE, plausibleMax: 1500 }, required: true, glossary: "usableRange", hint: "Real-world range with your load and conditions, not the brochure figure." }),
   num({ id: "bev.batteryCapacity", section: "bev-core", label: "Battery capacity", unit: "kwh", rule: { ...POSITIVE, plausibleMax: 1500 }, required: false, hint: "Recommended." }),
 
-  choice({ id: "bev.chargingOpportunity", section: "bev-ops", label: "Charging opportunity during the operating day", options: OPTIONS.chargingOpportunity, presentation: "select", required: false }),
-  num({ id: "bev.chargingDowntime", section: "bev-ops", label: "Average charging downtime per operating day", unit: "hours_per_day", rule: { min: 0, max: 24 }, required: false }),
+  choice({ id: "bev.chargingOpportunity", glossary: "chargingOpportunity", section: "bev-ops", label: "Charging opportunity during the operating day", options: OPTIONS.chargingOpportunity, presentation: "select", required: false }),
+  num({ id: "bev.chargingDowntime", glossary: "chargingDowntime", section: "bev-ops", label: "Average charging downtime per operating day", unit: "hours_per_day", rule: { min: 0, max: 24 }, required: false }),
   choice({ id: "bev.payloadImpact", section: "bev-ops", label: "Payload impact", options: OPTIONS.payloadImpact, presentation: "radio", required: false }),
-  qnum({ id: "bev.payloadReduction", section: "bev-ops", label: "Estimated payload reduction", qualifiers: [{ id: "kg", unit: "kg", rule: POSITIVE }, { id: "percent", unit: "percent", rule: POSITIVE_PCT }], defaultQualifier: "kg", required: true, visibleWhen: (r) => r.choice("bev.payloadImpact") === "reduced" }),
+  qnum({ id: "bev.payloadReduction", glossary: "payloadReduction", section: "bev-ops", label: "Estimated payload reduction", qualifiers: [{ id: "kg", unit: "kg", rule: POSITIVE }, { id: "percent", unit: "percent", rule: POSITIVE_PCT }], defaultQualifier: "kg", required: true, visibleWhen: (r) => r.choice("bev.payloadImpact") === "reduced" }),
 
   ...advancedCosts("bev", "bev-advanced"),
-  choice({ id: "bev.batteryReplacement", section: "bev-advanced", label: "Battery replacement expected?", options: OPTIONS.yesNoUnknown, presentation: "radio", required: false, hint: "“Unknown” is kept as unknown. It is not treated as zero." }),
+  choice({ id: "bev.batteryReplacement", glossary: "batteryReplacement", section: "bev-advanced", label: "Battery replacement expected?", options: OPTIONS.yesNoUnknown, presentation: "radio", required: false, hint: "“Unknown” is kept as unknown. It is not treated as zero." }),
   num({ id: "bev.batteryReplacementYear", section: "bev-advanced", label: "Battery replacement year", unit: "years", rule: { ...POSITIVE_INT, max: 50 }, required: true, visibleWhen: (r) => r.choice("bev.batteryReplacement") === "yes", hint: "Year of operation in which the battery is replaced." }),
   num({ id: "bev.batteryReplacementCost", section: "bev-advanced", label: "Estimated battery replacement cost", unit: "money", rule: MONEY, required: true, visibleWhen: (r) => r.choice("bev.batteryReplacement") === "yes" }),
   num({ id: "bev.electricityEscalation", section: "bev-advanced", label: "Expected annual electricity-price escalation", unit: "percent", rule: ESCALATION, required: false, glossary: "escalation", hint: "Leave blank if you have no view. No escalation is assumed." }),
@@ -195,11 +195,11 @@ export const FIELDS: readonly FieldDef[] = [
     hint: "Choose the unit you know. Enter one, not both.",
   }),
   num({ id: "biofuel.annualMaintenance", section: "bio-core", label: "Annual maintenance cost (per vehicle)", unit: "money_per_year", rule: MONEY, required: true }),
-  num({ id: "biofuel.usefulLife", section: "bio-core", label: "Vehicle useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true }),
+  num({ id: "biofuel.usefulLife", glossary: "usefulLife", section: "bio-core", label: "Vehicle useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true }),
 
-  choice({ id: "biofuel.fuelAvailability", section: "bio-supply", label: "Fuel availability", options: OPTIONS.fuelAvailability, presentation: "select", required: false }),
-  num({ id: "biofuel.additionalRefuellingKm", section: "bio-supply", label: "Additional refuelling distance (per vehicle per day)", unit: "km_per_day", rule: MONEY, required: false, hint: "Extra distance driven to reach this fuel." }),
-  num({ id: "biofuel.downtime", section: "bio-supply", label: "Operational downtime from fuel availability", unit: "hours_per_month", rule: { min: 0, max: 744 }, required: false, hint: "Hours per month that a vehicle cannot run, or is delayed, because the fuel is not available." }),
+  choice({ id: "biofuel.fuelAvailability", glossary: "fuelAvailability", section: "bio-supply", label: "Fuel availability", options: OPTIONS.fuelAvailability, presentation: "select", required: false }),
+  num({ id: "biofuel.additionalRefuellingKm", glossary: "refuelling", section: "bio-supply", label: "Additional refuelling distance (per vehicle per day)", unit: "km_per_day", rule: MONEY, required: false, hint: "Extra distance driven to reach this fuel." }),
+  num({ id: "biofuel.downtime", glossary: "biofuelDowntime", section: "bio-supply", label: "Operational downtime from fuel availability", unit: "hours_per_month", rule: { min: 0, max: 744 }, required: false, hint: "Hours per month that a vehicle cannot run, or is delayed, because the fuel is not available." }),
   choice({ id: "biofuel.specialInfrastructure", section: "bio-supply", label: "Special storage or infrastructure required?", options: OPTIONS.yesNoUnknown, presentation: "radio", required: false, hint: "If yes, enter the costs in Step 5." }),
 
   ...advancedCosts("biofuel", "bio-advanced"),
@@ -225,7 +225,7 @@ export const FIELDS: readonly FieldDef[] = [
   num({ id: "bevInfra.installationCost", section: "fin-bev-infra", label: "Installation cost", unit: "money", rule: MONEY, required: true, visibleWhen: hasChargingInfra, hint: "Total for the whole installation." }),
   num({ id: "bevInfra.electricalUpgradeCost", section: "fin-bev-infra", label: "Electrical upgrade cost", unit: "money", rule: MONEY, required: false, allowNotApplicable: true, visibleWhen: hasChargingInfra, hint: "Total, for example grid connection or wiring upgrades." }),
   num({ id: "bevInfra.chargerCount", section: "fin-bev-infra", label: "Number of chargers", unit: "vehicles", rule: { min: 1, integer: true }, required: true, visibleWhen: hasChargingInfra }),
-  num({ id: "bevInfra.vehiclesSharing", section: "fin-bev-infra", label: "Total vehicles using these chargers", unit: "vehicles", rule: { min: 1, integer: true }, required: true, visibleWhen: hasChargingInfra, hint: "Count every vehicle that uses them, including the vehicles you are assessing. Your fleet is charged its share of the cost." }),
+  num({ id: "bevInfra.vehiclesSharing", glossary: "infraSharing", section: "fin-bev-infra", label: "Total vehicles using these chargers", unit: "vehicles", rule: { min: 1, integer: true }, required: true, visibleWhen: hasChargingInfra, hint: "Count every vehicle that uses them, including the vehicles you are assessing. Your fleet is charged its share of the cost." }),
   num({ id: "bevInfra.lifeYears", section: "fin-bev-infra", label: "Infrastructure useful life", unit: "years", rule: { ...POSITIVE, max: 50 }, required: true, visibleWhen: hasChargingInfra }),
   num({ id: "bevInfra.annualMaintenance", section: "fin-bev-infra", label: "Annual charger maintenance cost", unit: "money_per_year", rule: MONEY, required: false, allowNotApplicable: true, visibleWhen: hasChargingInfra }),
   num({ id: "bevInfra.otherAnnualCost", section: "fin-bev-infra", label: "Other annual charging infrastructure cost", unit: "money_per_year", rule: MONEY, required: false, allowNotApplicable: true, visibleWhen: hasChargingInfra }),

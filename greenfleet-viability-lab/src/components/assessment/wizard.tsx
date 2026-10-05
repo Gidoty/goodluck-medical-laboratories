@@ -12,6 +12,7 @@ import { neighbours, stepById, type StepId } from "@/domain/steps";
 import { useAssessmentState } from "@/state/StoreProvider";
 import { ReviewScreen } from "./review-screen";
 import { StartActions } from "./start-actions";
+import { StepGuidanceNote } from "./step-guidance-note";
 import { StepForm } from "./step-form";
 import { StepProgress } from "./step-progress";
 
@@ -58,6 +59,7 @@ export function AssessmentWizard({ stepId }: { stepId: StepId }) {
           action={stepId !== "review" ? <StartActions variant="compact" /> : undefined}
         />
         <CardBody>
+          <StepGuidanceNote stepId={stepId} />
           {stepId === "review" ? (
             <ReviewScreen assessment={assessment} />
           ) : (

@@ -2,10 +2,12 @@
 
 import { Info } from "lucide-react";
 import Link from "next/link";
+import { PageHelpButton } from "@/guidance/HelpButtons";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Collapsible } from "@/components/ui/collapsible";
 import { ResponsiveTable } from "@/components/ui/responsive-table";
+import { HelpTip } from "@/components/ui/help-tip";
 import { StatusBadge } from "@/components/ui/status-badge";
 import type { ViabilityStatus } from "@/domain/types";
 import { OPERATIONAL_STATUS_LABEL } from "@/calculation/operational/types";
@@ -87,7 +89,7 @@ export function CommercialHeadline({ r, f }: { r: AssessmentCalculationResult; f
   return (
     <section aria-labelledby="commercial-title" className="space-y-3">
       <div>
-        <h2 id="commercial-title" className="text-xl font-semibold text-navy-950">Commercial viability against diesel</h2>
+        <div className="flex flex-wrap items-center gap-x-3"><h2 id="commercial-title" className="text-xl font-semibold text-navy-950">Commercial viability against diesel</h2><PageHelpButton id="results.commercial" label="What the four labels mean" /></div>
         <p className="text-sm text-slate-600">Is each green alternative commercially viable, relative to the diesel baseline, under the assumptions you entered? Decided by explicit rules on cost and operation. Environmental performance is shown beside it and does not change it.</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
@@ -105,8 +107,8 @@ export function CommercialHeadline({ r, f }: { r: AssessmentCalculationResult; f
               <div className="mt-2"><StatusBadge status={BADGE_STATUS[c.classification]} size="lg" /></div>
               <p className="mt-3 text-sm font-medium text-navy-900">{f.text(c.primaryReason)}</p>
               <dl className="mt-3 divide-y divide-line text-sm">
-                <div className="flex flex-wrap justify-between gap-x-3 py-1.5"><dt className="text-navy-800">NPV vs diesel</dt><dd className="font-semibold text-navy-950">{f.money(a.npv)}</dd></div>
-                <div className="flex flex-wrap justify-between gap-x-3 py-1.5"><dt className="text-navy-800">Discounted payback</dt><dd className="text-right font-semibold text-navy-950">{f.years(a.discountedPayback)}</dd></div>
+                <div className="relative flex flex-wrap justify-between gap-x-3 py-1.5"><dt className="flex items-center gap-1 text-navy-800">NPV vs diesel<HelpTip term="npv" /></dt><dd className="font-semibold text-navy-950">{f.money(a.npv)}</dd></div>
+                <div className="relative flex flex-wrap justify-between gap-x-3 py-1.5"><dt className="flex items-center gap-1 text-navy-800">Discounted payback<HelpTip term="discountedPayback" /></dt><dd className="text-right font-semibold text-navy-950">{f.years(a.discountedPayback)}</dd></div>
                 <div className="flex flex-wrap items-center justify-between gap-x-3 py-1.5"><dt className="text-navy-800">Operational</dt><dd><OperationalStatusPill status={c.operationalStatus} /></dd></div>
                 <div className="py-1.5"><dt className="text-navy-800">Environmental</dt><dd className="text-xs text-navy-900">{c.environmentalContext.text}</dd></div>
               </dl>
@@ -184,6 +186,7 @@ export function WhyPanels({ r, f }: { r: AssessmentCalculationResult; f: ResultF
   return (
     <section aria-labelledby="why-title" className="space-y-3">
       <h2 id="why-title" className="sr-only">Why these results</h2>
+      <PageHelpButton id="results.why" label="How to read the decision trace" />
       {GREEN.map((g) => <WhyPanel key={g} r={r} g={g} f={f} />)}
     </section>
   );

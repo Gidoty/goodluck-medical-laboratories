@@ -1,4 +1,4 @@
-# GreenFleet Viability Lab: progress summary (Batches 1 to 5)
+# GreenFleet Viability Lab: progress summary (Batches 1 to 5.1)
 
 **Project:** web decision-support tool comparing diesel, battery-electric (BEV) and biofuel fleets for logistics start-ups. Academic prototype, University of Port Harcourt (CELTRAS).
 **Where:** folder `greenfleet-viability-lab/` in repo `gidoty/goodluck-medical-laboratories`, branch `ccr-7360588a-pkyx8s`. Independent of the rest of the repo.
@@ -39,6 +39,14 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - Results page: headline classification cards (with Conditions to Resolve / Primary barriers / What is missing / viable wording), a dimensions matrix, "Why this result?" panels with the trace, and a policy note. The "pending" message is gone. Methodology page has the policy section.
 - Not built: sensitivity, scenarios, threshold solving, AI, export, saved-scenario storage.
 
+## Batch 5.1: user guidance system
+- New `src/guidance/` module (details in `docs/USER_GUIDANCE_SYSTEM.md`): a central static content registry, a context-aware Help panel (side drawer on desktop, bottom sheet on mobile), a first-visit welcome, a 7-step skippable Quick Tour that can be restarted from Help, and page and section help buttons.
+- Onboarding state (completed, skipped or dismissed) is kept under its own storage key and never touches assessment data.
+- Every assessment step has a short "In this step / Next" note. Results have help for the economic, operational, environmental and commercial parts, the decision trace, and an honest empty state.
+- Field help rewritten or added for the technically difficult inputs; NPV, payback and TCO help on Results. "Why is this required?" appears under missing required values.
+- Home has a "How GreenFleet Works" panel. Sensitivity and Scenarios help says plainly that those tools are not available yet.
+- No calculation, operational rule, environmental rule or Policy v1.0 change.
+
 ## Rules to keep
 - Asset perspective only. Loans, interest and equity are stored but excluded from NPV and TCO.
 - Escalation applies only if the user entered it. A blank is held constant and shown as a missing assumption.
@@ -49,7 +57,7 @@ App shell with sidebar and mobile menu, landing page, design system (forest gree
 - No market prices or emission factors are shipped. Demo values are labelled "Illustrative assumption, not current market data."
 
 ## Quality status
-399 automated tests (328 from Batches 1 to 4, plus 71 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
+439 automated tests (399 from Batches 1 to 5, plus 40 new), lint, typecheck and production build all pass. Browser-checked at desktop and mobile (Home, Assessment, Results, Methodology) with no console errors or horizontal overflow. Two hand-verifiable calculation cases are in the tests.
 
 ## Already in the code for later batches
 Types exist for `SensitivityVariable` and `Scenario`. `StatusBadge` now shows the four commercial labels. Sensitivity and Scenarios pages are placeholders.

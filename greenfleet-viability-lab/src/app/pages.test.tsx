@@ -71,7 +71,7 @@ describe("results page", () => {
 
   it("shows the empty state and no figures until an assessment is complete", () => {
     const markup = html(<ResultsBody assessment={blank()} />);
-    expect(markup).toContain("Complete an assessment to generate results.");
+    expect(markup).toContain("No assessment results are available yet.");
     expect(text(<ResultsBody assessment={blank()} />)).not.toMatch(/[₦$]\s?\d/);
   });
   it("shows calculated figures, warnings, charts and assumptions for a complete assessment", () => {

@@ -2,6 +2,8 @@
 
 import { ArrowRight, CheckCircle2, CircleDashed, Hourglass } from "lucide-react";
 import { useMemo } from "react";
+import { Collapsible } from "@/components/ui/collapsible";
+import { HOW_GREENFLEET_WORKS } from "@/guidance/content";
 import { StartActions } from "@/components/assessment/start-actions";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -23,15 +25,20 @@ export function OverviewView() {
 
   if (!hydrated) {
     return (
-      <Card aria-busy="true">
-        <CardBody>
-          <p role="status" className="text-sm text-slate-600">Loading your saved work…</p>
-        </CardBody>
-      </Card>
+      <div className="space-y-6">
+        <HowGreenFleetWorks />
+        <Card aria-busy="true">
+          <CardBody>
+            <p role="status" className="text-sm text-slate-600">Loading your saved work…</p>
+          </CardBody>
+        </Card>
+      </div>
     );
   }
 
   return (
+    <div className="space-y-6">
+    <HowGreenFleetWorks />
     <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
       <Card>
         <CardHeader title="Current assessment" description="Your work is saved in this browser." />
@@ -76,7 +83,7 @@ export function OverviewView() {
                 {j.state === "ready" ? (
                   <Badge tone="forest">Available</Badge>
                 ) : (
-                  <Badge tone="neutral"><Hourglass aria-hidden className="size-3" /> Later batch</Badge>
+                  <Badge tone="neutral"><Hourglass aria-hidden className="size-3" /> Coming later</Badge>
                 )}
               </li>
             ))}
@@ -84,5 +91,16 @@ export function OverviewView() {
         </CardBody>
       </Card>
     </div>
+    </div>
+  );
+}
+function HowGreenFleetWorks() {
+  return (
+    <Collapsible title="How GreenFleet Works" summary="Six steps from your fleet to a transparent commercial classification.">
+      <ol className="list-decimal space-y-1.5 pl-5">
+        {HOW_GREENFLEET_WORKS.map((t) => <li key={t}>{t}</li>)}
+      </ol>
+      <p className="mt-3 text-xs text-slate-600">GreenFleet uses your assumptions. It does not provide live market prices and does not guarantee investment outcomes.</p>
+    </Collapsible>
   );
 }

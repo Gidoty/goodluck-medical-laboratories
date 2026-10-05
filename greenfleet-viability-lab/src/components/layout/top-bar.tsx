@@ -5,6 +5,7 @@ import { formatDateTime } from "@/lib/format";
 import { useAssessmentActions, useAssessmentState } from "@/state/StoreProvider";
 import { CurrencySelect } from "@/components/assessment/currency-select";
 import { createReader, getCurrency } from "@/domain/reader";
+import { HelpButton } from "@/guidance/HelpButtons";
 import { MobileNav } from "./mobile-nav";
 
 export function TopBar() {
@@ -23,7 +24,7 @@ export function TopBar() {
             <dt className="text-xs text-slate-600">Assessment</dt>
             <dd className="truncate font-semibold text-navy-950">{name || "Untitled assessment"}</dd>
           </div>
-          <div className="min-w-0">
+          <div className="hidden min-w-0 sm:block">
             <dt className="text-xs text-slate-600">Scenario</dt>
             <dd className="truncate font-semibold text-navy-950">{assessment.scenarioName}</dd>
           </div>
@@ -34,6 +35,7 @@ export function TopBar() {
             </dd>
           </div>
         </dl>
+        <HelpButton className="shrink-0" />
         <div className="shrink-0">
           <label htmlFor={currencyId} className="block text-xs text-slate-600">
             Currency

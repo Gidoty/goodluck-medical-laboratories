@@ -181,7 +181,7 @@ function CalculatePanel({ readiness }: { readiness: Readiness }) {
           <Button size="lg" onClick={run}>
             <Calculator aria-hidden className="size-5" /> Run Commercial Viability Assessment
           </Button>
-          <p className="text-sm text-slate-600">Calculates cost, NPV and payback, checks operational feasibility, and classifies each alternative against diesel by fixed rules.</p>
+          <p className="max-w-xl text-xs text-slate-600">When you run the assessment, GreenFleet will calculate economic performance, operational feasibility, environmental performance where emission factors are available, and commercial viability.</p>
         </div>
         <div role="status" aria-live="polite">
           {attempted && !readiness.commercialReady && (

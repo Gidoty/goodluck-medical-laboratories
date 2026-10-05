@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, CircleHelp, Info, OctagonAlert, Wrench } f
 import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { ResponsiveTable } from "@/components/ui/responsive-table";
+import { PageHelpButton } from "@/guidance/HelpButtons";
 import { ButtonLink } from "@/components/ui/button";
 import { formatNumber } from "@/lib/format";
 import { TECH_NAMES, type AssessmentCalculationResult, type CalcWarning, type GreenTechId, type TechId } from "@/calculation/types";
@@ -127,7 +128,7 @@ export function OperationalSection({ r, arrangement }: { r: AssessmentCalculatio
   return (
     <section aria-labelledby="op-title" className="space-y-4">
       <div>
-        <h2 id="op-title" className="text-lg font-semibold text-navy-950">Operational feasibility</h2>
+        <div className="flex flex-wrap items-center gap-x-3"><h2 id="op-title" className="text-lg font-semibold text-navy-950">Operational feasibility</h2><PageHelpButton id="results.operational" label="What the statuses mean" /></div>
         <p className="text-sm text-slate-600">Could each option do the transport task you described? Rule-based checks on your own inputs. No cost or emissions figure is used here.</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
@@ -248,7 +249,7 @@ export function EnvironmentalSection({ r }: { r: AssessmentCalculationResult }) 
   return (
     <section aria-labelledby="env-title" className="space-y-4">
       <div>
-        <h2 id="env-title" className="text-lg font-semibold text-navy-950">Environmental performance</h2>
+        <div className="flex flex-wrap items-center gap-x-3"><h2 id="env-title" className="text-lg font-semibold text-navy-950">Environmental performance</h2><PageHelpButton id="results.environmental" label="How emissions are estimated" /></div>
         <p className="text-sm text-slate-600">Estimated operational energy/fuel-related GHG emissions, from the factors you supplied. This is not a life-cycle assessment: vehicle and battery manufacturing, disposal and infrastructure emissions are not included.</p>
       </div>
       <ResponsiveTable caption="Estimated operational emissions of diesel, battery electric and biofuel">

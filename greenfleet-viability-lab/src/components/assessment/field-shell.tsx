@@ -4,6 +4,7 @@ import { AlertCircle, TriangleAlert } from "lucide-react";
 import type { ReactNode } from "react";
 import { AssumptionBadge } from "@/components/ui/assumption-badge";
 import { HelpTip } from "@/components/ui/help-tip";
+import { GLOSSARY } from "@/content/glossary";
 import { DEMO_LABEL } from "@/domain/demo";
 import type { FieldIssue } from "@/domain/checks";
 import type { FieldDef } from "@/domain/schema/types";
@@ -80,6 +81,15 @@ export function FieldShell({ def, assessment, controlId, labelId, issues, descri
             </span>
           </p>
         ))}
+        {def.required && issues.some((i) => i.code === "missing") && (
+          <details className="mt-1 text-xs text-slate-700">
+            <summary className="w-fit cursor-pointer font-medium text-navy-700 underline underline-offset-2">Why is this required?</summary>
+            <p className="mt-1">
+              {GLOSSARY[def.glossary ?? ""]?.text ? `${GLOSSARY[def.glossary ?? ""]?.text} ` : ""}
+              GreenFleet needs this value to calculate the comparison, and it never fills a blank with an assumed figure.
+            </p>
+          </details>
+        )}
       </div>
       {illustrative && <p className="mt-1 text-xs font-medium text-amber-900">{DEMO_LABEL}</p>}
       {footer}

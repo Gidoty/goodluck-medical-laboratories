@@ -5,6 +5,7 @@ import { AssumptionBadge, type AssumptionKind } from "@/components/ui/assumption
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Collapsible } from "@/components/ui/collapsible";
 import { ResponsiveTable } from "@/components/ui/responsive-table";
+import { HelpTip } from "@/components/ui/help-tip";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { formatNumber } from "@/lib/format";
 import { TECH_NAMES, type AssessmentCalculationResult, type AssumptionRecord, type CalcWarning, type GreenTechId, type IncrementalAnalysis, type TechId, type TechnologyEconomics } from "@/calculation/types";
@@ -34,10 +35,10 @@ export function HeadlineTiles({ r, f }: { r: AssessmentCalculationResult; f: Res
 
 /* ------------------------------ technology cards ------------------------------ */
 
-function Metric({ label, value, note }: { label: string; value: string; note?: string }) {
+function Metric({ label, value, note, term }: { label: string; value: string; note?: string; term?: string }) {
   return (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 py-2">
-      <dt className="text-sm text-navy-800">{label}</dt>
+    <div className="relative flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 py-2">
+      <dt className="flex items-center gap-1 text-sm text-navy-800">{label}{term && <HelpTip term={term} />}</dt>
       <dd className="text-right text-sm font-semibold text-navy-950">
         {value}
         {note && <span className="block text-xs font-normal text-slate-600">{note}</span>}
@@ -58,8 +59,8 @@ export function TechnologyCards({ r, f }: { r: AssessmentCalculationResult; f: R
               <Card key={id} className="p-5">
                 <h3 className="text-base font-semibold text-navy-950">{TECH_NAMES[id]}</h3>
                 <dl className="mt-2 divide-y divide-line">
-                  <Metric label="Total cost of ownership" value={f.money(t.undiscountedTco)} note={`over ${r.metadata.horizonYears} years, not discounted`} />
-                  <Metric label="Present cost of ownership" value={f.money(t.presentCost)} note={`discounted at ${formatNumber(r.metadata.discountRate * 100, 2)}% a year`} />
+                  <Metric label="Total cost of ownership" term="tco" value={f.money(t.undiscountedTco)} note={`over ${r.metadata.horizonYears} years, not discounted`} />
+                  <Metric label="Present cost of ownership" term="presentCost" value={f.money(t.presentCost)} note={`discounted at ${formatNumber(r.metadata.discountRate * 100, 2)}% a year`} />
                   <Metric label="Cost per km" value={f.perKm(t.tcoPerKm)} />
                   <Metric label="Present cost per km" value={f.perKm(t.presentCostPerKm)} />
                 </dl>
@@ -81,10 +82,10 @@ export function TechnologyCards({ r, f }: { r: AssessmentCalculationResult; f: R
                 <h3 className="text-base font-semibold text-navy-950">{TECH_NAMES[g]} vs diesel</h3>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-navy-800"><Icon aria-hidden className="size-4" />{NPV_LABEL[a.npvDirection]}</p>
                 <dl className="mt-2 divide-y divide-line">
-                  <Metric label="Net present value (NPV)" value={f.money(a.npv)} />
+                  <Metric label="Net present value (NPV)" term="npv" value={f.money(a.npv)} />
                   <Metric label="Extra investment at the start" value={f.money(a.additionalInitialInvestment)} note={a.additionalInitialInvestment < 0 ? "negative: cheaper than diesel at the start" : undefined} />
-                  <Metric label="Simple payback" value={f.years(a.simplePayback)} />
-                  <Metric label="Discounted payback" value={f.years(a.discountedPayback)} />
+                  <Metric label="Simple payback" term="payback" value={f.years(a.simplePayback)} />
+                  <Metric label="Discounted payback" term="discountedPayback" value={f.years(a.discountedPayback)} />
                   <Metric label="Year 1 operating difference" value={f.savings(a.operatingSavings.year1, a.operatingSavings.year1Direction)} />
                 </dl>
               </Card>

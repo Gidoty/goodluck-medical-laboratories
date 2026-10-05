@@ -33,7 +33,7 @@ export function HelpTip({ term }: { term: string }) {
             setHover(false);
           }
         }}
-        className="grid size-5 shrink-0 place-items-center rounded-full text-navy-500 hover:bg-navy-100 hover:text-navy-800"
+        className="-my-1 grid size-8 shrink-0 place-items-center rounded-full text-navy-500 hover:bg-navy-100 hover:text-navy-800"
       >
         <Info aria-hidden className="size-4" />
       </button>

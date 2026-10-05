@@ -4,6 +4,8 @@ import { AssessmentWizard } from "@/components/assessment/wizard";
 import { PageHeader } from "@/components/ui/page-header";
 import { ASSESSMENT_STEPS, stepById } from "@/domain/steps";
 
+import { STEP_GUIDANCE } from "@/guidance/registry";
+
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -21,6 +23,7 @@ export default async function AssessmentStepPage({ params }: { params: Promise<{
   return (
     <>
       <PageHeader
+        help={STEP_GUIDANCE[step.id]}
         eyebrow="New assessment"
         title="Build your fleet comparison"
         description="Work through six short steps. Your entries are saved in this browser as you go."

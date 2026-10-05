@@ -14,6 +14,7 @@ import { formatNumber } from "@/lib/format";
 import { useAssessmentState } from "@/state/StoreProvider";
 import type { AssessmentCalculationResult } from "@/calculation/types";
 import type { Assessment } from "@/domain/stored";
+import { PageHelpButton } from "@/guidance/HelpButtons";
 import { resultFormatter } from "./format-results";
 import { CashFlowChart, CostComponentsChart, TcoChart } from "./results-charts";
 import { CommercialHeadline, CommercialMatrix, CommercialPolicyNote, WhyPanels } from "./commercial-sections";
@@ -45,7 +46,7 @@ export function ResultsBody({ assessment }: { assessment: Assessment }) {
       <Card>
         <CardHeader title="Headline comparison" description="The cost of diesel, battery-electric and biofuel vehicles over your analysis period." />
         <CardBody>
-          <EmptyState icon={Calculator} title="Complete an assessment to generate results." action={<ButtonLink href={blank ? "/assessment/business" : "/assessment/review"}>{blank ? "Start New Assessment" : "Review missing inputs"}</ButtonLink>}>
+          <EmptyState icon={Calculator} title="No assessment results are available yet." action={<div className="flex flex-wrap justify-center gap-2"><ButtonLink href={blank ? "/assessment/business" : "/assessment/review"}>{blank ? "Start an Assessment" : "Review missing inputs"}</ButtonLink><PageHelpButton id="home" label="How GreenFleet Works" /></div>}>
             {blank ? "Results appear here once the inputs are complete." : `${outcome.issues.length} ${outcome.issues.length === 1 ? "input needs" : "inputs need"} attention${missing > 0 ? `, including ${missing} still missing` : ""}. Results are calculated only from a complete, valid assessment.`}
           </EmptyState>
         </CardBody>
@@ -98,7 +99,7 @@ function ResultsDashboard({ result, currency, arrangement }: { result: Assessmen
 
       <section aria-labelledby="econ-title" className="space-y-6">
         <div>
-          <h2 id="econ-title" className="text-xl font-semibold text-navy-950">Economic attractiveness</h2>
+          <div className="flex flex-wrap items-center gap-x-3"><h2 id="econ-title" className="text-xl font-semibold text-navy-950">Economic attractiveness</h2><PageHelpButton id="results.economic" label="How to read these figures" /></div>
           <p className="text-sm text-slate-600">Cost only. Nothing in this section says whether the vehicles can do the work or what they emit. The commercial classification above combines this with operational feasibility by fixed rules.</p>
         </div>
         <HeadlineTiles r={result} f={f} />

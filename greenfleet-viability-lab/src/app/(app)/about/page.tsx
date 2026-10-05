@@ -14,7 +14,7 @@ const CONTEXT: ReadonlyArray<readonly [string, string]> = [
 export default function AboutPage() {
   return (
     <>
-      <PageHeader eyebrow="About" title="About GreenFleet Viability Lab" />
+      <PageHeader help="about" eyebrow="About" title="About GreenFleet Viability Lab" />
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Card>
           <CardBody className="space-y-4 leading-relaxed text-navy-800">

@@ -17,6 +17,7 @@ export default function SensitivityPage() {
   return (
     <>
       <PageHeader
+        help="sensitivity"
         eyebrow="Analysis"
         title="Scenario and sensitivity analysis"
         description="Green transport viability is conditional, not universal. This is where you test how far your assumptions can move."

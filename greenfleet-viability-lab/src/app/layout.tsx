@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { GuidanceProvider } from "@/guidance/GuidanceProvider";
 import { AssessmentStoreProvider } from "@/state/StoreProvider";
 import "./globals.css";
 
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <AssessmentStoreProvider>{children}</AssessmentStoreProvider>
+        <AssessmentStoreProvider>
+          <GuidanceProvider>{children}</GuidanceProvider>
+        </AssessmentStoreProvider>
       </body>
     </html>
   );

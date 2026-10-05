@@ -26,6 +26,7 @@ export default function MethodologyPage() {
   return (
     <>
       <PageHeader
+        help="methodology"
         eyebrow="Transparency"
         title="Methodology & assumptions"
         description="How GreenFleet will reach its answers, and what you can inspect and change."

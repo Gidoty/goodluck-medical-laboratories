@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Overview" };
 export default function OverviewPage() {
   return (
     <>
-      <PageHeader eyebrow="Workspace" title="Overview" description="Pick up your assessment, or see how the full journey fits together." />
+      <PageHeader help="home" eyebrow="Workspace" title="Overview" description="Pick up your assessment, or see how the full journey fits together." />
       <OverviewView />
     </>
   );

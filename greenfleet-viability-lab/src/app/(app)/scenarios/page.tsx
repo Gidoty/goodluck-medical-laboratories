@@ -11,6 +11,7 @@ export default function ScenariosPage() {
   return (
     <>
       <PageHeader
+        help="scenarios"
         eyebrow="Library"
         title="Saved scenarios"
         description="Keep named versions of an assessment, for example a fuel-price shock or a cheaper tariff, and compare them side by side."

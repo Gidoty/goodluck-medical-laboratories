@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/layout/logo";
+import { HelpButton } from "@/guidance/HelpButtons";
 import { ButtonLink } from "@/components/ui/button";
 
 export function SiteHeader() {
@@ -14,6 +15,7 @@ export function SiteHeader() {
           <Link href="/about" className="hidden rounded-md px-3 py-2 text-sm font-medium text-navy-700 hover:bg-navy-100 sm:inline-block">
             About
           </Link>
+          <HelpButton />
           <ButtonLink href="/overview" variant="secondary" size="sm">
             Open workspace
           </ButtonLink>
