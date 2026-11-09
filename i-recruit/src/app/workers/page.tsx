@@ -4,7 +4,9 @@ import { EnquiryForm } from "@/components/EnquiryForm";
 import { Faq } from "@/components/Faq";
 import { PageHero } from "@/components/PageHero";
 import { SectionHeading } from "@/components/SectionHeading";
+import Image from "next/image";
 import { SITE } from "@/lib/site";
+import { WORK } from "@/lib/media";
 
 export const metadata: Metadata = {
   title: "For Workers: Mason and Labourer Jobs in Alberta",
@@ -59,6 +61,13 @@ export default function WorkersPage() {
               </li>
             ))}
           </ol>
+          <div className="mt-12 grid gap-4 sm:grid-cols-3">
+            {[WORK.plastered, WORK.reinforcement, WORK.trench].map((img) => (
+              <div key={img.src} className="reveal relative aspect-[4/5] overflow-hidden bg-charcoal">
+                <Image src={img.src} alt={img.alt} fill sizes="(min-width: 640px) 400px, 100vw" className="object-cover object-top" />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

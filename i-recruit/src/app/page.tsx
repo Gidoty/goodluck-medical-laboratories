@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 import { ButtonLink } from "@/components/ButtonLink";
 import { BrickWall } from "@/components/BrickWall";
+import Image from "next/image";
 import { LogoMark } from "@/components/Logo";
+import { Gallery } from "@/components/Gallery";
+import { WORK } from "@/lib/media";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SITE, whatsappLink } from "@/lib/site";
 
@@ -83,15 +86,25 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="hero-in relative mx-auto hidden w-full max-w-md lg:block" style={{ animationDelay: "250ms" }}>
-            <div className="float">
-              <LogoMark className="mx-auto h-72 w-72 drop-shadow-[0_30px_50px_rgb(0_0_0/0.5)]" title="I-Recruit logo" />
+          <div className="hero-in relative mx-auto hidden w-full max-w-sm lg:block" style={{ animationDelay: "250ms" }}>
+            <div className="absolute -bottom-4 -left-4 h-full w-full border-4 border-orange" aria-hidden />
+            <div className="relative aspect-[4/5] overflow-hidden bg-ink shadow-[0_40px_80px_-30px_rgb(0_0_0/0.7)]">
+              <Image
+                src={WORK.masonSmiling.src}
+                alt={WORK.masonSmiling.alt}
+                fill
+                priority
+                sizes="384px"
+                className="object-cover object-[50%_18%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" aria-hidden />
             </div>
-            <div className="absolute -left-6 top-6 border-l-4 border-orange bg-ink/90 px-5 py-3 backdrop-blur">
+            <LogoMark className="absolute -right-8 -top-8 h-24 w-24 drop-shadow-[0_12px_20px_rgb(0_0_0/0.5)]" />
+            <div className="absolute -left-10 bottom-14 border-l-4 border-orange bg-ink/95 px-5 py-3">
               <p className="font-display text-sm font-bold uppercase tracking-[0.2em] text-white/60">Trades</p>
               <p className="font-display text-2xl font-bold uppercase">Masons · Labourers</p>
             </div>
-            <div className="absolute -right-2 bottom-2 border-l-4 border-orange bg-ink/90 px-5 py-3 backdrop-blur">
+            <div className="absolute -right-10 bottom-0 border-l-4 border-orange bg-ink/95 px-5 py-3">
               <p className="font-display text-sm font-bold uppercase tracking-[0.2em] text-white/60">Placing in</p>
               <p className="font-display text-2xl font-bold uppercase">Alberta, Canada</p>
             </div>
@@ -126,21 +139,27 @@ export default function Home() {
             {[
               {
                 icon: Hammer,
+                img: WORK.formwork,
                 title: "Masons and bricklayers",
                 text: "Experienced tradespeople for brick, block and masonry work on residential, commercial and civil projects. Each candidate's trade experience is assessed before you see them.",
                 points: ["Brick and block laying", "Masonry finishing and repair", "Reads plans and works to spec"],
               },
               {
                 icon: HardHat,
+                img: WORK.stairsForm,
                 title: "Construction labourers",
                 text: "Dependable manual workers for site preparation, material handling, mixing, cleanup and support on active building sites.",
                 points: ["Site preparation and support", "Material handling", "Safety-aware and punctual"],
               },
-            ].map(({ icon: Icon, title, text, points }) => (
+            ].map(({ icon: Icon, img, title, text, points }) => (
               <article
                 key={title}
-                className="reveal group relative overflow-hidden border-t-4 border-orange bg-white p-8 shadow-[0_20px_50px_-30px_rgb(0_0_0/0.4)] transition-transform duration-300 hover:-translate-y-1 sm:p-10"
+                className="reveal group relative overflow-hidden border-t-4 border-orange bg-white shadow-[0_20px_50px_-30px_rgb(0_0_0/0.4)] transition-transform duration-300 hover:-translate-y-1"
               >
+                <div className="relative aspect-[16/8] overflow-hidden bg-charcoal">
+                  <Image src={img.src} alt={img.alt} fill sizes="(min-width: 768px) 560px, 100vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                </div>
+                <div className="p-8 sm:p-10">
                 <Icon className="h-12 w-12 text-orange-ink" aria-hidden />
                 <h3 className="mt-6 text-4xl font-extrabold uppercase leading-none text-charcoal">{title}</h3>
                 <p className="mt-4 text-muted">{text}</p>
@@ -151,6 +170,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
+                </div>
               </article>
             ))}
           </div>
@@ -184,6 +204,12 @@ export default function Home() {
               Hiring from overseas only works when you can trust who arrives. We screen before we recommend, so
               the person on your site matches the person on paper.
             </SectionHeading>
+            <figure className="reveal relative mt-10 overflow-hidden bg-charcoal">
+              <Image src={WORK.safety.src} alt={WORK.safety.alt} width={WORK.safety.w} height={WORK.safety.h} sizes="(min-width: 1024px) 560px, 100vw" className="h-auto w-full" />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 to-transparent px-5 pb-4 pt-12 font-display text-xl font-bold uppercase tracking-wide text-white">
+                Site safety briefing
+              </figcaption>
+            </figure>
             <div className="mt-8">
               <ButtonLink href="/services" variant="dark">
                 See our services
@@ -206,6 +232,27 @@ export default function Home() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* ON SITE */}
+      <section className="bg-ink px-5 py-24 text-white sm:px-8 sm:py-28">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading eyebrow="On site" title="The work our tradespeople do" tone="dark">
+            Block laying, foundations, staircases and finishing. This is the standard of work we recruit for.
+          </SectionHeading>
+          <div className="mt-12">
+            <Gallery
+              items={[
+                { ...WORK.trench, caption: "Block laying" },
+                { ...WORK.level, caption: "Built to line" },
+                { ...WORK.plastered, caption: "Wall finishing" },
+                { ...WORK.stairsPour, caption: "Staircase pour" },
+                { ...WORK.corner, caption: "Corner work" },
+                { ...WORK.interior, caption: "Interior walls" },
+              ]}
+            />
+          </div>
         </div>
       </section>
 

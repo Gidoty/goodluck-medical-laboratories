@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
 import { SectionHeading } from "@/components/SectionHeading";
 import { ButtonLink } from "@/components/ButtonLink";
+import Image from "next/image";
+import { CERTS } from "@/lib/media";
 
 export const metadata: Metadata = {
   title: "About I-Recruit: Vision, Mission and Values",
@@ -67,6 +69,35 @@ export default function AboutPage() {
       </section>
 
       <section className="px-5 py-24 sm:px-8 sm:py-28">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading eyebrow="Credentials" title="Trained and certified">
+            Hands-on masonry training, process safety and project management qualifications behind the people who run I-Recruit.
+          </SectionHeading>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {CERTS.map((c) => (
+              <a
+                key={c.src}
+                href={c.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="reveal group flex flex-col border-t-4 border-orange bg-white shadow-[0_20px_50px_-30px_rgb(0_0_0/0.4)] transition-transform duration-300 hover:-translate-y-1"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-stone">
+                  <Image src={c.src} alt={c.alt} fill sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw" className="object-contain p-3 transition-transform duration-500 group-hover:scale-[1.03]" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-extrabold uppercase leading-tight text-charcoal">{c.title}</h3>
+                  <p className="mt-2 text-sm text-muted">{c.issuer}</p>
+                  <p className="text-sm font-semibold text-orange-ink">{c.date}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-muted">Select a certificate to view it full size. Awarded to Dickson Onisobuana.</p>
+        </div>
+      </section>
+
+      <section className="bg-stone px-5 py-24 sm:px-8 sm:py-28">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
             <SectionHeading eyebrow="Where we work" title="Africa to Alberta">

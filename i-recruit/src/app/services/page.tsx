@@ -3,6 +3,8 @@ import { ClipboardCheck, FileText, Hammer, LineChart, ShieldCheck, Users } from 
 import { ButtonLink } from "@/components/ButtonLink";
 import { PageHero } from "@/components/PageHero";
 import { SectionHeading } from "@/components/SectionHeading";
+import { Gallery } from "@/components/Gallery";
+import { WORK } from "@/lib/media";
 
 export const metadata: Metadata = {
   title: "Services: Construction Recruitment and Workforce Consulting",
@@ -64,6 +66,24 @@ export default function ServicesPage() {
                 <p className="mt-3 text-muted">{text}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-stone px-5 py-24 sm:px-8 sm:py-28">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading eyebrow="Our trades in action" title="What good masonry looks like" />
+          <div className="mt-12">
+            <Gallery
+              items={[
+                { ...WORK.masonSmiling, caption: "Wall finishing" },
+                { ...WORK.interior, caption: "Interior walls" },
+                { ...WORK.trench, caption: "Foundation blockwork" },
+                { ...WORK.wallSite, caption: "Completed walls" },
+                { ...WORK.stairsPour, caption: "Staircase pour" },
+                { ...WORK.formwork, caption: "Foundation formwork" },
+              ]}
+            />
           </div>
         </div>
       </section>

@@ -4,7 +4,9 @@ import { EnquiryForm } from "@/components/EnquiryForm";
 import { Faq } from "@/components/Faq";
 import { PageHero } from "@/components/PageHero";
 import { SectionHeading } from "@/components/SectionHeading";
+import Image from "next/image";
 import { SITE, whatsappLink } from "@/lib/site";
+import { WORK } from "@/lib/media";
 import { ButtonLink } from "@/components/ButtonLink";
 
 export const metadata: Metadata = {
@@ -84,6 +86,16 @@ export default function EmployersPage() {
               ))}
             </ol>
           </div>
+        </div>
+      </section>
+
+      <section aria-label="Examples of site work" className="bg-ink px-5 py-16 sm:px-8">
+        <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-3 sm:gap-4">
+          {[WORK.level, WORK.stairsForm, WORK.formwork].map((img) => (
+            <div key={img.src} className="reveal relative aspect-[16/10] overflow-hidden bg-charcoal">
+              <Image src={img.src} alt={img.alt} fill sizes="(min-width: 640px) 400px, 100vw" className="object-cover" />
+            </div>
+          ))}
         </div>
       </section>
 
