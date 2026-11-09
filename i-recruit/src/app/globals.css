@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1d1e22;
+  --color-charcoal: #2c2d31;
+  --color-slate: #3a3c42;
+  --color-orange: #f58b1e;
+  --color-orange-deep: #d9730f;
+  --color-orange-ink: #a24a04;
+  --color-paper: #f7f4ef;
+  --color-stone: #e6e0d6;
+  --color-muted: #5d5f66;
+
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-sans: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-orange);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.005em;
+}
+
+/* Brick-course texture for dark sections */
+.bg-bricks {
+  background-color: var(--color-charcoal);
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.045) 2px, transparent 2px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.045) 2px, transparent 2px);
+  background-size: 96px 40px, 96px 40px;
+  background-position: 0 0, 0 0;
+}
+
+/* Angled section edges echo the diagonal corner in the logo */
+.edge-slant-bottom {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.5vw), 0 100%);
+}
+.edge-slant-top {
+  clip-path: polygon(0 3.5vw, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Hero brick wall */
+@keyframes lay {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.brick {
+  opacity: 0;
+  animation: lay 0.7s var(--ease-out-quart) forwards;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.hero-in {
+  opacity: 0;
+  animation: rise 0.9s var(--ease-out-quart) forwards;
+}
+
+/* Scroll reveal: CSS only, content stays visible where unsupported */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.95rem;
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .faq-chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .brick,
+  .hero-in,
+  .reveal,
+  .float {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
