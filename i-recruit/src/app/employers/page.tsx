@@ -28,7 +28,7 @@ const FAQ = [
   },
   {
     q: "Do you handle immigration paperwork?",
-    a: "We help employers and candidates with documentation and guide both sides through Canadian labour and immigration requirements. Final decisions on permits rest with the Government of Canada, and we do not guarantee outcomes.",
+    a: "We help employers and candidates with documentation and guide both sides through Canadian labour and immigration requirements.",
   },
   {
     q: "Can you help me plan my workforce?",

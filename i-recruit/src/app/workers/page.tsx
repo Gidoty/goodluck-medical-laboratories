@@ -26,16 +26,16 @@ const FAQ = [
     a: "Experienced masons, bricklayers and construction labourers living in Nigeria, Cameroon or Kenya. Other countries can submit an enquiry and we will let you know if we can help.",
   },
   {
-    q: "Does registering guarantee a job?",
-    a: "No. Registering puts you into our screening process. Placement depends on your skills, employer demand and Canadian requirements.",
+    q: "What happens after I register?",
+    a: "A member of our team contacts you to confirm your details. Your skills assessment and screening follow, and suitable candidates are put forward to Alberta employers.",
   },
   {
     q: "What should I prepare?",
     a: "Your work history, the types of projects you have worked on, any trade certificates or safety training, and a valid passport if you have one.",
   },
   {
-    q: "Can you guarantee a work permit?",
-    a: "No one can. We help you with documentation and explain the requirements. The Government of Canada makes the final decision.",
+    q: "Do you help with paperwork?",
+    a: "Yes. We help you prepare your documents and explain the Canadian labour and immigration requirements that apply to your placement.",
   },
 ];
 
