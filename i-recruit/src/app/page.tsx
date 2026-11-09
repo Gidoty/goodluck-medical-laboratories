@@ -244,11 +244,14 @@ export default function Home() {
           <div className="mt-12">
             <Gallery
               items={[
-                { ...WORK.trench, caption: "Block laying" },
-                { ...WORK.level, caption: "Built to line" },
+                { ...WORK.trenchMortar, caption: "Block laying" },
+                { ...WORK.wallsLevel, caption: "Built to line" },
                 { ...WORK.plastered, caption: "Wall finishing" },
+                { ...WORK.trenchPointing, caption: "Pointing joints" },
                 { ...WORK.stairsPour, caption: "Staircase pour" },
+                { ...WORK.rebar, caption: "Foundation steel" },
                 { ...WORK.corner, caption: "Corner work" },
+                { ...WORK.rooftop, caption: "Upper-floor walls" },
                 { ...WORK.interior, caption: "Interior walls" },
               ]}
             />

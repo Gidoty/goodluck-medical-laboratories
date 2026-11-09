@@ -77,11 +77,14 @@ export default function ServicesPage() {
             <Gallery
               items={[
                 { ...WORK.masonSmiling, caption: "Wall finishing" },
+                { ...WORK.trenchBending, caption: "Mortar and blocks" },
                 { ...WORK.interior, caption: "Interior walls" },
                 { ...WORK.trench, caption: "Foundation blockwork" },
-                { ...WORK.wallSite, caption: "Completed walls" },
+                { ...WORK.night, caption: "Walls at dusk" },
+                { ...WORK.boundary, caption: "Boundary wall" },
                 { ...WORK.stairsPour, caption: "Staircase pour" },
-                { ...WORK.formwork, caption: "Foundation formwork" },
+                { ...WORK.trenchSide, caption: "Reinforced foundation wall" },
+                { ...WORK.wallSite, caption: "Completed walls" },
               ]}
             />
           </div>

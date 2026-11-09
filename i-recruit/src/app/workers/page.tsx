@@ -62,7 +62,7 @@ export default function WorkersPage() {
             ))}
           </ol>
           <div className="mt-12 grid gap-4 sm:grid-cols-3">
-            {[WORK.plastered, WORK.reinforcement, WORK.trench].map((img) => (
+            {[WORK.trenchMortar, WORK.plastered, WORK.trenchPointing].map((img) => (
               <div key={img.src} className="reveal relative aspect-[4/5] overflow-hidden bg-charcoal">
                 <Image src={img.src} alt={img.alt} fill sizes="(min-width: 640px) 400px, 100vw" className="object-cover object-top" />
               </div>

@@ -91,7 +91,7 @@ export default function EmployersPage() {
 
       <section aria-label="Examples of site work" className="bg-ink px-5 py-16 sm:px-8">
         <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-3 sm:gap-4">
-          {[WORK.level, WORK.stairsForm, WORK.formwork].map((img) => (
+          {[WORK.wallsLevel, WORK.stairsForm, WORK.boundary].map((img) => (
             <div key={img.src} className="reveal relative aspect-[16/10] overflow-hidden bg-charcoal">
               <Image src={img.src} alt={img.alt} fill sizes="(min-width: 640px) 400px, 100vw" className="object-cover" />
             </div>

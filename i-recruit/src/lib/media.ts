@@ -19,6 +19,15 @@ export const WORK = {
   stairsPour: work("concrete-staircase-pour", 589, 1280, "Freshly poured concrete staircase"),
   stairsForm: work("staircase-formwork", 1280, 589, "Concrete staircase being formed beside a block wall"),
   wallSite: work("block-wall-site", 912, 420, "Completed block wall on a building site"),
+  trenchBending: work("mason-trench-bending-mortar", 589, 1280, "Mason in orange coveralls spreading mortar on a block course in a trench"),
+  trenchMortar: work("mason-trench-mortar-trowel", 589, 1280, "Mason in orange coveralls laying hollow blocks with mortar and a trowel"),
+  trenchSide: work("mason-trench-wall-side", 589, 1280, "Mason building a hollow block foundation wall with reinforcement bars"),
+  trenchPointing: work("mason-trench-pointing", 720, 1280, "Mason pointing the joints of a block foundation wall"),
+  wallsLevel: work("block-walls-trowel-level", 1280, 589, "Block walls with a trowel and spirit level resting on top"),
+  boundary: work("boundary-wall", 912, 420, "Boundary wall built from sandcrete blocks"),
+  night: work("night-block-walls", 589, 1280, "Block walls with reinforcement columns at dusk"),
+  rooftop: work("block-walls-rooftop", 592, 1280, "Block walls rising on an upper floor"),
+  rebar: work("foundation-rebar-cage", 589, 1280, "Steel reinforcement cage prepared in a foundation trench"),
   level: work("block-wall-spirit-level", 1280, 589, "Block walls built to line with a spirit level on site"),
 } as const;
 
