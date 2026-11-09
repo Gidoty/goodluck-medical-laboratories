@@ -28,6 +28,9 @@ export const WORK = {
   night: work("night-block-walls", 589, 1280, "Block walls with reinforcement columns at dusk"),
   rooftop: work("block-walls-rooftop", 592, 1280, "Block walls rising on an upper floor"),
   rebar: work("foundation-rebar-cage", 589, 1280, "Steel reinforcement cage prepared in a foundation trench"),
+  overview: work("site-overview-blue-sky", 1280, 592, "Block and column framework rising on a commercial building site"),
+  stoneFill: work("foundation-stone-fill", 1280, 589, "Foundation walls with stone fill and reinforcement"),
+  supervisor: work("supervisor-reading-plan", 592, 1280, "Site supervisor in a hard hat checking building plans beside a block wall"),
   level: work("block-wall-spirit-level", 1280, 589, "Block walls built to line with a spirit level on site"),
 } as const;
 

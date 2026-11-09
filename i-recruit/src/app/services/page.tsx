@@ -85,6 +85,9 @@ export default function ServicesPage() {
                 { ...WORK.stairsPour, caption: "Staircase pour" },
                 { ...WORK.trenchSide, caption: "Reinforced foundation wall" },
                 { ...WORK.wallSite, caption: "Completed walls" },
+                { ...WORK.supervisor, caption: "Working to plan" },
+                { ...WORK.overview, caption: "Commercial framework" },
+                { ...WORK.stoneFill, caption: "Foundation stone fill" },
               ]}
             />
           </div>

@@ -93,7 +93,7 @@ export default function AboutPage() {
               </a>
             ))}
           </div>
-          <p className="mt-6 text-sm text-muted">Select a certificate to view it full size. Awarded to Dickson Onisobuana.</p>
+          <p className="mt-6 text-sm text-muted">Select a certificate to view it full size. Held by Dickson Onisobuana, CEO of I-Recruit.</p>
         </div>
       </section>
 

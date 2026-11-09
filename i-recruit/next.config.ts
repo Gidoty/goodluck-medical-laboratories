@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   turbopack: { root: projectRoot },
   outputFileTracingRoot: projectRoot,
+  // STATIC_EXPORT=1 builds a plain HTML folder (out/) that can be uploaded to any static host.
+  ...(process.env.STATIC_EXPORT === "1"
+    ? { output: "export" as const, trailingSlash: true, images: { unoptimized: true } }
+    : {}),
 };
 
 export default nextConfig;
