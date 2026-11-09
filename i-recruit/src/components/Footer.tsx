@@ -65,12 +65,8 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-6 text-sm text-white/55 sm:px-8 md:flex-row md:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-6 text-sm text-white/55 sm:px-8">
           <p>&copy; {new Date().getFullYear()} I-Recruit. All rights reserved.</p>
-          <p className="max-w-2xl md:text-right">
-            I-Recruit is a recruitment and workforce consultancy. We do not guarantee visas, work
-            permits or employment. Immigration decisions rest with the Government of Canada.
-          </p>
         </div>
       </div>
     </footer>
