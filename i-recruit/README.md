@@ -27,6 +27,16 @@ npm run lint
 There is no backend. Each form builds a message and opens WhatsApp or the visitor's email app, so nothing is stored.
 To switch to server-side submission later, replace `EnquiryForm.tsx` with a Formspree or Resend call.
 
+## Quick preview without Git (any static host)
+
+```bash
+STATIC_EXPORT=1 NEXT_PUBLIC_NOINDEX=1 NEXT_PUBLIC_SITE_URL=https://your-preview-url npm run build
+python3 scripts/make-portable.py out portable
+```
+
+`portable/` holds 7 self-contained HTML files (CSS, fonts and images embedded). Upload them to Netlify Drop,
+Cloudflare Pages or any static host. They work even if the host drops sub-folders.
+
 ## Deploy on Vercel
 
 1. Import the repository in the target Vercel account.
